@@ -3,12 +3,6 @@ import java.io.*;
 
 public class HannahBot {
 
-	public static String[] borrowedItem = new String[10000];
-	public static int[] borrowedTeam = new int[10000];
-	public static int borrowedPointer = 0;
-	public static String[] lentItem = new String[10000];
-	public static int[] lentTeam = new int[10000];
-	public static int lentPointer = 0;
 	public static int[][] results = new int[10000][2];
 	public static String[] exact = new String[10000];
 	public static int[] exactLocation = new int[10000];
@@ -47,6 +41,8 @@ public class HannahBot {
 	public static boolean askHannah = false;
 	public static boolean debugMode = false;
 	public static boolean ziptie = false;
+	protected static BotGUI bot = new BotGUI();
+
 	public static void main(String args[]) throws InterruptedException
 	{
 		initialize();
@@ -58,216 +54,31 @@ public class HannahBot {
 	public static void initialize()
 	{
 		loadLibrary();
-		loadBorrow();
 		greet();
+		
 	}
 	public static void greet()
 	{
-		System.out.println("=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=[Hannah Bot]=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=");
-		System.out.println();
-		System.out.println("   Hi, I'm HannahBot (v1.8). I can look for things, and tell you what's in our totes and boxes.");
-		System.out.println("Hannah Bot (v1.8) Theoretically(TM) supports description-based queries and all sentence structures.");
-		System.out.println();
-		System.out.println("-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=(v1.8)=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-");
-		System.out.println();
-		System.out.println("How may I help you?");
+		bot.displayResults("=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=[Hannah Bot]=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=");
+		bot.displayResults("");
+		bot.displayResults("   Hi, I'm HannahBot (v1.8). I can look for things, and tell you what's in our totes and boxes.");
+		bot.displayResults("Hannah Bot (v1.8) Theoretically(TM) supports description-based queries and all sentence structures.");
+		bot.displayResults("");
+		bot.displayResults("-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=(v1.8)=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-");
+		bot.displayResults("");
 	}
 	public static void conductor() throws InterruptedException
 	{
 		reset();
-		String input = input();
-		boolean normal = caser(input);
-		if( normal )
-		{
+		String input = "";
+		input = bot.getSearch();
+		if(input != ""){
 			parse(input);
 			search();
 			output();
 		}
-		menu();
 	}
-	public static boolean caser(String input) throws InterruptedException
-	{
-		boolean normal = false;
-		boolean skip = false;
-		boolean ignoreExclaim = false;
-		String data = input.toLowerCase();
-		if( input.equals("") )
-		{
-			System.out.println("I'm going to need something more specific.");
-			skip = true;
-		}
-		if( data.contains("changelog") )
-		{
-			System.out.println("(v1.0) ::  Basic search function for totes.");
-			System.out.println("(v1.1) ::  Added some more search functinality.");
-			System.out.println("(v1.2) ::  Added ability to list things in totes.");
-			System.out.println("(v1.3) ::  Added support for sentence structures.");
-			System.out.println("(v1.4) ::  Added Easter Eggs and bug fixes.");
-			System.out.println("(v1.5) ::  Incorporated description-based search.");
-			System.out.println("(v1.6) ::  Bug fixes. Added some additional commands and Easter Eggs.");
-			System.out.println("(v1.7) ::  Improved Search Algorithm. Bug Fixes. Consolidated Memory Arrays.");
-			skip = true;
-			System.out.println("(v1.8) ::  Critical Bug Fix.");
-		}
-		if( data.contains("help") && !data.contains("find") || data.contains("help") && !data.contains("look") )
-		{
-			System.out.println("I can look for things by name or by description, theoretically.");
-			System.out.println("I can also list things in the totes.");
-			System.out.println("Say 'flush' to clear the output thingy.");
-			System.out.println("Say 'changelog' to view the changelog.");
-			System.out.println("You can also toggle debug mode by telling me to.");
-			skip = true;
-		}
-		if( data.contains("flush") )
-		{
-			for( int f=0; f<50; f++ )
-			{
-				System.out.println();
-			}
-			skip = true;
-		}
-		if( data.contains("cls") )
-		{
-			System.out.println("Cls? What's that? I'm supposed to be based off of a human being, Pranav.");
-			skip = true;
-		}
-		if( data.contains("three") || data.contains("3") )
-		{
-			if( data.contains("law") )
-			{
-				System.out.println("I'm offended.");
-				skip = true;
-			}
-		}
-		if( data.contains("debug") && data.contains(" on") )
-		{
-			debugMode = true;
-			skip = true;
-		}
-		else if( data.contains("debug") && data.contains(" off") )
-		{
-			debugMode = false;
-			skip = true;
-		}
-		else if( data.contains("debug") && data.contains("toggle") )
-		{
-			debugMode = !debugMode;
-		}
-		if( data.startsWith("hi!") || data.startsWith("hi") || data.startsWith("hi?") || data.startsWith("hello") || data.startsWith("greetings") )
-		{
-			System.out.println("Hi.");
-			Thread.sleep(500);
-			ignoreExclaim = true;
-			skip = true;
-		}
-		if( data.contains("ziptie") && data.contains("dream") )
-		{
-			System.out.println("Allow me to refer you to our robot.");
-		}
-		if( data.contains("door") || data.contains("hinge") )
-		{
-			System.out.println("Really? Again?");
-			skip = true;
-		}
-		if( data.contains("replacement") && data.contains("hannah") )
-		{
-			System.out.println("I'm not Hannah's replacement. Hannah is a wonderful and unique human being. I am a computer program.");
-			skip = true;
-		}
-		if( input.endsWith("!") && !ignoreExclaim  )
-		{
-			System.out.println("Hey, no need to yell.");
-			Thread.sleep(500);
-		}
-		if( input.endsWith("!") && data.contains("please") )
-		{
-			System.out.println("Fine.");
-			Thread.sleep(500);
-		}
-		if( data.contains("backpack") )
-		{
-			System.out.println("If you're looking for a backpack, I would ask Pranav.");
-			skip = true;
-		}
-		if( !skip )
-		{
-			boolean checkPerson = false;
-			for( int f=0; f<29; f++ )
-			{
-				if( data.contains(People[f]) && data.contains("where") )
-				{
-					checkPerson = true;
-					break;
-				}
-			}
-			if( checkPerson )
-			{
-				System.out.println("I'm a tote organizer. Go ask Rayna or something.");
-			}
-			else if( data.contains("where") && data.contains("hannah") && askHannah )
-			{
-				System.out.println("I'm right her- Oh.");
-				Thread.sleep(500);
-				System.out.println("You meant *that* Hannah.");
-				askHannah = true;
-			}
-			else if( data.contains("where") && data.contains("hannah") && !askHannah )
-			{
-				System.out.println("Haven't you already tried looking for me?");
-			}
-			else if( data.contains("love") )
-			{
-				System.out.println("If you're looking for love, you'll have to look elsewhere.");
-			}
-			else if( data.contains("toolbox") )
-			{
-				listToolBox();
-			}
-			else if( data.contains("tote a") )
-			{
-				listToteA();
-			}
-			else if( data.contains("tote b") )
-			{
-				listToteB();
-			}
-			else if( data.contains("tote c") )
-			{
-				listToteC();
-			}
-			else if( data.contains("tote d") )
-			{
-				listToteD();
-			}
-			else if( data.contains("tote e") )
-			{
-				listToteE();
-			}
-			else if( data.contains("crate") )
-			{
-				listCrate();
-			}
-			else if( data.contains("inventory") || data.contains("list") || data.contains(" all") || data.contains("everything") )
-			{
-				listToolBox();
-				listToteA();
-				listToteB();
-				listToteC();
-				listToteD();
-				listToteE();
-				listCrate();
-			}
-			else
-			{
-				normal = true;
-				if( data.contains("ziptie") || data.contains("zip tie") )
-				{
-					ziptie = true;
-				}
-			}
-		}
-		return normal;
-	}
+
 	public static void parse(String input)
 	{
 		String data = input.toLowerCase();
@@ -304,10 +115,6 @@ public class HannahBot {
 			}
 			if( pass )
 			{
-				if( debugMode )
-				{
-					System.out.println(keyword);
-				}
 				keywords[keywordPointer] = keyword;
 				keywordPointer++;
 			}
@@ -325,103 +132,100 @@ public class HannahBot {
 		printedPointer = 1;
 		ziptie = false;
 	}
-	public static void menu()
-	{
-		System.out.println("How else may I help you?");
-	}
+	
+
+	
 	public static void output()
 	{
 		if( resultPointer == 0 )
 		{
-			System.out.println("Sorry, I couldn't find what you were looking for. Maybe you meant something else?");
+			bot.displayResults("Sorry, I couldn't find what you were looking for. Maybe you meant something else?");
 		}
 		else
 		{
-			System.out.println("Okay, here's what I found:");
+			bot.displayResults("Okay, here's what I found:");
 		}
-		System.out.println("");
+		bot.displayResults("");
 		if( p[0] > 0 )
 		{
-			System.out.println("In the Toolbox, we should theoretically have the following items:");
+			bot.displayResults("In the Toolbox, we should theoretically have the following items:");
 			for( int f=0; f<p[0]; f++ )
 			{
 				if(antiRepeat(ToolBox[results[f][1]]))
 				{
 					System.out.println(ToolBox[results[f][1]]);
+					bot.displayResults(ToolBox[results[f][1]]);
 				}
 			}
-			System.out.println("");
+			bot.displayResults("");
 		}
 		if( p[1] > 0 )
 		{
-			System.out.println("In Tote A, we should theoretically have the following items:");
+			bot.displayResults("In Tote A, we should theoretically have the following items:");
 			for( int f=p[0]; f<p[0]+p[1]; f++ )
 			{
 				if(antiRepeat(ToteA[results[f][1]]))
 				{
-					System.out.println(ToteA[results[f][1]]);
+					bot.displayResults(ToteA[results[f][1]]);
 				}			}
-			System.out.println("");
+			bot.displayResults("");
 		}
 		if( p[2] > 0 )
 		{
-			System.out.println("In Tote B, we should theoretically have the following items:");
+			bot.displayResults("In Tote B, we should theoretically have the following items:");
 			for( int f=p[0]+p[1]; f<p[0]+p[1]+p[2]; f++ )
 			{
 				if(antiRepeat(ToteB[results[f][1]]))
 				{
-					System.out.println(ToteB[results[f][1]]);
+					bot.displayResults(ToteB[results[f][1]]);
 				}			}
-			System.out.println("");
+			bot.displayResults("");
 		}
 		if( p[3] > 0 )
 		{
-			System.out.println("In Tote C, we should theoretically have the following items:");
+			bot.displayResults("In Tote C, we should theoretically have the following items:");
 			for( int f=p[0]+p[1]+p[2]; f<p[0]+p[1]+p[2]+p[3]; f++ )
 			{
 				if(antiRepeat(ToteC[results[f][1]]))
 				{
-					System.out.println(ToteC[results[f][1]]);
+					bot.displayResults(ToteC[results[f][1]]);
 				}			}
-			System.out.println("");
+			bot.displayResults("");
 		}
 		if( p[4] > 0 )
 		{
-			System.out.println("In Tote D, we should theoretically have the following items:");
+			bot.displayResults("In Tote D, we should theoretically have the following items:");
 			for( int f=p[0]+p[1]+p[2]+p[3]; f<p[0]+p[1]+p[2]+p[3]+p[4]; f++ )
 			{
 				if(antiRepeat(ToteD[results[f][1]]))
 				{
-					System.out.println(ToteD[results[f][1]]);
+					bot.displayResults(ToteD[results[f][1]]);
 				}			}
-			System.out.println("");
+			bot.displayResults("");
 		}
 		if( p[5] > 0 )
 		{
-			System.out.println("In Tote E, we should theoretically have the following items:");
+			bot.displayResults("In Tote E, we should theoretically have the following items:");
 			for( int f=p[0]+p[1]+p[2]+p[3]+p[4]; f<p[0]+p[1]+p[2]+p[3]+p[4]+p[5]; f++ )
 			{
 				if(antiRepeat(ToteE[results[f][1]]))
 				{
-					System.out.println(ToteE[results[f][1]]);
+					bot.displayResults(ToteE[results[f][1]]);
 				}			}
-			System.out.println("");
+			bot.displayResults("");
 		}
 		if( p[6] > 0 )
 		{
-			System.out.println("In the Crate, we should theoretically have the following items:");
+			bot.displayResults("In the Crate, we should theoretically have the following items:");
 			for( int f=p[0]+p[1]+p[2]+p[3]+p[4]+p[5]; f<p[0]+p[1]+p[2]+p[3]+p[4]+p[5]+p[6]; f++ )
 			{
 				if(antiRepeat(Crate[results[f][1]]))
 				{
-					System.out.println(Crate[results[f][1]]);
+					bot.displayResults(Crate[results[f][1]]);
 				}			}
-			System.out.println("");
+			bot.displayResults("");
 		}
-		if( ziptie )
-		{
-			System.out.println("There's also a whole bunch in Trinity's hair.");
-		}
+
 	}
 	public static String input()
 	{
@@ -429,6 +233,7 @@ public class HannahBot {
 		String query = sc.nextLine();
 		return query;
 	}
+	
 	public static void search()
 	{
 		checkToolBox();
@@ -575,7 +380,6 @@ public class HannahBot {
 		loadTEDesc();
 		loadCDesc();
 		loadExclusion();
-		loadPeople();
 	}
 	public static void loadToolBox()
 	{
@@ -762,38 +566,7 @@ public class HannahBot {
 		Exclusion[21] = "tell";
 		Exclusion[22] = "could";
 	}
-	public static void loadPeople()
-	{
-		People[0] = "justin";
-		People[1] = "pranav";
-		People[2] = "aanya";
-		People[3] = "anya";
-		People[4] = "thuy";
-		People[5] = "evan";
-		People[6] = "rayna";
-		People[7] = "antoni";
-		People[8] = "kunal";
-		People[9] = "canoe";
-		People[10] = "hayley";
-		People[11] = "arrington";
-		People[12] = "tibbs";
-		People[13] = "jessica";
-		People[14] = "raymond";
-		People[15] = "alex";
-		People[16] = "robert";
-		People[17] = "nathan";
-		People[18] = "trinity";
-		People[19] = "reyna";
-		People[20] = "rohan";
-		People[21] = "russel";
-		People[22] = "matt";
-		People[23] = "matthew";
-		People[24] = "ryan";
-		People[25] = "joey";
-		People[26] = "kovalik";
-		People[27] = "joseph";
-		People[28] = "zain";
-	}
+
 	public static void loadTLDesc()
 	{
 		TLDesc[0] = "Precision Screwdrivers Sets screws ";
@@ -953,69 +726,7 @@ public class HannahBot {
 		CDesc[14] = "Orange Safety Kits";
 		CDesc[15] = "knee pads";
 	}
-	public static void listToolBox()
-	{
-		System.out.println("The Toolbox contains the following:");
-		for( int f=0; f<41; f++ )
-		{
-			System.out.println(ToolBox[f]);
-		}
-		System.out.println();
-	}
-	public static void listToteA()
-	{
-		System.out.println("Tote A contains the following:");
-		for( int f=0; f<20; f++ )
-		{
-			System.out.println(ToteA[f]);
-		}
-		System.out.println();
-	}
-	public static void listToteB()
-	{
-		System.out.println("Tote B contains the following:");
-		for( int f=0; f<11; f++ )
-		{
-			System.out.println(ToteB[f]);
-		}
-		System.out.println();
-	}
-	public static void listToteC()
-	{
-		System.out.println("Tote C contains the following:");
-		for( int f=0; f<18; f++ )
-		{
-			System.out.println(ToteC[f]);
-		}
-		System.out.println();
-	}
-	public static void listToteD()
-	{
-		System.out.println("Tote D contains the following:");
-		for( int f=0; f<25; f++ )
-		{
-			System.out.println(ToteD[f]);
-		}
-		System.out.println();
-	}
-	public static void listToteE()
-	{
-		System.out.println("Tote E contains the following:");
-		for( int f=0; f<8; f++ )
-		{
-			System.out.println(ToteE[f]);
-		}
-		System.out.println();
-	}
-	public static void listCrate()
-	{
-		System.out.println("The Crate contains the following:");
-		for( int f=0; f<16; f++ )
-		{
-			System.out.println(Crate[f]);
-		}
-		System.out.println();
-	}
+	
 	public static boolean antiRepeat(String check)
 	{
 		boolean b = true;
@@ -1032,91 +743,5 @@ public class HannahBot {
 			printedPointer++;
 		}
 		return b;
-	}
-	public static void borrow()
-	{
-		System.out.println("Do you want to check what we borrowed, or what was borrowed from us?");
-		boolean repeat = true;
-		boolean in = false;
-		boolean out = false;
-		while( repeat )
-		{
-			repeat = false;
-			String input = input();
-			String data = input.toLowerCase();
-			if( data.contains("we") && data.contains("borrowed") || data.contains("us") && data.contains("lent") )
-			{
-				in = true;
-			}
-			if( data.contains("we") && data.contains("lent") || data.contains("us") && data.contains("borrowed") )
-			{
-				out = true;
-			}
-			if( in && out )
-			{
-				System.out.println("You're going to have to pick one or the other.");	
-				repeat = true;
-			}
-		}
-		if( in )
-		{
-			
-		}
-		if( out )
-		{
-			
-		}
-	}
-	public static void loadBorrow()
-	{
-		try
-		{
-			Scanner fin = new Scanner(new File("C:\borrow.txt"));
-			while( fin.hasNextLine() )
-			{
-				String ignore1 = fin.nextLine();
-				String ignore2 = fin.nextLine();
-				String ignore3 = fin.nextLine();
-				String ignore4 = fin.nextLine();
-				String type = fin.nextLine();
-				if( type.toLowerCase().equals("b") )
-				{
-					borrowedItem[borrowedPointer] = fin.nextLine();
-					try
-					{
-						borrowedTeam[borrowedPointer] = fin.nextInt();
-					}
-					catch(Exception e)
-					{
-						System.out.println("Warning: Syntax error!");
-						break;
-					}
-					borrowedPointer++;
-				}
-				else if( type.toLowerCase().equals("l") )
-				{
-					lentItem[lentPointer] = fin.nextLine();
-					try
-					{
-					lentTeam[lentPointer] = fin.nextInt();
-					}
-					catch(Exception e)
-					{
-						System.out.println("Warning: Syntax error!");
-						break;
-					}
-					lentPointer++;
-				}
-				else
-				{
-					System.out.println("That's not the correct syntax.");
-					break;
-				}
-			}
-		}
-		catch( Exception E1 )
-		{
-			System.out.println("That's weird... I can't read any of this.");
-		}
 	}
 }
