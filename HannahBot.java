@@ -375,7 +375,7 @@ public class HannahBot {
 					}
 					if( ToolBox[results[f][1]][1] != "0" )
 					{
-						System.out.println("The " + ToolBox[results[f][1]][0] + " was lent to team " + ToolBox[results[f][1]][1] + ".");
+						System.out.println("* The " + ToolBox[results[f][1]][0] + " was lent to team " + ToolBox[results[f][1]][1] + ".");
 					}
 				}
 			}
@@ -394,7 +394,7 @@ public class HannahBot {
 					}
 					if( ToteA[results[f][1]][1] != "0" )
 					{
-						System.out.println("The " + ToteA[results[f][1]][0] + " was lent to team " + ToteA[results[f][1]][1] + ".");
+						System.out.println("* The " + ToteA[results[f][1]][0] + " was lent to team " + ToteA[results[f][1]][1] + ".");
 					}
 				}
 			}
@@ -413,7 +413,7 @@ public class HannahBot {
 					}
 					if( ToteB[results[f][1]][1] != "0" )
 					{
-						System.out.println("The " + ToteB[results[f][1]][0] + " was lent to team " + ToteB[results[f][1]][1] + ".");
+						System.out.println("* The " + ToteB[results[f][1]][0] + " was lent to team " + ToteB[results[f][1]][1] + ".");
 					}
 				}
 			}
@@ -432,7 +432,7 @@ public class HannahBot {
 					}
 					if( ToteC[results[f][1]][1] != "0" )
 					{
-						System.out.println("The " + ToteC[results[f][1]][0] + " was lent to team " + ToteC[results[f][1]][1] + ".");
+						System.out.println("* The " + ToteC[results[f][1]][0] + " was lent to team " + ToteC[results[f][1]][1] + ".");
 					}
 				}
 			}
@@ -451,7 +451,7 @@ public class HannahBot {
 					}
 					if( ToteD[results[f][1]][1] != "0" )
 					{
-						System.out.println("The " + ToteD[results[f][1]][0] + " was lent to team " + ToteD[results[f][1]][1] + ".");
+						System.out.println("* The " + ToteD[results[f][1]][0] + " was lent to team " + ToteD[results[f][1]][1] + ".");
 					}
 				}
 			}
@@ -470,7 +470,7 @@ public class HannahBot {
 					}
 					if( ToteE[results[f][1]][1] != "0" )
 					{
-						System.out.println("The " + ToteE[results[f][1]][0] + " was lent to team " + ToteE[results[f][1]][1] + ".");
+						System.out.println("* The " + ToteE[results[f][1]][0] + " was lent to team " + ToteE[results[f][1]][1] + ".");
 					}
 				}
 			}
@@ -489,7 +489,7 @@ public class HannahBot {
 					}
 					if( ToolBox[results[f][1]][1] != "0" )
 					{
-						System.out.println("The " + Crate[results[f][1]][0] + " was lent to team " + Crate[results[f][1]][1] + ".");
+						System.out.println("* The " + Crate[results[f][1]][0] + " was lent to team " + Crate[results[f][1]][1] + ".");
 					}
 				}
 			}
@@ -1086,7 +1086,7 @@ public class HannahBot {
 			}
 			if( ToteA[f][1] != "0" )
 			{
-				System.out.println("The " + ToteA[f][0] + " was lent to team " + ToteA[f][1] + ".");
+				System.out.println("* The " + ToteA[f][0] + " was lent to team " + ToteA[f][1] + ".");
 			}		
 		}
 		System.out.println();
@@ -1102,7 +1102,7 @@ public class HannahBot {
 			}
 			if( ToteB[f][1] != "0" )
 			{
-				System.out.println("The " + ToteB[f][0] + " was lent to team " + ToteB[f][1] + ".");
+				System.out.println("* The " + ToteB[f][0] + " was lent to team " + ToteB[f][1] + ".");
 			}		}
 		System.out.println();
 	}
@@ -1117,7 +1117,7 @@ public class HannahBot {
 			}
 			if( ToteC[f][1] != "0" )
 			{
-				System.out.println("The " + ToteC[f][0] + " was lent to team " + ToteC[f][1] + ".");
+				System.out.println("* The " + ToteC[f][0] + " was lent to team " + ToteC[f][1] + ".");
 			}		}
 		System.out.println();
 	}
@@ -1132,7 +1132,7 @@ public class HannahBot {
 			}
 			if( ToteD[f][1] != "0" )
 			{
-				System.out.println("The " + ToteD[f][0] + " was lent to team " + ToteD[f][1] + ".");
+				System.out.println("* The " + ToteD[f][0] + " was lent to team " + ToteD[f][1] + ".");
 			}		}
 		System.out.println();
 	}
@@ -1147,7 +1147,7 @@ public class HannahBot {
 			}
 			if( ToteE[f][1] != "0" )
 			{
-				System.out.println("The " + ToteE[f][0] + " was lent to team " + ToteE[f][1] + ".");
+				System.out.println("* The " + ToteE[f][0] + " was lent to team " + ToteE[f][1] + ".");
 			}		}
 		System.out.println();
 	}
@@ -1162,7 +1162,7 @@ public class HannahBot {
 			}
 			if( Crate[f][1] != "0" )
 			{
-				System.out.println("The " + Crate[f][0] + " was lent to team " + Crate[f][1] + ".");
+				System.out.println("* The " + Crate[f][0] + " was lent to team " + Crate[f][1] + ".");
 			}		}
 		System.out.println();
 	}
