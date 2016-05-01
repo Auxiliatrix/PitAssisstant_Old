@@ -1,0 +1,7 @@
+// Borrow/Lent File
+// Line 1: B/L (Borrowed/Lent)
+// Line 2: Borrowed Item
+// Line 3: Team No.
+B
+Rivet Gun
+604

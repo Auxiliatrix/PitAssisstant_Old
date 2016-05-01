@@ -4,10 +4,10 @@ import java.io.*;
 public class HannahBot {
 
 	public static String[] borrowedItem = new String[10000];
-	public static int[] borrowedTeam = new int[10000];
+	public static String[] borrowedTeam = new String[10000];
 	public static int borrowedPointer = 0;
 	public static String[] lentItem = new String[10000];
-	public static int[] lentTeam = new int[10000];
+	public static String[] lentTeam = new String[10000];
 	public static int lentPointer = 0;
 	public static int[][] results = new int[10000][2];
 	public static String[] exact = new String[10000];
@@ -47,6 +47,7 @@ public class HannahBot {
 	public static boolean askHannah = false;
 	public static boolean debugMode = false;
 	public static boolean ziptie = false;
+	public static boolean adminRestart = false;
 	public static void main(String args[]) throws InterruptedException
 	{
 		initialize();
@@ -58,8 +59,26 @@ public class HannahBot {
 	public static void initialize()
 	{
 		loadLibrary();
+		if( adminRestart )
+		{
+			createFile();
+		}
 		loadBorrow();
 		greet();
+	}
+	public static void createFile()
+	{
+		try
+		{
+			OutputStream test = new FileOutputStream("borrow.txt");
+			PrintStream myOutputFile = new PrintStream("test");
+			myOutputFile.println("test");
+			test.close();
+		}
+		catch (Exception E)
+		{
+			System.out.println("Okay Sang Gi, you actually need to fix this.");
+		}
 	}
 	public static void greet()
 	{
@@ -1069,22 +1088,25 @@ public class HannahBot {
 	}
 	public static void loadBorrow()
 	{
-		try
-		{
-			Scanner fin = new Scanner(new File("C:\borrow.txt"));
-			while( fin.hasNextLine() )
-			{
-				String ignore1 = fin.nextLine();
-				String ignore2 = fin.nextLine();
-				String ignore3 = fin.nextLine();
-				String ignore4 = fin.nextLine();
-				String type = fin.nextLine();
-				if( type.toLowerCase().equals("b") )
+        String fileName = "borrow.txt";
+        String line = null;
+        try {
+            FileReader fileReader = new FileReader(fileName);
+            BufferedReader bufferedReader = new BufferedReader(fileReader);
+            String ignore1 = bufferedReader.readLine();
+			String ignore2 = bufferedReader.readLine();
+			String ignore3 = bufferedReader.readLine();
+			String ignore4 = bufferedReader.readLine();
+            while((line = bufferedReader.readLine()) != null)
+            {
+            	if( line.toLowerCase().equals("b") )
 				{
-					borrowedItem[borrowedPointer] = fin.nextLine();
+            		line = bufferedReader.readLine();
+					borrowedItem[borrowedPointer] = line;
 					try
 					{
-						borrowedTeam[borrowedPointer] = fin.nextInt();
+						line = bufferedReader.readLine();
+						borrowedTeam[borrowedPointer] = line;
 					}
 					catch(Exception e)
 					{
@@ -1093,12 +1115,14 @@ public class HannahBot {
 					}
 					borrowedPointer++;
 				}
-				else if( type.toLowerCase().equals("l") )
+				else if( line.toLowerCase().equals("l") )
 				{
-					lentItem[lentPointer] = fin.nextLine();
+					line = bufferedReader.readLine();
+					lentItem[lentPointer] = line;
 					try
 					{
-					lentTeam[lentPointer] = fin.nextInt();
+						line = bufferedReader.readLine();
+						lentTeam[lentPointer] = line;
 					}
 					catch(Exception e)
 					{
@@ -1112,11 +1136,19 @@ public class HannahBot {
 					System.out.println("That's not the correct syntax.");
 					break;
 				}
-			}
-		}
-		catch( Exception E1 )
-		{
-			System.out.println("That's weird... I can't read any of this.");
-		}
+            }   
+            bufferedReader.close();         
+        }
+        catch(FileNotFoundException ex)
+        {
+            System.out.println(
+                "Unable to open file '" + fileName + "'");                
+        }
+        catch(IOException ex)
+        {
+            System.out.println("Error reading file '" + fileName + "'");
+        }
+        System.out.println(borrowedItem[0]);
+        System.out.println(borrowedTeam[0]);
 	}
 }
