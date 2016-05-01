@@ -1,5 +1,6 @@
 import java.awt.Color;
 import java.awt.FlowLayout;
+import java.awt.Font;
 import java.awt.Image;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -8,6 +9,7 @@ import java.io.IOException;
 import javax.imageio.ImageIO;
 import javax.swing.AbstractAction;
 import javax.swing.AbstractButton;
+import javax.swing.BorderFactory;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JFrame;
@@ -36,18 +38,43 @@ class BotGUI extends JFrame{
 	    
 	    setVisible(true);
 	}
+	
+	public void setResultLabel(){
+		this.resultLabel = new JTextArea();
+		this.resultLabel.setEditable(false);
+		getContentPane().add(this.resultLabel);
 
+	}
+	
 	public void setup(){
 	    setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setSize(700, 700);        
         getContentPane().setBackground(Color.WHITE);
-        ImageIcon img = new ImageIcon();
-        setIconImage(img.getImage());
+        Image img = null;
+		try {
+			img = ImageIO.read(getClass().getResource("LogoWhite.bmp"));
+		}catch (IOException e) {
+			System.out.println("Corner Button Image Does Not Exist");
+		}
+        
+        setIconImage(img);
+        
 	    setLayout(new FlowLayout());
 	}
 	
 	public void createTextBox(){
 		this.textBox = new JTextField(30);
+		this.textBox.setHorizontalAlignment(JTextField.CENTER);
+		this.textBox.setFont(new java.awt.Font("Arial",Font.BOLD, 25));
+		this.textBox.setBorder(BorderFactory.createLineBorder(Color.BLACK, 5));
+		this.textBox.addActionListener(new ActionListener() {
+		    @Override
+		    public void actionPerformed(ActionEvent event) {
+		    	String getValue = textBox.getText();
+			    currentSearch = getValue;
+			    textBox.setText("");
+		    }
+		});
 	    add(this.textBox);
 	}
 	
@@ -71,22 +98,29 @@ class BotGUI extends JFrame{
 
 		add(this.button);
 	}
-		
-	public void setResultLabel(){
-		this.resultLabel = new JTextArea();
-		this.resultLabel.setEditable(false);
-		getContentPane().add(this.resultLabel);
-
-	}
 	
 	public void createClearButton(){
 		this.clearButton = new JButton();
-
+		
+		try {
+			Image img = ImageIO.read(getClass().getResource("Clear.bmp"));
+			this.clearButton.setIcon(new ImageIcon(img));
+		}catch (IOException e) {
+			System.out.println("Clear Button Image Does Not Exist");
+		}
+		
 		this.clearButton.setBorder(null);
 		
 		this.clearButton.addActionListener(new ActionListener(){
 			   public void actionPerformed(ActionEvent ae){
-			      resultLabel.removeAll();
+			      resultLabel.setText("");
+			      displayResults("=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=[Hannah Bot]=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=");
+				  displayResults("");
+				  displayResults("   Hi, I'm HannahBot (v1.8). I can look for things, and tell you what's in our totes and boxes.");
+				  displayResults("Hannah Bot (v1.8) Theoretically(TM) supports description-based queries and all sentence structures.");
+				  displayResults("");
+				  displayResults("-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=(v1.8)=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-");
+				  displayResults("");
 			   }
 			});
 
@@ -103,7 +137,7 @@ class BotGUI extends JFrame{
 		}
 	}	
 	
-	public void displayResults(String results){
+	protected void displayResults(String results){
 		this.resultLabel.append("\n" + results);
 	}
 	
