@@ -48,7 +48,7 @@ public class HannahBot {
 	public static boolean askHannah = false;
 	public static boolean debugMode = false;
 	public static boolean ziptie = false;
-	public static boolean adminRestart = false;
+	public static boolean adminRestart = true;
 	public static void main(String args[]) throws InterruptedException
 	{
 		initialize();
@@ -60,26 +60,52 @@ public class HannahBot {
 	public static void initialize()
 	{
 		loadLibrary();
-		if( adminRestart )
+		if( !loaded() )
 		{
 			createFile();
 		}
 		loadBorrow();
 		greet();
 	}
+	public static boolean loaded()
+	{
+		boolean tf = false;
+		String fileName = "borrow.txt";
+        String line = null;
+        try {
+            FileReader fileReader = new FileReader(fileName);
+            BufferedReader bufferedReader = new BufferedReader(fileReader);
+            fileReader.close();
+            bufferedReader.close();
+            tf = true;
+        }
+        catch(Exception e)
+        {
+        	tf = false;
+        }
+		return tf;
+	}
 	public static void createFile()
 	{
+		OutputStream test;
+		PrintStream myOutputFile;
 		try
 		{
-			OutputStream test = new FileOutputStream("borrow.txt");
-			PrintStream myOutputFile = new PrintStream("test");
+			test = new FileOutputStream("borrow.txt");
+			myOutputFile = new PrintStream("test");
 			myOutputFile.println("test");
 			test.close();
+			myOutputFile.close();
 		}
 		catch (Exception E)
 		{
 			System.out.println("Okay Sang Gi, you actually need to fix this.");
-		}
+		}	
+		write("// adminRestart = false");
+		write("// This is the file where the borrowed items are stored.");
+		write("// Line 1: B/L (Borrowed/Lent)");
+		write("// Line 2: Item Name (Exact)");
+		write("// Line 3: Team No.");
 	}
 	public static void greet()
 	{
@@ -140,12 +166,25 @@ public class HannahBot {
 			System.out.println("You can also toggle debug mode by telling me to.");
 			skip = true;
 		}
+		if( data.contains("todo") || data.contains("to-do") )
+		{
+			System.out.println("1. Borrowed Item Tracking");
+			System.out.println("2. Memory Modification");
+			System.out.println("3. Emoji Support");
+			System.out.println("4. Fix repeat bug");
+			System.out.println("5. Fix pointer error");
+		}
 		if( data.contains("flush") )
 		{
 			for( int f=0; f<50; f++ )
 			{
 				System.out.println();
 			}
+			skip = true;
+		}
+		if( data.contains("git") )
+		{
+			System.out.println("Go away, Ryan.");
 			skip = true;
 		}
 		if( data.contains("cls") )
@@ -948,7 +987,7 @@ public class HannahBot {
 	{
 		TADesc[0] = "Rivets Boxes";
 		TADesc[1] = "Pneumatics Hardware Boxes";
-		TADesc[2] = "Zip Tie Boxes ziptie";
+		TADesc[2] = "Zip Tie Boxes ziptie zipties";
 		TADesc[3] = "Encoders";
 		TADesc[4] = "Pressure Tapes";
 		TADesc[5] = "Hack Saws";
@@ -1337,6 +1376,7 @@ public class HannahBot {
 					break;
 				}
             }   
+            fileReader.close();
             bufferedReader.close();         
         }
         catch(FileNotFoundException ex)
@@ -1440,4 +1480,22 @@ public class HannahBot {
 		}
 		return loc;
 	}
+	public static void write(String string)
+	{
+		try
+        (
+        	FileWriter fw = new FileWriter("borrow.txt", true);
+        	BufferedWriter bw = new BufferedWriter(fw);
+        	PrintWriter out = new PrintWriter(bw)
+        )	{
+        		out.println(string);
+        		fw.close();
+        		bw.close();
+        		out.close();
+        }
+        catch(IOException e)
+        {
+        	System.out.println("Hey, where did the file go?");
+        }
+    }
 }
