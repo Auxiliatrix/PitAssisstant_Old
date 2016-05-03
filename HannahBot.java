@@ -904,7 +904,7 @@ public class HannahBot {
 	{
 		TLDesc[0] = "Precision Screwdrivers Sets screws ";
 		TLDesc[1] = "Goo-gone goo gone removers";
-		TLDesc[2] = "Files papers documents";
+		TLDesc[2] = "Files";
 		TLDesc[3] = "Erwin Clamps";
 		TLDesc[4] = "Metal Clamps";
 		TLDesc[5] = "Flashlights";
