@@ -1,6 +1,8 @@
+##Custom for this project##
 /HannahBot.class
 /bin
-# from github java template
+borrow.txt
+##from github java template##
 *.class
 
 # Mobile Tools for Java (J2ME)
