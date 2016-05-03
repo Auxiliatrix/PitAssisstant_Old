@@ -49,10 +49,11 @@ public class HannahBot {
 	public static boolean debugMode = false;
 	public static boolean ziptie = false;
 	public static boolean adminRestart = true;
+	public static boolean on = true;
 	public static void main(String args[]) throws InterruptedException
 	{
 		initialize();
-		while( true )
+		while( on )
 		{
 			conductor();
 		}
@@ -62,10 +63,22 @@ public class HannahBot {
 		loadLibrary();
 		if( !loaded() )
 		{
-			createFile();
+			if(createFile() )
+			{
+				write("// adminRestart = false");
+				write("// This is the file where the borrowed items are stored.");
+				write("// Line 1: B/L (Borrowed/Lent)");
+				write("// Line 2: Item Name (Exact)");
+				write("// Line 3: Team No.");
+			}
 		}
 		loadBorrow();
 		greet();
+	}
+	public static void shutDown()
+	{
+		write("close");
+		on = false;
 	}
 	public static boolean loaded()
 	{
@@ -82,30 +95,27 @@ public class HannahBot {
         catch(Exception e)
         {
         	tf = false;
+        	System.out.println("Initial startup detected.");
+        	System.out.println("Creating new file.");
         }
 		return tf;
 	}
-	public static void createFile()
+	public static boolean createFile()
 	{
-		OutputStream test;
-		PrintStream myOutputFile;
 		try
 		{
-			test = new FileOutputStream("borrow.txt");
-			myOutputFile = new PrintStream("test");
-			myOutputFile.println("test");
-			test.close();
-			myOutputFile.close();
+        	FileWriter fw = new FileWriter("borrow.txt", true);
+        	BufferedWriter bw = new BufferedWriter(fw);
+        	PrintWriter out = new PrintWriter(bw);
+        	fw.close();
+        	bw.close();
+        	out.close();
 		}
-		catch (Exception E)
+		catch( Exception E )
 		{
-			System.out.println("Okay Sang Gi, you actually need to fix this.");
-		}	
-		write("// adminRestart = false");
-		write("// This is the file where the borrowed items are stored.");
-		write("// Line 1: B/L (Borrowed/Lent)");
-		write("// Line 2: Item Name (Exact)");
-		write("// Line 3: Team No.");
+			System.out.println("Error writing.");
+		}
+		return true;
 	}
 	public static void greet()
 	{
@@ -141,6 +151,11 @@ public class HannahBot {
 		if( input.equals("") )
 		{
 			System.out.println("I'm going to need something more specific.");
+			skip = true;
+		}
+		if( data.contains("bye") )
+		{
+			shutDown();
 			skip = true;
 		}
 		if( data.contains("changelog") )
@@ -1482,20 +1497,16 @@ public class HannahBot {
 	}
 	public static void write(String string)
 	{
-		try
-        (
-        	FileWriter fw = new FileWriter("borrow.txt", true);
-        	BufferedWriter bw = new BufferedWriter(fw);
-        	PrintWriter out = new PrintWriter(bw)
-        )	{
-        		out.println(string);
-        		fw.close();
-        		bw.close();
-        		out.close();
+		try{
+
+            FileWriter fstream = new FileWriter("borrow.txt",true);
+            BufferedWriter fbw = new BufferedWriter(fstream);
+            fbw.write(string);
+            fbw.newLine();
+            fbw.close();
+        }catch (Exception e) {
+            System.out.println("Error: " + e.getMessage());
         }
-        catch(IOException e)
-        {
-        	System.out.println("Hey, where did the file go?");
-        }
+
     }
 }
