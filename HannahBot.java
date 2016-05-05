@@ -75,10 +75,22 @@ public class HannahBot {
 		loadBorrow();
 		greet();
 	}
-	public static void shutDown()
+	public static boolean createFile()
 	{
-		write("close");
-		on = false;
+		try
+		{
+        	FileWriter fw = new FileWriter("borrow.txt", true);
+        	BufferedWriter bw = new BufferedWriter(fw);
+        	PrintWriter out = new PrintWriter(bw);
+        	fw.close();
+        	bw.close();
+        	out.close();
+		}
+		catch( Exception E )
+		{
+			System.out.println("Error writing.");
+		}
+		return true;
 	}
 	public static boolean loaded()
 	{
@@ -99,23 +111,6 @@ public class HannahBot {
         	System.out.println("Creating new file.");
         }
 		return tf;
-	}
-	public static boolean createFile()
-	{
-		try
-		{
-        	FileWriter fw = new FileWriter("borrow.txt", true);
-        	BufferedWriter bw = new BufferedWriter(fw);
-        	PrintWriter out = new PrintWriter(bw);
-        	fw.close();
-        	bw.close();
-        	out.close();
-		}
-		catch( Exception E )
-		{
-			System.out.println("Error writing.");
-		}
-		return true;
 	}
 	public static void greet()
 	{
@@ -141,6 +136,17 @@ public class HannahBot {
 			output();
 		}
 		menu();
+	}
+	public static void reset()
+	{
+		resultPointer = 0;
+		keywordPointer = 0;
+		for( int f=0; f<printedPointer; f++ )
+		{
+			printed[f] = "";
+		}
+		printedPointer = 1;
+		ziptie = false;
 	}
 	public static boolean caser(String input) throws InterruptedException
 	{
@@ -188,6 +194,7 @@ public class HannahBot {
 			System.out.println("3. Emoji Support");
 			System.out.println("4. Fix repeat bug");
 			System.out.println("5. Fix pointer error");
+			skip = true;
 		}
 		if( data.contains("flush") )
 		{
@@ -390,17 +397,6 @@ public class HannahBot {
 			data = temp;
 		}
 	}
-	public static void reset()
-	{
-		resultPointer = 0;
-		keywordPointer = 0;
-		for( int f=0; f<printedPointer; f++ )
-		{
-			printed[f] = "";
-		}
-		printedPointer = 1;
-		ziptie = false;
-	}
 	public static void menu()
 	{
 		System.out.println("How else may I help you?");
@@ -570,6 +566,23 @@ public class HannahBot {
 		checkToteE();
 		checkCrate();
 	}
+	public static boolean antiRepeat(String check)
+	{
+		boolean b = true;
+		for( int f=0; f<printedPointer; f++ )
+		{
+			if(check.equals(printed[f]))
+			{
+				b = false;
+			}
+		}
+		if( b )
+		{
+			printed[printedPointer-1] = check;
+			printedPointer++;
+		}
+		return b;
+	}
 	public static void checkToolBox()
 	{
 		p[0] = 0;
@@ -688,6 +701,202 @@ public class HannahBot {
 				}
 			}
 		}
+	}
+	public static void borrow()
+	{
+		System.out.println("Do you want to check what we borrowed, or what was borrowed from us?");
+		boolean repeat = true;
+		boolean in = false;
+		boolean out = false;
+		while( repeat )
+		{
+			String input = input();
+			String data = input.toLowerCase();
+			if( data.contains("we") && data.contains("borrowed") || data.contains("us") && data.contains("lent") )
+			{
+				in = true;
+			}
+			if( data.contains("we") && data.contains("lent") || data.contains("us") && data.contains("borrowed") )
+			{
+				out = true;
+			}
+			repeat = false;
+			if( in && out )
+			{
+				System.out.println("You're going to have to pick one or the other.");	
+				repeat = true;
+			}
+		}
+		if( in )
+		{
+			
+		}
+		if( out )
+		{
+			
+		}
+	}
+	public static void loadBorrow()
+	{
+        String fileName = "borrow.txt";
+        String line = null;
+        try {
+            FileReader fileReader = new FileReader(fileName);
+            BufferedReader bufferedReader = new BufferedReader(fileReader);
+            while((line = bufferedReader.readLine()) != null)
+            {
+            	if( line.startsWith("//") )
+            	{
+            		String ignore = line;
+            	}
+            	else if( line.toLowerCase().equals("b") )
+				{
+            		boolean good = true;
+            		line = bufferedReader.readLine();
+					String tempString = line;
+					String tempTeam = "0";
+					try
+					{
+						line = bufferedReader.readLine();
+						tempTeam = line;
+					}
+					catch(Exception e)
+					{
+						System.out.println("Warning: Syntax error!");
+						good = false;
+						break;
+					}
+					if( good )
+					{
+						borrowedItem[borrowedPointer] = tempString;
+						borrowedTeam[borrowedPointer] = tempTeam;
+						borrowedPointer++;
+					}
+				}
+				else if( line.toLowerCase().equals("l") )
+				{
+					boolean good = true;
+					line = bufferedReader.readLine();
+					String tempString = line;
+					String tempTeam = "0";
+					try
+					{
+						line = bufferedReader.readLine();
+						tempTeam = line;
+					}
+					catch(Exception e)
+					{
+						System.out.println("Warning: Syntax error!");
+						good = false;
+						break;
+					}
+					if( good )
+					{
+						String item = tempString.toLowerCase();
+						int tb = ToolBoxCB(item);
+						int a = ToteACB(item);
+						int b = ToteBCB(item);
+						int c = ToteCCB(item);
+						int d = ToteDCB(item);
+						int e = ToteECB(item);
+						int crate = CrateCB(item);
+						if( tb+a+b+c+d+e+crate != 0 )
+						{
+							if( tb != 0 )
+							{
+								lentLoc[lentPointer][0] = 0;
+								lentLoc[lentPointer][1] = tb;
+								ToolBox[tb][1] = tempTeam;
+							}
+							if( a != 0 )
+							{
+								lentLoc[lentPointer][0] = 1;
+								lentLoc[lentPointer][1] = a;
+								ToteA[a][1] = tempTeam;
+							}
+							if( b != 0 )
+							{
+								lentLoc[lentPointer][0] = 2;
+								lentLoc[lentPointer][1] = b;
+								ToteB[b][1] = tempTeam;
+							}
+							if( c != 0 )
+							{
+								lentLoc[lentPointer][0] = 3;
+								lentLoc[lentPointer][1] = c;
+								ToteC[c][1] = tempTeam;
+							}
+							if( d != 0 )
+							{
+								lentLoc[lentPointer][0] = 4;
+								lentLoc[lentPointer][1] = d;
+								ToteD[d][1] = tempTeam;
+							}
+							if( e != 0 )
+							{
+								lentLoc[lentPointer][0] = 5;
+								lentLoc[lentPointer][1] = e;
+								ToteE[e][1] = tempTeam;
+							}
+							if( crate != 0 )
+							{
+								lentLoc[lentPointer][0] = 6;
+								lentLoc[lentPointer][1] = crate;
+								Crate[crate][1] = tempTeam;
+							}
+							lentItem[lentPointer] = tempString;
+							lentTeam[lentPointer] = tempTeam;
+							lentPointer++;
+						}
+					}
+				}
+				else
+				{
+					System.out.println("That's not the correct syntax.");
+					break;
+				}
+            }   
+            fileReader.close();
+            bufferedReader.close();         
+        }
+        catch(FileNotFoundException ex)
+        {
+            System.out.println(
+                "Unable to open file '" + fileName + "'");                
+        }
+        catch(IOException ex)
+        {
+            System.out.println("Error reading file '" + fileName + "'");
+        }
+	}
+	public static void write(String string)
+	{
+		try{
+
+            FileWriter fstream = new FileWriter("borrow.txt",true);
+            BufferedWriter fbw = new BufferedWriter(fstream);
+            fbw.write(string);
+            fbw.newLine();
+            fbw.close();
+        }catch (Exception e) {
+            System.out.println("Error: " + e.getMessage());
+        }
+
+    }
+	public static void borrowWrite(String writer)
+	{
+		int end = writer.indexOf(" ");
+		String BL = writer.substring(0,end);
+		String temp = writer.substring(end+1,writer.length());
+		end = writer.indexOf(" ");
+		String item = writer.substring(0,end);
+		temp = writer.substring(end+1,writer.length());end = writer.indexOf(" ");
+		String team = writer.substring(0,end);
+		temp = writer.substring(end+1,writer.length());
+		write(BL);
+		write(item);
+		write(team);
+		loadBorrow();
 	}
 	public static void loadLibrary()
 	{
@@ -1113,6 +1322,97 @@ public class HannahBot {
 		CDesc[14] = "Orange Safety Kits";
 		CDesc[15] = "knee pads";
 	}
+	public static int ToolBoxCB(String item)
+	{
+		int loc = 0;
+		for( int f=0; f<41; f++ )
+		{
+			if( item.equals(ToolBox[f][0].toLowerCase()) )
+			{
+				loc = f;
+				break;
+			}
+		}
+		return loc;
+	}
+	public static int ToteACB(String item)
+	{
+		int loc = 0;
+		for( int f=0; f<20; f++ )
+		{
+			if( item.equals(ToteA[f][0].toLowerCase()) )
+			{
+				loc = f;
+				break;
+			}
+		}
+		return loc;
+	}
+	public static int ToteBCB(String item)
+	{
+		int loc = 0;
+		for( int f=0; f<11; f++ )
+		{
+			if( item.equals(ToteB[f][0].toLowerCase()) )
+			{
+				loc = f;
+				break;
+			}
+		}
+		return loc;
+	}
+	public static int ToteCCB(String item)
+	{
+		int loc = 0;
+		for( int f=0; f<18; f++ )
+		{
+			if( item.equals(ToteC[f][0].toLowerCase()) )
+			{
+				loc = f;
+				break;
+			}
+		}
+		return loc;
+	}
+	public static int ToteDCB(String item)
+	{
+		int loc = 0;
+		for( int f=0; f<25; f++ )
+		{
+			if( item.equals(ToteD[f][0].toLowerCase()) )
+			{
+				loc = f;
+				break;
+			}
+		}
+		return loc;
+	}
+	public static int ToteECB(String item)
+	{
+		int loc = 0;
+		for( int f=0; f<8; f++ )
+		{
+			if( item.equals(ToteE[f][0].toLowerCase()) )
+			{
+				loc = f;
+				break;
+			}
+		}
+		return loc;
+	}
+	public static int CrateCB(String item)
+	{
+		int loc = 0;
+		for( int f=0; f<16; f++ )
+		{
+			if( item.equals(Crate[f][0].toLowerCase()) )
+			{
+				loc = f;
+				break;
+			}
+		}
+		return loc;
+	}
 	public static void listToolBox()
 	{
 		System.out.println("The Toolbox contains the following:");
@@ -1220,293 +1520,9 @@ public class HannahBot {
 			}		}
 		System.out.println();
 	}
-	public static boolean antiRepeat(String check)
+	public static void shutDown()
 	{
-		boolean b = true;
-		for( int f=0; f<printedPointer; f++ )
-		{
-			if(check.equals(printed[f]))
-			{
-				b = false;
-			}
-		}
-		if( b )
-		{
-			printed[printedPointer-1] = check;
-			printedPointer++;
-		}
-		return b;
+		write("close");
+		on = false;
 	}
-	public static void borrow()
-	{
-		System.out.println("Do you want to check what we borrowed, or what was borrowed from us?");
-		boolean repeat = true;
-		boolean in = false;
-		boolean out = false;
-		while( repeat )
-		{
-			repeat = false;
-			String input = input();
-			String data = input.toLowerCase();
-			if( data.contains("we") && data.contains("borrowed") || data.contains("us") && data.contains("lent") )
-			{
-				in = true;
-			}
-			if( data.contains("we") && data.contains("lent") || data.contains("us") && data.contains("borrowed") )
-			{
-				out = true;
-			}
-			if( in && out )
-			{
-				System.out.println("You're going to have to pick one or the other.");	
-				repeat = true;
-			}
-		}
-		if( in )
-		{
-			
-		}
-		if( out )
-		{
-			
-		}
-	}
-	public static void loadBorrow()
-	{
-        String fileName = "borrow.txt";
-        String line = null;
-        try {
-            FileReader fileReader = new FileReader(fileName);
-            BufferedReader bufferedReader = new BufferedReader(fileReader);
-            while((line = bufferedReader.readLine()) != null)
-            {
-            	if( line.startsWith("//") )
-            	{
-            		String ignore = line;
-            	}
-            	else if( line.toLowerCase().equals("b") )
-				{
-            		boolean good = true;
-            		line = bufferedReader.readLine();
-					String tempString = line;
-					String tempTeam = "0";
-					try
-					{
-						line = bufferedReader.readLine();
-						tempTeam = line;
-					}
-					catch(Exception e)
-					{
-						System.out.println("Warning: Syntax error!");
-						good = false;
-						break;
-					}
-					if( good )
-					{
-						borrowedItem[borrowedPointer] = tempString;
-						borrowedTeam[borrowedPointer] = tempTeam;
-						borrowedPointer++;
-					}
-				}
-				else if( line.toLowerCase().equals("l") )
-				{
-					boolean good = true;
-					line = bufferedReader.readLine();
-					String tempString = line;
-					String tempTeam = "0";
-					try
-					{
-						line = bufferedReader.readLine();
-						tempTeam = line;
-					}
-					catch(Exception e)
-					{
-						System.out.println("Warning: Syntax error!");
-						good = false;
-						break;
-					}
-					if( good )
-					{
-						String item = tempString.toLowerCase();
-						int tb = ToolBoxCB(item);
-						int a = ToteACB(item);
-						int b = ToteBCB(item);
-						int c = ToteCCB(item);
-						int d = ToteDCB(item);
-						int e = ToteECB(item);
-						int crate = CrateCB(item);
-						if( tb+a+b+c+d+e+crate != 0 )
-						{
-							if( tb != 0 )
-							{
-								lentLoc[lentPointer][0] = 0;
-								lentLoc[lentPointer][1] = tb;
-								ToolBox[tb][1] = tempTeam;
-							}
-							if( a != 0 )
-							{
-								lentLoc[lentPointer][0] = 1;
-								lentLoc[lentPointer][1] = a;
-								ToteA[a][1] = tempTeam;
-							}
-							if( b != 0 )
-							{
-								lentLoc[lentPointer][0] = 2;
-								lentLoc[lentPointer][1] = b;
-								ToteB[b][1] = tempTeam;
-							}
-							if( c != 0 )
-							{
-								lentLoc[lentPointer][0] = 3;
-								lentLoc[lentPointer][1] = c;
-								ToteC[c][1] = tempTeam;
-							}
-							if( d != 0 )
-							{
-								lentLoc[lentPointer][0] = 4;
-								lentLoc[lentPointer][1] = d;
-								ToteD[d][1] = tempTeam;
-							}
-							if( e != 0 )
-							{
-								lentLoc[lentPointer][0] = 5;
-								lentLoc[lentPointer][1] = e;
-								ToteE[e][1] = tempTeam;
-							}
-							if( crate != 0 )
-							{
-								lentLoc[lentPointer][0] = 6;
-								lentLoc[lentPointer][1] = crate;
-								Crate[crate][1] = tempTeam;
-							}
-							lentItem[lentPointer] = tempString;
-							lentTeam[lentPointer] = tempTeam;
-							lentPointer++;
-						}
-					}
-				}
-				else
-				{
-					System.out.println("That's not the correct syntax.");
-					break;
-				}
-            }   
-            fileReader.close();
-            bufferedReader.close();         
-        }
-        catch(FileNotFoundException ex)
-        {
-            System.out.println(
-                "Unable to open file '" + fileName + "'");                
-        }
-        catch(IOException ex)
-        {
-            System.out.println("Error reading file '" + fileName + "'");
-        }
-	}
-	public static int ToolBoxCB(String item)
-	{
-		int loc = 0;
-		for( int f=0; f<41; f++ )
-		{
-			if( item.equals(ToolBox[f][0].toLowerCase()) )
-			{
-				loc = f;
-				break;
-			}
-		}
-		return loc;
-	}
-	public static int ToteACB(String item)
-	{
-		int loc = 0;
-		for( int f=0; f<20; f++ )
-		{
-			if( item.equals(ToteA[f][0].toLowerCase()) )
-			{
-				loc = f;
-				break;
-			}
-		}
-		return loc;
-	}
-	public static int ToteBCB(String item)
-	{
-		int loc = 0;
-		for( int f=0; f<11; f++ )
-		{
-			if( item.equals(ToteB[f][0].toLowerCase()) )
-			{
-				loc = f;
-				break;
-			}
-		}
-		return loc;
-	}
-	public static int ToteCCB(String item)
-	{
-		int loc = 0;
-		for( int f=0; f<18; f++ )
-		{
-			if( item.equals(ToteC[f][0].toLowerCase()) )
-			{
-				loc = f;
-				break;
-			}
-		}
-		return loc;
-	}
-	public static int ToteDCB(String item)
-	{
-		int loc = 0;
-		for( int f=0; f<25; f++ )
-		{
-			if( item.equals(ToteD[f][0].toLowerCase()) )
-			{
-				loc = f;
-				break;
-			}
-		}
-		return loc;
-	}
-	public static int ToteECB(String item)
-	{
-		int loc = 0;
-		for( int f=0; f<8; f++ )
-		{
-			if( item.equals(ToteE[f][0].toLowerCase()) )
-			{
-				loc = f;
-				break;
-			}
-		}
-		return loc;
-	}
-	public static int CrateCB(String item)
-	{
-		int loc = 0;
-		for( int f=0; f<16; f++ )
-		{
-			if( item.equals(Crate[f][0].toLowerCase()) )
-			{
-				loc = f;
-				break;
-			}
-		}
-		return loc;
-	}
-	public static void write(String string)
-	{
-		try{
-
-            FileWriter fstream = new FileWriter("borrow.txt",true);
-            BufferedWriter fbw = new BufferedWriter(fstream);
-            fbw.write(string);
-            fbw.newLine();
-            fbw.close();
-        }catch (Exception e) {
-            System.out.println("Error: " + e.getMessage());
-        }
-
-    }
 }
