@@ -10,6 +10,11 @@ public class HannahBot {
 	public static int[][] lentLoc = new int[10000][2];
 	public static String[] lentTeam = new String[10000];
 	public static int lentPointer = 0;
+	public static String[] borrowedItemBU = new String[10000];
+	public static String[] borrowedTeamBU = new String[10000];
+	public static String[] lentItemBU = new String[10000];
+	public static int[][] lentLocBU = new int[10000][2];
+	public static String[] lentTeamBU = new String[10000];
 	public static int[][] results = new int[10000][2];
 	public static String[] exact = new String[10000];
 	public static int[] exactLocation = new int[10000];
@@ -65,11 +70,7 @@ public class HannahBot {
 		{
 			if(createFile() )
 			{
-				write("// adminRestart = false");
-				write("// This is the file where the borrowed items are stored.");
-				write("// Line 1: B/L (Borrowed/Lent)");
-				write("// Line 2: Item Name (Exact)");
-				write("// Line 3: Team No.");
+				resetBorrow();
 			}
 		}
 		loadBorrow();
@@ -212,6 +213,35 @@ public class HannahBot {
 		if( data.contains("cls") )
 		{
 			System.out.println("Cls? What's that? I'm supposed to be based off of a human being, Pranav.");
+			skip = true;
+		}
+		if( data.contains("restore") && data.contains("borrow") )
+		{
+			restoreBorrow();
+			System.out.println("I've successfully restored the borrow file.");
+		}
+		if( data.contains("reset") && data.contains("borrow") )
+		{
+			resetBorrow();
+			System.out.println("I've cleared all memories of what we've borrowed.");
+			System.out.println("I've saved a backup of it, though, so just let me know if you want to restore it.");
+			skip = true;
+		}
+		else if( data.contains("borrow") || data.contains("lend") || data.contains("lent") )
+		{
+			data = " " + data + " ";
+			if( (data.contains(" we ") && data.contains("borrow")) || (data.contains(" us ") && data.contains("lent")) )
+			{
+				borrow("in");
+			}
+			else if( (data.contains(" we ") && data.contains("lent")) || (data.contains(" us ") && data.contains("borrow")) )
+			{
+				borrow("out");
+			}
+			else if( data.contains("borrow") || data.contains("lend") || data.contains("lent") )
+			{
+				borrow("null");
+			}
 			skip = true;
 		}
 		if( data.contains("three") || data.contains("3") )
@@ -702,39 +732,113 @@ public class HannahBot {
 			}
 		}
 	}
-	public static void borrow()
+	public static void borrow(String inout)
 	{
-		System.out.println("Do you want to check what we borrowed, or what was borrowed from us?");
+		boolean check = false;
 		boolean repeat = true;
 		boolean in = false;
 		boolean out = false;
-		while( repeat )
+		if( inout.equals("in") )
 		{
-			String input = input();
-			String data = input.toLowerCase();
-			if( data.contains("we") && data.contains("borrowed") || data.contains("us") && data.contains("lent") )
+			in = true;
+		}
+		if( inout.equals("out") )
+		{
+			out = true;
+		}
+		if( inout.equals("null") )
+		{
+			check = true;
+			System.out.println("Do you want to record what we borrowed, or what was borrowed from us?");
+		}
+		String IO = "";
+		String Item = "";
+		String Team = "";
+		if( check )
 			{
-				in = true;
-			}
-			if( data.contains("we") && data.contains("lent") || data.contains("us") && data.contains("borrowed") )
+			while( repeat )
 			{
-				out = true;
-			}
-			repeat = false;
-			if( in && out )
-			{
-				System.out.println("You're going to have to pick one or the other.");	
-				repeat = true;
+				String input = input();
+				String data = input.toLowerCase();
+				data = " " + data + " ";
+				if( (data.contains(" we ") && data.contains("borrow")) || (data.contains(" us ") && data.contains("lent")) )
+				{
+					in = true;
+				}
+				if( (data.contains(" we ") && data.contains("lent")) || (data.contains(" us ") && data.contains("borrow")) )
+				{
+					out = true;
+				}
+				repeat = false;
+				if( in && out )
+				{
+					System.out.println("You're going to have to pick one or the other.");	
+					repeat = true;
+				}
 			}
 		}
 		if( in )
 		{
-			
+			IO = "B";
+			repeat = true;
+			while( repeat )
+			{
+				repeat = false;
+				System.out.println("What item did we borrow?");
+				Item = input();
+				repeat = false;
+				if( Item.equals("") )
+				{
+					System.out.println("I'm going to need something more specific.");
+					repeat = true;
+				}
+			}
+			repeat = true;
+			while( repeat )
+			{
+				repeat = false;
+				System.out.println("Which team did we borrow from?");
+				Team = input();
+				repeat = false;
+				if( Team.equals("") )
+				{
+					System.out.println("I'm going to need something more specific.");
+					repeat = true;
+				}
+			}
 		}
 		if( out )
 		{
-			
+			IO = "L";
+			repeat = true;
+			while( repeat )
+			{
+				repeat = false;
+				System.out.println("What item did we lend?");
+				Item = input();
+				repeat = false;
+				if( Item.equals("") )
+				{
+					System.out.println("I'm going to need something more specific.");
+					repeat = true;
+				}
+			}
+			repeat = true;
+			while( repeat )
+			{
+				repeat = false;
+				System.out.println("Which team did we lend to?");
+				Team = input();
+				repeat = false;
+				if( Team.equals("") )
+				{
+					System.out.println("I'm going to need something more specific.");
+					repeat = true;
+				}
+			}
 		}
+		borrowWrite(IO + "~" + Item + "~" + Team + "~");
+		loadBorrow();
 	}
 	public static void loadBorrow()
 	{
@@ -745,6 +849,7 @@ public class HannahBot {
             BufferedReader bufferedReader = new BufferedReader(fileReader);
             while((line = bufferedReader.readLine()) != null)
             {
+            	String item = "";
             	if( line.startsWith("//") )
             	{
             		String ignore = line;
@@ -792,7 +897,7 @@ public class HannahBot {
 					}
 					if( good )
 					{
-						String item = tempString.toLowerCase();
+						item = tempString.toLowerCase();
 						int tb = ToolBoxCB(item);
 						int a = ToteACB(item);
 						int b = ToteBCB(item);
@@ -848,12 +953,13 @@ public class HannahBot {
 							lentTeam[lentPointer] = tempTeam;
 							lentPointer++;
 						}
+						else
+						{
+							System.out.println("I don't think we have a " + item + ".");
+							System.out.println("You may want to check the borrow file, or reset it.");
+							break;
+						}
 					}
-				}
-				else
-				{
-					System.out.println("That's not the correct syntax.");
-					break;
 				}
             }   
             fileReader.close();
@@ -885,18 +991,48 @@ public class HannahBot {
     }
 	public static void borrowWrite(String writer)
 	{
-		int end = writer.indexOf(" ");
+		int end = writer.indexOf("~");
 		String BL = writer.substring(0,end);
 		String temp = writer.substring(end+1,writer.length());
-		end = writer.indexOf(" ");
-		String item = writer.substring(0,end);
-		temp = writer.substring(end+1,writer.length());end = writer.indexOf(" ");
-		String team = writer.substring(0,end);
-		temp = writer.substring(end+1,writer.length());
+		end = temp.indexOf("~");
+		String item = temp.substring(0,end);
+		temp = temp.substring(end+1,temp.length());
+		end = temp.indexOf("~");
+		String team = temp.substring(0,end);
+		temp = temp.substring(end+1,temp.length());
 		write(BL);
 		write(item);
 		write(team);
 		loadBorrow();
+	}
+	public static void resetBorrow()
+	{
+		write("// adminRestart = false");
+		write("// This is the file where the borrowed items are stored.");
+		write("// Line 1: B/L (Borrowed/Lent)");
+		write("// Line 2: Item Name (Exact)");
+		write("// Line 3: Team No.");
+		borrowedPointer = 0;
+		lentPointer = 0;
+		for( int f=0; f<10000; f++ )
+		{
+			borrowedItem[f] = "";
+			borrowedTeam[f] = "";
+			lentItem[f] = "";
+			lentLoc[f][0] = 0;
+			lentLoc[f][1] = 0;
+			lentTeam[f] = "";
+		}
+	}
+	public static void restoreBorrow()
+	{
+		borrowedItem = borrowedItemBU;
+		borrowedTeam = borrowedTeamBU;
+		borrowedPointer = 0;
+		lentItem = lentItemBU;
+		lentLoc = lentLocBU;
+		lentTeam = lentTeamBU;
+		lentPointer = 0;
 	}
 	public static void loadLibrary()
 	{
