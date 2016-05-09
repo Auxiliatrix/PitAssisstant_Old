@@ -12,9 +12,11 @@ public class HannahBot {
 	public static int lentPointer = 0;
 	public static String[] borrowedItemBU = new String[10000];
 	public static String[] borrowedTeamBU = new String[10000];
+	public static int borrowedPointerBU = 0;
 	public static String[] lentItemBU = new String[10000];
 	public static int[][] lentLocBU = new int[10000][2];
 	public static String[] lentTeamBU = new String[10000];
+	public static int lentPointerBU = 0;
 	public static int[][] results = new int[10000][2];
 	public static String[] exact = new String[10000];
 	public static int[] exactLocation = new int[10000];
@@ -55,6 +57,7 @@ public class HannahBot {
 	public static boolean ziptie = false;
 	public static boolean adminRestart = true;
 	public static boolean on = true;
+	public static boolean borrowCheck = true;
 	public static void main(String args[]) throws InterruptedException
 	{
 		initialize();
@@ -136,7 +139,14 @@ public class HannahBot {
 			search();
 			output();
 		}
-		menu();
+		if( on )
+		{
+			menu();
+		}
+		else if( !on && borrowCheck )
+		{
+			System.out.println("Goodbye.");
+		}
 	}
 	public static void reset()
 	{
@@ -155,11 +165,6 @@ public class HannahBot {
 		boolean skip = false;
 		boolean ignoreExclaim = false;
 		String data = input.toLowerCase();
-		if( input.equals("") )
-		{
-			System.out.println("I'm going to need something more specific.");
-			skip = true;
-		}
 		if( data.contains("bye") )
 		{
 			shutDown();
@@ -195,6 +200,8 @@ public class HannahBot {
 			System.out.println("3. Emoji Support");
 			System.out.println("4. Fix repeat bug");
 			System.out.println("5. Fix pointer error");
+			System.out.println("6. Save reponses to a text file for easy translation for international teams.");
+			System.out.println("7. Fix the ridiculously buggy borrow stuff");
 			skip = true;
 		}
 		if( data.contains("flush") )
@@ -215,12 +222,13 @@ public class HannahBot {
 			System.out.println("Cls? What's that? I'm supposed to be based off of a human being, Pranav.");
 			skip = true;
 		}
-		if( data.contains("restore") && data.contains("borrow") )
+		if( (data.contains("reload") || data.contains("restore")) && data.contains("borrow") )
 		{
 			restoreBorrow();
 			System.out.println("I've successfully restored the borrow file.");
+			skip = true;
 		}
-		if( data.contains("reset") && data.contains("borrow") )
+		else if( (data.contains("clear") || data.contains("reset")) && data.contains("borrow") )
 		{
 			resetBorrow();
 			System.out.println("I've cleared all memories of what we've borrowed.");
@@ -265,6 +273,7 @@ public class HannahBot {
 		else if( data.contains("debug") && data.contains("toggle") )
 		{
 			debugMode = !debugMode;
+			skip = true;
 		}
 		if( data.startsWith("hi!") || data.startsWith("hi") || data.startsWith("hi?") || data.startsWith("hello") || data.startsWith("greetings") )
 		{
@@ -583,7 +592,18 @@ public class HannahBot {
 	public static String input()
 	{
 		Scanner sc = new Scanner(System.in);
-		String query = sc.nextLine();
+		boolean repeat = true;
+		String query = "";
+		while( repeat )
+		{
+			repeat = false;
+			query = sc.nextLine();
+			if( query == "" )
+			{
+				repeat = true;
+				System.out.println("I'm going to need something more specific.");
+			}
+		}
 		return query;
 	}
 	public static void search()
@@ -734,6 +754,10 @@ public class HannahBot {
 	}
 	public static void borrow(String inout)
 	{
+		if( debugMode )
+		{
+			System.out.println("borrow() called with input + '" + inout + "'.");
+		}
 		boolean check = false;
 		boolean repeat = true;
 		boolean in = false;
@@ -780,68 +804,29 @@ public class HannahBot {
 		if( in )
 		{
 			IO = "B";
-			repeat = true;
-			while( repeat )
-			{
-				repeat = false;
-				System.out.println("What item did we borrow?");
-				Item = input();
-				repeat = false;
-				if( Item.equals("") )
-				{
-					System.out.println("I'm going to need something more specific.");
-					repeat = true;
-				}
-			}
-			repeat = true;
-			while( repeat )
-			{
-				repeat = false;
-				System.out.println("Which team did we borrow from?");
-				Team = input();
-				repeat = false;
-				if( Team.equals("") )
-				{
-					System.out.println("I'm going to need something more specific.");
-					repeat = true;
-				}
-			}
+			System.out.println("What item did we borrow?");
+			Item = input();
+			System.out.println("Which team did we borrow from?");
+			Team = input();
 		}
 		if( out )
 		{
 			IO = "L";
+			System.out.println("What item did we lend?");
+			Item = input();
 			repeat = true;
-			while( repeat )
-			{
-				repeat = false;
-				System.out.println("What item did we lend?");
-				Item = input();
-				repeat = false;
-				if( Item.equals("") )
-				{
-					System.out.println("I'm going to need something more specific.");
-					repeat = true;
-				}
-			}
-			repeat = true;
-			while( repeat )
-			{
-				repeat = false;
-				System.out.println("Which team did we lend to?");
-				Team = input();
-				repeat = false;
-				if( Team.equals("") )
-				{
-					System.out.println("I'm going to need something more specific.");
-					repeat = true;
-				}
-			}
+			System.out.println("Which team did we lend to?");
+			Team = input();
 		}
 		borrowWrite(IO + "~" + Item + "~" + Team + "~");
 		loadBorrow();
 	}
 	public static void loadBorrow()
 	{
+		if( debugMode )
+		{
+			System.out.println("loadBorrow() called");
+		}
         String fileName = "borrow.txt";
         String line = null;
         try {
@@ -955,7 +940,7 @@ public class HannahBot {
 						}
 						else
 						{
-							System.out.println("I don't think we have a " + item + ".");
+							System.out.println("I don't think we have '" + item + "'.");
 							System.out.println("You may want to check the borrow file, or reset it.");
 							break;
 						}
@@ -977,6 +962,10 @@ public class HannahBot {
 	}
 	public static void write(String string)
 	{
+		if( debugMode )
+		{
+			System.out.println("write() called with input '" + string + "'.");
+		}
 		try{
 
             FileWriter fstream = new FileWriter("borrow.txt",true);
@@ -985,12 +974,16 @@ public class HannahBot {
             fbw.newLine();
             fbw.close();
         }catch (Exception e) {
-            System.out.println("Error: " + e.getMessage());
+            System.out.println("Couldn't print to the file.");
         }
 
     }
 	public static void borrowWrite(String writer)
 	{
+		if( debugMode )
+		{
+			System.out.println("borrowWrite() called with input '" + writer + "'.");
+		}
 		int end = writer.indexOf("~");
 		String BL = writer.substring(0,end);
 		String temp = writer.substring(end+1,writer.length());
@@ -1003,10 +996,44 @@ public class HannahBot {
 		write(BL);
 		write(item);
 		write(team);
-		loadBorrow();
+	}
+	public static void clearBorrow()
+	{
+		if( debugMode )
+		{
+			System.out.println("clearBorrow() called");
+		}
+		PrintWriter writer;
+		try {
+			writer = new PrintWriter("borrow.txt");
+			writer.print("");
+			writer.close();
+		} catch (FileNotFoundException e) {
+			System.out.println("You can't reset something I don't have yet.");
+		}
 	}
 	public static void resetBorrow()
 	{
+		if( debugMode )
+		{
+			System.out.println("resetBorrow() called");
+		}
+		loadToolBox();
+		loadToteA();
+		loadToteB();
+		loadToteC();
+		loadToteD();
+		loadToteE();
+		loadCrate();
+		clearBorrow();
+		// back up text file contents!
+		borrowedItemBU = borrowedItem;
+		borrowedTeamBU = borrowedTeam;
+		borrowedPointerBU = borrowedPointer;
+		lentItemBU = lentItem;
+		lentLocBU = lentLoc;
+		lentTeamBU = lentTeam;
+		lentPointerBU = lentPointer;
 		write("// adminRestart = false");
 		write("// This is the file where the borrowed items are stored.");
 		write("// Line 1: B/L (Borrowed/Lent)");
@@ -1026,13 +1053,18 @@ public class HannahBot {
 	}
 	public static void restoreBorrow()
 	{
+		if( debugMode )
+		{
+			System.out.println("restoreBorrow() called");
+		}
+		// remember to add back the file stuff
 		borrowedItem = borrowedItemBU;
 		borrowedTeam = borrowedTeamBU;
-		borrowedPointer = 0;
+		borrowedPointer = borrowedPointerBU;
 		lentItem = lentItemBU;
 		lentLoc = lentLocBU;
 		lentTeam = lentTeamBU;
-		lentPointer = 0;
+		lentPointer = lentPointerBU;
 	}
 	public static void loadLibrary()
 	{
