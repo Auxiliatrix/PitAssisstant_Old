@@ -801,6 +801,7 @@ public class HannahBot {
 				}
 			}
 		}
+		boolean go = false;
 		if( in )
 		{
 			IO = "B";
@@ -808,6 +809,7 @@ public class HannahBot {
 			Item = input();
 			System.out.println("Which team did we borrow from?");
 			Team = input();
+			go = true;
 		}
 		if( out )
 		{
@@ -817,9 +819,27 @@ public class HannahBot {
 			repeat = true;
 			System.out.println("Which team did we lend to?");
 			Team = input();
+			int tb = ToolBoxCB(Item);
+			int a = ToteACB(Item);
+			int b = ToteBCB(Item);
+			int c = ToteCCB(Item);
+			int d = ToteDCB(Item);
+			int e = ToteECB(Item);
+			int crate = CrateCB(Item);
+			if( tb+a+b+c+d+e+crate != 0 )
+			{
+				go = true;
+			}
 		}
-		borrowWrite(IO + "~" + Item + "~" + Team + "~");
-		loadBorrow();
+		if(go)
+		{
+			borrowWrite(IO + "~" + Item + "~" + Team + "~");
+			loadBorrow();
+		}
+		else if( !go )
+		{
+			System.out.println("I dont think we have '" + Item + "'.");
+		}
 	}
 	public static void loadBorrow()
 	{
