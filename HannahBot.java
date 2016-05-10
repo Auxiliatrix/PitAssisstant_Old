@@ -60,6 +60,7 @@ public class HannahBot {
 	public static boolean borrowCheck = true;
 	public static void main(String args[]) throws InterruptedException
 	{
+		/* [Organizer] [Main] */
 		initialize();
 		while( on )
 		{
@@ -68,6 +69,7 @@ public class HannahBot {
 	}
 	public static void initialize()
 	{
+		/* [Organizer] [Load] */
 		loadLibrary();
 		if( !loaded() )
 		{
@@ -81,6 +83,7 @@ public class HannahBot {
 	}
 	public static boolean createFile()
 	{
+		/* [Startup] [Load] [Borrow] */
 		try
 		{
         	FileWriter fw = new FileWriter("borrow.txt", true);
@@ -98,6 +101,7 @@ public class HannahBot {
 	}
 	public static boolean loaded()
 	{
+		/* [Startup] [Load] [Borrow] */
 		boolean tf = false;
 		String fileName = "borrow.txt";
         String line = null;
@@ -118,6 +122,7 @@ public class HannahBot {
 	}
 	public static void greet()
 	{
+		/* [Startup] [Text] [Print] [Info] */
 		System.out.println("=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=[Hannah Bot]=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=");
 		System.out.println();
 		System.out.println("   Hi, I'm HannahBot (v1.9). I can look for things, and tell you what's in our totes and boxes.");
@@ -130,6 +135,7 @@ public class HannahBot {
 	}
 	public static void conductor() throws InterruptedException
 	{
+		/* [Organizer] [Main] */
 		reset();
 		String input = input();
 		boolean normal = caser(input);
@@ -150,6 +156,7 @@ public class HannahBot {
 	}
 	public static void reset()
 	{
+		/* [Cleanup] [Pointer] [Borrow] */
 		resultPointer = 0;
 		keywordPointer = 0;
 		for( int f=0; f<printedPointer; f++ )
@@ -161,6 +168,7 @@ public class HannahBot {
 	}
 	public static boolean caser(String input) throws InterruptedException
 	{
+		/* [Organizer] [Text] [Process] */
 		boolean normal = false;
 		boolean skip = false;
 		boolean ignoreExclaim = false;
@@ -168,6 +176,14 @@ public class HannahBot {
 		if( data.contains("bye") )
 		{
 			shutDown();
+			skip = true;
+		}
+		if( data.contains("flush") )
+		{
+			for( int f=0; f<50; f++ )
+			{
+				System.out.println();
+			}
 			skip = true;
 		}
 		if( data.contains("changelog") )
@@ -198,18 +214,12 @@ public class HannahBot {
 			System.out.println("1. Borrowed Item Tracking");
 			System.out.println("2. Memory Modification");
 			System.out.println("3. Emoji Support");
-			System.out.println("4. Fix repeat bug");
-			System.out.println("5. Fix pointer error");
+			System.out.println("4. Find repeat error");
+			System.out.println("5. Consolidate pointers");
 			System.out.println("6. Save reponses to a text file for easy translation for international teams.");
 			System.out.println("7. Fix the ridiculously buggy borrow stuff");
-			skip = true;
-		}
-		if( data.contains("flush") )
-		{
-			for( int f=0; f<50; f++ )
-			{
-				System.out.println();
-			}
+			System.out.println("8. Add debug tags to all functions.");
+			System.out.println("9. Organize cases [Standalone, Priority, Easter Egg, Repeatable]");
 			skip = true;
 		}
 		if( data.contains("git") )
@@ -238,7 +248,15 @@ public class HannahBot {
 		else if( data.contains("borrow") || data.contains("lend") || data.contains("lent") )
 		{
 			data = " " + data + " ";
-			if( (data.contains(" we ") && data.contains("borrow")) || (data.contains(" us ") && data.contains("lent")) )
+			if( data.contains("tell") || data.contains("list") || data.contains("print") )
+			{
+				listBorrow();
+			}
+			else if( data.contains("check") && !data.contains("out") )
+			{
+				listBorrow();
+			}
+			else if( (data.contains(" we ") && data.contains("borrow")) || (data.contains(" us ") && data.contains("lent")) )
 			{
 				borrow("in");
 			}
@@ -263,19 +281,29 @@ public class HannahBot {
 		if( data.contains("debug") && data.contains(" on") )
 		{
 			debugMode = true;
+			System.out.println("Debug mode enabled.");
 			skip = true;
 		}
 		else if( data.contains("debug") && data.contains(" off") )
 		{
 			debugMode = false;
+			System.out.println("Debug mode disabled.");
 			skip = true;
 		}
 		else if( data.contains("debug") && data.contains("toggle") )
 		{
 			debugMode = !debugMode;
+			if( debugMode )
+			{
+				System.out.println("Debug mode enabled.");
+			}
+			else
+			{
+				System.out.println("Debug mode disabled.");
+			}
 			skip = true;
 		}
-		if( data.startsWith("hi!") || data.startsWith("hi") || data.startsWith("hi?") || data.startsWith("hello") || data.startsWith("greetings") )
+		if( data.startsWith("hi!") || data.startsWith("hi ") || data.startsWith("hello") || data.startsWith("greetings") )
 		{
 			System.out.println("Hi.");
 			Thread.sleep(500);
@@ -296,19 +324,14 @@ public class HannahBot {
 			System.out.println("I'm not Hannah's replacement. Hannah is a wonderful and unique human being. I am a computer program.");
 			skip = true;
 		}
-		if( input.endsWith("!") && !ignoreExclaim  )
-		{
-			System.out.println("Hey, no need to yell.");
-			Thread.sleep(500);
-		}
-		if( input.endsWith("!") && data.contains("please") )
-		{
-			System.out.println("Fine.");
-			Thread.sleep(500);
-		}
 		if( data.contains("backpack") )
 		{
 			System.out.println("If you're looking for a backpack, I would ask Pranav.");
+			skip = true;
+		}
+		if( data.contains("memes") )
+		{
+			System.out.println("Stop looking for memes.");
 			skip = true;
 		}
 		if( !skip )
@@ -392,6 +415,7 @@ public class HannahBot {
 	}
 	public static void parse(String input)
 	{
+		/* [Data] [Text] [Process] */
 		String data = input.toLowerCase();
 		while( data.endsWith(" ") )
 		{
@@ -438,6 +462,7 @@ public class HannahBot {
 	}
 	public static void menu()
 	{
+		/* [Cleanup] [Text] [Print] */
 		System.out.println("How else may I help you?");
 	}
 	public static void output()
@@ -591,6 +616,7 @@ public class HannahBot {
 	}
 	public static String input()
 	{
+		/* [IO] [Text] [Input] */
 		Scanner sc = new Scanner(System.in);
 		boolean repeat = true;
 		String query = "";
@@ -608,6 +634,7 @@ public class HannahBot {
 	}
 	public static void search()
 	{
+		/* [Organizer] [Text] [Process] */
 		checkToolBox();
 		checkToteA();
 		checkToteB();
@@ -618,6 +645,7 @@ public class HannahBot {
 	}
 	public static boolean antiRepeat(String check)
 	{
+		/* [Support] [Text] [Pointer] */
 		boolean b = true;
 		for( int f=0; f<printedPointer; f++ )
 		{
@@ -635,6 +663,7 @@ public class HannahBot {
 	}
 	public static void checkToolBox()
 	{
+		/* [Search] [Data] [Memory] */
 		p[0] = 0;
 		for( int f=0; f<41; f++ )
 		{
@@ -652,6 +681,7 @@ public class HannahBot {
 	}
 	public static void checkToteA()
 	{
+		/* [Search] [Data] [Memory] */
 		p[1] = 0;
 		for( int f=0; f<20; f++ )
 		{
@@ -669,6 +699,7 @@ public class HannahBot {
 	}
 	public static void checkToteB()
 	{
+		/* [Search] [Data] [Memory] */
 		p[2] = 0;
 		for( int f=0; f<11; f++ )
 		{
@@ -686,6 +717,7 @@ public class HannahBot {
 	}
 	public static void checkToteC()
 	{
+		/* [Search] [Data] [Memory] */
 		p[3] = 0;
 		for( int f=0; f<18; f++ )
 		{
@@ -703,6 +735,7 @@ public class HannahBot {
 	}
 	public static void checkToteD()
 	{
+		/* [Search] [Data] [Memory] */
 		p[4] = 0;
 		for( int f=0; f<25; f++ )
 		{
@@ -720,6 +753,7 @@ public class HannahBot {
 	}
 	public static void checkToteE()
 	{
+		/* [Search] [Data] [Memory] */
 		p[5] = 0;
 		for( int f=0; f<8; f++ )
 		{
@@ -737,6 +771,7 @@ public class HannahBot {
 	}
 	public static void checkCrate()
 	{
+		/* [Search] [Data] [Memory] */
 		p[6] = 0;
 		for( int f=0; f<16; f++ )
 		{
@@ -754,6 +789,7 @@ public class HannahBot {
 	}
 	public static void borrow(String inout)
 	{
+		/* [Organizer] [Borrow] [IO] */
 		if( debugMode )
 		{
 			System.out.println("borrow() called with input + '" + inout + "'.");
@@ -816,6 +852,7 @@ public class HannahBot {
 			IO = "L";
 			System.out.println("What item did we lend?");
 			Item = input();
+			Item = Item.toLowerCase();
 			repeat = true;
 			System.out.println("Which team did we lend to?");
 			Team = input();
@@ -843,6 +880,7 @@ public class HannahBot {
 	}
 	public static void loadBorrow()
 	{
+		/* [Startup] [Borrow] [IO] */
 		if( debugMode )
 		{
 			System.out.println("loadBorrow() called");
@@ -982,6 +1020,7 @@ public class HannahBot {
 	}
 	public static void write(String string)
 	{
+		/* [IO] [Borrow] */
 		if( debugMode )
 		{
 			System.out.println("write() called with input '" + string + "'.");
@@ -1000,6 +1039,7 @@ public class HannahBot {
     }
 	public static void borrowWrite(String writer)
 	{
+		/* [Organizer] [Borrow] [IO] */
 		if( debugMode )
 		{
 			System.out.println("borrowWrite() called with input '" + writer + "'.");
@@ -1019,6 +1059,7 @@ public class HannahBot {
 	}
 	public static void clearBorrow()
 	{
+		/* [Cleanup] [Borrow] [Memory] */
 		if( debugMode )
 		{
 			System.out.println("clearBorrow() called");
@@ -1073,6 +1114,7 @@ public class HannahBot {
 	}
 	public static void restoreBorrow()
 	{
+		/* [Cleanup] [Borrow] [Memory] */
 		if( debugMode )
 		{
 			System.out.println("restoreBorrow() called");
@@ -1086,8 +1128,98 @@ public class HannahBot {
 		lentTeam = lentTeamBU;
 		lentPointer = lentPointerBU;
 	}
+	public static void listBorrow()
+	{
+		/* [Borrow] [Text] [Print] [Info] */
+		String fileName = "borrow.txt";
+        // We borrowed 'a box' from 000.
+		// We lent 'rivet gun' to 000.
+		String piece0 = "We ";
+		String piece1 = "";
+		String piece2 = "";
+		String piece3 = "";
+		String piece4 = "";
+		String piece5 = ".";
+		String line = null;
+        try {
+            FileReader fileReader = new FileReader(fileName);
+            BufferedReader bufferedReader = new BufferedReader(fileReader);
+            while((line = bufferedReader.readLine()) != null)
+            {
+            	String item = "";
+            	if( line.startsWith("//") )
+            	{
+            		String ignore = line;
+            	}
+            	else if( line.toLowerCase().equals("b") )
+				{
+            		boolean good = true;
+            		line = bufferedReader.readLine();
+					String tempString = line;
+					String tempTeam = "0";
+					try
+					{
+						line = bufferedReader.readLine();
+						tempTeam = line;
+					}
+					catch(Exception e)
+					{
+						System.out.println("Warning: Syntax error!");
+						good = false;
+						break;
+					}
+					if( good )
+					{
+						piece1 = "borrowed '";
+						piece2 = tempString;
+						piece3 = "' from ";
+						piece4 = tempTeam;
+						System.out.println(piece0+piece1+piece2+piece3+piece4+piece5);
+					}
+				}
+				else if( line.toLowerCase().equals("l") )
+				{
+					boolean good = true;
+					line = bufferedReader.readLine();
+					String tempString = line;
+					String tempTeam = "0";
+					try
+					{
+						line = bufferedReader.readLine();
+						tempTeam = line;
+					}
+					catch(Exception e)
+					{
+						System.out.println("Warning: Syntax error!");
+						good = false;
+						break;
+					}
+					if( good )
+					{
+						piece1 = "lent '";
+						piece2 = tempString;
+						piece3 = "' to ";
+						piece4 = tempTeam;
+						System.out.println(piece0+piece1+piece2+piece3+piece4+piece5);
+					}
+				}
+			} 
+            fileReader.close();
+            bufferedReader.close();         
+        }
+        catch(FileNotFoundException ex)
+        {
+            System.out.println(
+                "Unable to open file '" + fileName + "'");                
+        }
+        catch(IOException ex)
+        {
+            System.out.println("Error reading file '" + fileName + "'");
+        }
+    }
 	public static void loadLibrary()
 	{
+		/* [Startup] [Organizer] [Load] [Memory] */
 		loadToolBox();
 		loadToteA();
 		loadToteB();
@@ -1107,6 +1239,7 @@ public class HannahBot {
 	}
 	public static void loadToolBox()
 	{
+		/* [Load] [Memory] */
 		ToolBox[0][0] = "Precision Screwdriver Set";
 		ToolBox[1][0] = "Goo-gone";
 		ToolBox[2][0] = "Files";
@@ -1155,6 +1288,7 @@ public class HannahBot {
 	}
 	public static void loadToteA()
 	{
+		/* [Load] [Memory] */
 		ToteA[0][0] = "Rivet Box";
 		ToteA[1][0] = "Pneumatics Hardware Box";
 		ToteA[2][0] = "Zip Tie Box";
@@ -1182,6 +1316,7 @@ public class HannahBot {
 	}
 	public static void loadToteB()
 	{
+		/* [Load] [Memory] */
 		ToteB[0][0] = "Polycord Box (+tread, radio, camera)";
 		ToteB[1][0] = "Solder Box (+chain)";
 		ToteB[2][0] = "Vex Pro Box (versas/ringlight/victor)";
@@ -1200,6 +1335,7 @@ public class HannahBot {
 	}
 	public static void loadToteC()
 	{
+		/* [Load] [Memory] */
 		ToteC[0][0] = "Hardstop (orange)";
 		ToteC[1][0] = "Gears Stuff Box";
 		ToteC[2][0] = "Mcmaster box";
@@ -1225,6 +1361,7 @@ public class HannahBot {
 	}
 	public static void loadToteD()
 	{
+		/* [Load] [Memory] */
 		ToteD[0][0] = "Pit Bag";
 		ToteD[1][0] = "White Board";
 		ToteD[2][0] = "Staple Bag";
@@ -1257,6 +1394,7 @@ public class HannahBot {
 	}
 	public static void loadToteE()
 	{
+		/* [Load] [Memory] */
 		ToteE[0][0] = "Chain Box";
 		ToteE[1][0] = "Plates Stuff Box";
 		ToteE[2][0] = "Clear Screw Box";
@@ -1272,6 +1410,7 @@ public class HannahBot {
 	}
 	public static void loadCrate()
 	{
+		/* [Load] [Memory] */
 		Crate[0][0] = "long hex stock (3)";
 		Crate[1][0] = "standard stand";
 		Crate[2][0] = "vise";
@@ -1295,6 +1434,7 @@ public class HannahBot {
 	}
 	public static void loadExclusion()
 	{
+		/* [Load] [Memory] */
 		Exclusion[0] = "and";
 		Exclusion[1] = "or";
 		Exclusion[2] = "where";
@@ -1321,6 +1461,7 @@ public class HannahBot {
 	}
 	public static void loadPeople()
 	{
+		/* [Load] [Memory] */
 		People[0] = "justin";
 		People[1] = "pranav";
 		People[2] = "aanya";
@@ -1353,6 +1494,7 @@ public class HannahBot {
 	}
 	public static void loadTLDesc()
 	{
+		/* [Load] [Memory] */
 		TLDesc[0] = "Precision Screwdrivers Sets screws ";
 		TLDesc[1] = "Goo-gone goo gone removers";
 		TLDesc[2] = "Files";
@@ -1397,6 +1539,7 @@ public class HannahBot {
 	}
 	public static void loadTADesc()
 	{
+		/* [Load] [Memory] */
 		TADesc[0] = "Rivets Boxes";
 		TADesc[1] = "Pneumatics Hardware Boxes";
 		TADesc[2] = "Zip Tie Boxes ziptie zipties";
@@ -1419,6 +1562,7 @@ public class HannahBot {
 		TADesc[19] = "Drills + chargers";	}
 	public static void loadTBDesc()
 	{
+		/* [Load] [Memory] */
 		TBDesc[0] = "Polycords Boxes (+treads, radios, cameras)";
 		TBDesc[1] = "Solder Boxes (+chains)";
 		TBDesc[2] = "Vex Pro Boxes (versas/ringlights/victors) vexpros";
@@ -1433,13 +1577,14 @@ public class HannahBot {
 	}
 	public static void loadTCDesc()
 	{
+		/* [Load] [Memory] */
 		TCDesc[0] = "Hardstops (orange)";
 		TCDesc[1] = "Gears Stuff Boxes";
 		TCDesc[2] = "Mcmaster boxes";
-		TCDesc[3] = "Red Battery batteries Wires electric cables cords";
-		TCDesc[4] = "Black Battery Wires batteries electric cables cords";
+		TCDesc[3] = "Red Battery batteries Wires electrical cables cords";
+		TCDesc[4] = "Black Battery Wires batteries electrical cables cords";
 		TCDesc[5] = "Pickup hardware bags(small)";
-		TCDesc[6] = "Wires cables electric cords boxes ";
+		TCDesc[6] = "Wires cables electrical cords boxes";
 		TCDesc[7] = "Victors motors";
 		TCDesc[8] = "Pneumatics Tubing Bags";
 		TCDesc[9] = "Versas";
@@ -1447,13 +1592,14 @@ public class HannahBot {
 		TCDesc[11] = "Air Tanks pneumatics";
 		TCDesc[12] = "Random Sheets Metal scrap";
 		TCDesc[13] = "Sponsor panels";
-		TCDesc[14] = "Breakers electric";
+		TCDesc[14] = "Breakers electrical";
 		TCDesc[15] = "Pneumatics Tubing Blue and Orange";
 		TCDesc[16] = "Optical Sensors";
 		TCDesc[17] = "Pickup hardware bags(big)";
 	}
 	public static void loadTDDesc()
 	{
+		/* [Load] [Memory] */
 		TDDesc[0] = "Pit Bags";
 		TDDesc[1] = "White Boards";
 		TDDesc[2] = "Staples Bags";
@@ -1463,7 +1609,7 @@ public class HannahBot {
 		TDDesc[6] = "Blue Fabrics";
 		TDDesc[7] = "Bumpers Bolts + Nuts Bags";
 		TDDesc[8] = "Standards flags";
-		TDDesc[9] = "Power Strips electric";
+		TDDesc[9] = "Power Strips electrical";
 		TDDesc[10] = "Extension cords power";
 		TDDesc[11] = "Multimeters";
 		TDDesc[12] = "vise bits";
@@ -1482,6 +1628,7 @@ public class HannahBot {
 	}
 	public static void loadTEDesc()
 	{
+		/* [Load] [Memory] */
 		TEDesc[0] = "Chain Boxes";
 		TEDesc[1] = "Plates Stuff Boxes";
 		TEDesc[2] = "Clear Screw Boxes";
@@ -1493,6 +1640,7 @@ public class HannahBot {
 	}
 	public static void loadCDesc()
 	{
+		/* [Load] [Memory] */
 		CDesc[0] = "long hex stocks (3)";
 		CDesc[1] = "standard stands";
 		CDesc[2] = "vises";
@@ -1512,6 +1660,7 @@ public class HannahBot {
 	}
 	public static int ToolBoxCB(String item)
 	{
+		/* [Search]*/
 		int loc = 0;
 		for( int f=0; f<41; f++ )
 		{
@@ -1525,6 +1674,7 @@ public class HannahBot {
 	}
 	public static int ToteACB(String item)
 	{
+		/* [Search] */
 		int loc = 0;
 		for( int f=0; f<20; f++ )
 		{
@@ -1538,6 +1688,7 @@ public class HannahBot {
 	}
 	public static int ToteBCB(String item)
 	{
+		/* [Search] */
 		int loc = 0;
 		for( int f=0; f<11; f++ )
 		{
@@ -1551,6 +1702,7 @@ public class HannahBot {
 	}
 	public static int ToteCCB(String item)
 	{
+		/* [Search] */
 		int loc = 0;
 		for( int f=0; f<18; f++ )
 		{
@@ -1564,6 +1716,7 @@ public class HannahBot {
 	}
 	public static int ToteDCB(String item)
 	{
+		/* [Search] */
 		int loc = 0;
 		for( int f=0; f<25; f++ )
 		{
@@ -1577,6 +1730,7 @@ public class HannahBot {
 	}
 	public static int ToteECB(String item)
 	{
+		/* [Search] */
 		int loc = 0;
 		for( int f=0; f<8; f++ )
 		{
@@ -1590,6 +1744,7 @@ public class HannahBot {
 	}
 	public static int CrateCB(String item)
 	{
+		/* [Search] */
 		int loc = 0;
 		for( int f=0; f<16; f++ )
 		{
@@ -1603,6 +1758,7 @@ public class HannahBot {
 	}
 	public static void listToolBox()
 	{
+		/* [Text] [Print] [Info] */
 		System.out.println("The Toolbox contains the following:");
 		for( int f=0; f<41; f++ )
 		{
@@ -1619,6 +1775,7 @@ public class HannahBot {
 	}
 	public static void listToteA()
 	{
+		/* [Text] [Print] [Info] */
 		System.out.println("Tote A contains the following:");
 		for( int f=0; f<20; f++ )
 		{
@@ -1635,6 +1792,7 @@ public class HannahBot {
 	}
 	public static void listToteB()
 	{
+		/* [Text] [Print] [Info] */
 		System.out.println("Tote B contains the following:");
 		for( int f=0; f<11; f++ )
 		{
@@ -1650,6 +1808,7 @@ public class HannahBot {
 	}
 	public static void listToteC()
 	{
+		/* [Text] [Print] [Info] */
 		System.out.println("Tote C contains the following:");
 		for( int f=0; f<18; f++ )
 		{
@@ -1665,6 +1824,7 @@ public class HannahBot {
 	}
 	public static void listToteD()
 	{
+		/* [Text] [Print] [Info] */
 		System.out.println("Tote D contains the following:");
 		for( int f=0; f<25; f++ )
 		{
@@ -1680,6 +1840,7 @@ public class HannahBot {
 	}
 	public static void listToteE()
 	{
+		/* [Text] [Print] [Info] */
 		System.out.println("Tote E contains the following:");
 		for( int f=0; f<8; f++ )
 		{
@@ -1695,6 +1856,7 @@ public class HannahBot {
 	}
 	public static void listCrate()
 	{
+		/* [Text] [Print] [Info] */
 		System.out.println("The Crate contains the following:");
 		for( int f=0; f<16; f++ )
 		{
@@ -1710,6 +1872,7 @@ public class HannahBot {
 	}
 	public static void shutDown()
 	{
+		/* [Cleanup] [Terminate] */
 		write("close");
 		on = false;
 	}
