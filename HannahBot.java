@@ -241,11 +241,11 @@ public class HannahBot {
 			System.out.println("5. Consolidate pointers");
 			System.out.println("6. Save reponses to a text file for easy translation for international teams");
 			System.out.println("7. Organize cases [Standalone, Priority, Easter Egg, Repeatable]");
-			System.out.println("8. Fix borrow reload so it saves file data");
-			System.out.println("9. Add undo borrow function");
-			System.out.println("10. Add ability to search for items we have borrowed");
-			System.out.println("11. Update help function");
-			System.out.println("12. Fix printBorrow repeat error");
+			System.out.println("8. Add undo borrow function");
+			System.out.println("9. Add ability to search for items we have borrowed");
+			System.out.println("10. Update help function");
+			System.out.println("11. Fix printBorrow repeat error");
+			System.out.println("12. Add ability to return items");
 			skip = true;
 		}
 		if( data.contains("git") )
@@ -274,7 +274,7 @@ public class HannahBot {
 		else if( data.contains("borrow") || data.contains("lend") || data.contains("lent") )
 		{
 			data = " " + data + " ";
-			if( data.contains("tell") || data.contains("list") || data.contains("print") )
+			if( data.contains("show") || data.contains("tell") || data.contains("list") || data.contains("print") )
 			{
 				listBorrow();
 			}
