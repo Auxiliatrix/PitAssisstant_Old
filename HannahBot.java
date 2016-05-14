@@ -1,6 +1,8 @@
 import java.util.Scanner;
 import java.io.*;
 
+import javafx.scene.chart.PieChart.Data;
+
 public class HannahBot {
 
 	public static String[] borrowFile = new String[10000];
@@ -26,7 +28,7 @@ public class HannahBot {
 	public static String[] printed = new String[10000];
 	public static int printedPointer = 1;
 	public static int resultPointer = 0;
-	public static int[] p = new int[7];
+	public static int[] p = new int[8];
 	public static String[] keywords = new String[10000];
 	public static int keywordPointer = 0;
 	public static int TLLength = 42;
@@ -234,18 +236,15 @@ public class HannahBot {
 		}
 		if( data.contains("todo") || data.contains("to-do") )
 		{
-			System.out.println("1. Borrowed Item Tracking");
-			System.out.println("2. Memory Modification");
-			System.out.println("3. Emoji Support");
-			System.out.println("4. Find repeat error");
-			System.out.println("5. Consolidate pointers");
-			System.out.println("6. Save reponses to a text file for easy translation for international teams");
-			System.out.println("7. Organize cases [Standalone, Priority, Easter Egg, Repeatable]");
-			System.out.println("8. Add undo borrow function");
-			System.out.println("9. Add ability to search for items we have borrowed");
-			System.out.println("10. Update help function");
-			System.out.println("11. Fix printBorrow repeat error");
-			System.out.println("12. Add ability to return items");
+			System.out.println("1. Memory Modification");
+			System.out.println("2. Emoji Support");
+			System.out.println("3. Consolidate pointers");
+			System.out.println("4. Save reponses to a text file for easy translation for international teams");
+			System.out.println("5. Organize cases [Standalone, Priority, Easter Egg, Repeatable]");
+			System.out.println("6. Add undo borrow function");
+			System.out.println("7. Add ability to search for items we have borrowed");
+			System.out.println("8. Update help function");
+			System.out.println("9. Add ability to return items");
 			skip = true;
 		}
 		if( data.contains("git") )
@@ -274,7 +273,7 @@ public class HannahBot {
 		else if( data.contains("borrow") || data.contains("lend") || data.contains("lent") )
 		{
 			data = " " + data + " ";
-			if( data.contains("show") || data.contains("tell") || data.contains("list") || data.contains("print") )
+			if( data.contains("what") || data.contains("show") || data.contains("tell") || data.contains("list") || data.contains("print") || data.contains("see") || data.contains("are") || data.contains(" in ") )
 			{
 				listBorrow();
 			}
@@ -282,11 +281,11 @@ public class HannahBot {
 			{
 				listBorrow();
 			}
-			else if( (data.contains(" we ") && data.contains("borrow")) || (data.contains(" us ") && data.contains("lent")) )
+			else if( (data.contains("we ") && data.contains("borrowed")) || (data.contains("borrow") && data.contains("from") && data.contains("we ")) || (data.contains(" us ") && data.contains("lent")) || (data.contains("lent") && data.contains("to") && data.contains(" us ")) )
 			{
 				borrow("in");
 			}
-			else if( (data.contains(" we ") && data.contains("lent")) || (data.contains(" us ") && data.contains("borrow")) )
+			else if( (data.contains("us ") && data.contains("borrowed")) || (data.contains("borrow") && data.contains("from") && data.contains(" us ")) || (data.contains("we ") && data.contains("lent") && data.contains("to")) || (data.contains("we ") && data.contains("lent")) )
 			{
 				borrow("out");
 			}
@@ -375,14 +374,14 @@ public class HannahBot {
 			{
 				System.out.println("I'm a tote organizer. Go ask Rayna or something.");
 			}
-			else if( data.contains("where") && data.contains("hannah") && askHannah )
+			else if( data.contains("where") && data.contains("hannah") && !askHannah )
 			{
 				System.out.println("I'm right her- Oh.");
 				Thread.sleep(500);
 				System.out.println("You meant *that* Hannah.");
 				askHannah = true;
 			}
-			else if( data.contains("where") && data.contains("hannah") && !askHannah )
+			else if( data.contains("where") && data.contains("hannah") && askHannah )
 			{
 				System.out.println("Haven't you already tried looking for me?");
 			}
@@ -644,6 +643,18 @@ public class HannahBot {
 			}
 			System.out.println("");
 		}
+		if( p[7] > 0 )
+		{
+			System.out.println("We should theoretically have borrowed the following items:");
+			for( int f=p[0]+p[1]+p[2]+p[3]+p[4]+p[5]+p[6]; f<p[0]+p[1]+p[2]+p[3]+p[4]+p[5]+p[6]+p[7]; f++ )
+			{
+				if(antiRepeat(borrowedItem[results[f][1]]))
+				{
+					System.out.println(borrowedItem[results[f][1]]);
+				}
+			}
+			System.out.println("");
+		}
 		if( ziptie )
 		{
 			System.out.println("There's also a whole bunch in Trinity's hair.");
@@ -685,6 +696,7 @@ public class HannahBot {
 		checkToteD();
 		checkToteE();
 		checkCrate();
+		checkBorrowed();
 	}
 	public static boolean antiRepeat(String check)
 	{
@@ -834,6 +846,23 @@ public class HannahBot {
 			}
 		}
 	}
+	public static void checkBorrowed()
+	{
+		p[7] = 0;
+		for( int f=0; f<borrowedPointer; f++ )
+		{
+			for( int g=0; g<keywordPointer; g++ )
+			{
+				if( keywords[g].toLowerCase().contains(borrowedItem[f].toLowerCase()) || borrowedItem[f].toLowerCase().contains(keywords[g].toLowerCase()) )
+				{
+					p[7]++;
+					resultPointer++;
+					results[resultPointer-1][0] = 7;
+					results[resultPointer-1][1] = f;
+				}
+			}
+		}
+	}
 	public static void borrow(String inout)
 	{
 		/* [Organizer] [Borrow] [IO] [021] */
@@ -868,12 +897,24 @@ public class HannahBot {
 			{
 				String input = input();
 				String data = input.toLowerCase();
-				data = " " + data + " ";
-				if( (data.contains(" we ") && data.contains("borrow")) || (data.contains(" us ") && data.contains("lent")) )
+				while( data.endsWith(" ") )
+				{
+					data = data.substring(0,data.length()-1);
+				}
+				if( data.endsWith(".") || data.endsWith("?") || data.endsWith("!") )
+				{
+					data = data.substring(0,data.length()-1);
+				}
+				while( data.endsWith(" ") )
+				{
+					data = data.substring(0,data.length()-1);
+				}
+				data = data + " ";
+				if( (data.contains("we ") && data.contains("borrow")) || (data.contains(" us ") && data.contains("lent")) )
 				{
 					in = true;
 				}
-				if( (data.contains(" we ") && data.contains("lent")) || (data.contains(" us ") && data.contains("borrow")) )
+				if( (data.contains("we ") && data.contains("lent")) || (data.contains(" us ") && data.contains("borrow")) )
 				{
 					out = true;
 				}
@@ -890,6 +931,8 @@ public class HannahBot {
 			}
 		}
 		boolean go = false;
+		boolean xcase = false;
+		String xteam = "";
 		if( in )
 		{
 			IO = "B";
@@ -919,21 +962,39 @@ public class HannahBot {
 			int d = ToteDCB(Item);
 			int e = ToteECB(Item);
 			int crate = CrateCB(Item);
-			if( tb+a+b+c+d+e+crate != 0 )
+			boolean prev = false;
+			for( int f=0; f<lentPointer; f++ )
+			{
+				if( lentItem[f].equals(Item) )
+				{
+					prev = true;
+					xteam = lentTeam[f];
+					break;
+				}
+			}
+			if( tb+a+b+c+d+e+crate != 0 && !prev )
 			{
 				go = true;
 			}
+			else if( prev )
+			{
+				xcase = true;
+			}
+		}
+		if( xcase )
+		{
+			System.out.println("The '" + Item + "' has already been lent to " + xteam+ ".");
 		}
 		if(go)
 		{
 			borrowWrite(IO + "~" + Item + "~" + Team + "~");
 			loadBorrow();
 		}
-		else if( !go && !none )
+		else if( !go && !none && !xcase )
 		{
 			System.out.println("I dont think we have '" + Item + "'.");
 		}
-		else if( !go && none )
+		else if( !go && none && !xcase )
 		{
 			System.out.println("Okay.");
 		}
@@ -1151,7 +1212,6 @@ public class HannahBot {
 		loadCrate();
 		saveBorrow();
 		clearBorrow();
-		// back up text file contents!
 		borrowedItemBU = borrowedItem;
 		borrowedTeamBU = borrowedTeam;
 		borrowedPointerBU = borrowedPointer;
