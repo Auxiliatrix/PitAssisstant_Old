@@ -1,8 +1,6 @@
 import java.util.Scanner;
 import java.io.*;
 
-import javafx.scene.chart.PieChart.Data;
-
 public class HannahBot {
 
 	public static String[] borrowFile = new String[10000];
@@ -69,6 +67,9 @@ public class HannahBot {
 	public static boolean adminRestart = true;
 	public static boolean on = true;
 	public static boolean borrowCheck = true;
+	
+	protected static BotGUI bot = new BotGUI();
+	
 	public static void main(String args[]) throws InterruptedException
 	{
 		/* [Organizer] [Main] [001] */
@@ -81,9 +82,9 @@ public class HannahBot {
 	public static void initialize()
 	{
 		/* [Organizer] [Load] [002] */
-		System.out.println("Loading libraries...");
+		bot.displayResults("Loading libraries...");
 		loadLibrary();
-		System.out.println("Libraries loaded!");
+		bot.displayResults("Libraries loaded!");
 		if( !loaded() )
 		{
 			if(createFile() )
@@ -108,7 +109,7 @@ public class HannahBot {
 		}
 		catch( Exception E )
 		{
-			System.out.println("Error creating file.");
+			bot.displayResults("Error creating file.");
 		}
 		return true;
 	}
@@ -128,47 +129,50 @@ public class HannahBot {
         catch(Exception e)
         {
         	tf = false;
-        	System.out.println("Initial startup detected.");
-        	System.out.println("Creating new file.");
+        	bot.displayResults("Initial startup detected.");
+        	bot.displayResults("Creating new file.");
         }
 		return tf;
 	}
 	public static void greet()
 	{
 		/* [Startup] [Text] [Print] [Info] [005] */
-		System.out.println("=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=[Hannah Bot]=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=");
-		System.out.println();
-		System.out.println("   Hi, I'm HannahBot (v1.9). I can look for things, and tell you what's in our totes and boxes.");
-		System.out.println("Hannah Bot (v1.9) Theoretically(TM) supports description-based queries and all sentence structures.");
-		System.out.println("Hannah Bot (v1.9) Theoretically(TM) can now read and keep track of borrowed items from a file.");
-		System.out.println();
-		System.out.println("-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=(v1.9)=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-");
-		System.out.println();
-		System.out.println("How may I help you?");
+		bot.displayResults("=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=[Hannah Bot]=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=");
+		bot.displayResults("");
+		bot.displayResults("       Hi, I'm HannahBot (v1.9). I can look for things, and tell you what's in our totes and boxes.");
+		bot.displayResults("Hannah Bot (v1.9) Theoretically(TM) supports description-based queries and all sentence structures.");
+		bot.displayResults("Hannah Bot (v1.9) Theoretically(TM) can now read and keep track of borrowed items from a file.");
+		bot.displayResults("");
+		bot.displayResults("=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=(v2.0)=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=");
+		bot.displayResults("");
+		bot.displayResults("How may I help you?");
 	}
 	public static void conductor() throws InterruptedException
 	{
 		/* [Organizer] [Main] [006] */
 		if( debugMode )
 		{
-			System.out.println("Conductor called.");
+			bot.displayResults("Conductor called.");
 		}
 		reset();
 		String input = input();
-		boolean normal = caser(input);
-		if( normal )
+		if( input!="" )
 		{
-			parse(input);
-			search();
-			output();
-		}
-		if( on )
-		{
-			menu();
-		}
-		else if( !on && borrowCheck )
-		{
-			System.out.println("Goodbye.");
+			boolean normal = caser(input);
+			if( normal )
+			{
+				parse(input);
+				search();
+				output();
+			}
+			if( on )
+			{
+				menu();
+			}
+			else if( !on && borrowCheck )
+			{
+				bot.displayResults("Goodbye.");
+			}
 		}
 	}
 	public static void reset()
@@ -176,7 +180,7 @@ public class HannahBot {
 		/* [Cleanup] [Pointer] [Borrow] [007] */
 		if( debugMode )
 		{
-			System.out.println("Reset called.");
+			bot.displayResults("Reset called.");
 		}
 		resultPointer = 0;
 		keywordPointer = 0;
@@ -192,7 +196,7 @@ public class HannahBot {
 		/* [Organizer] [Text] [Process] [008] */
 		if( debugMode )
 		{
-			System.out.println("Caser called.");
+			bot.displayResults("Caser called.");
 		}
 		boolean normal = false;
 		boolean skip = false;
@@ -207,67 +211,67 @@ public class HannahBot {
 		{
 			for( int f=0; f<50; f++ )
 			{
-				System.out.println();
+				bot.displayResults("");
 			}
 			skip = true;
 		}
 		if( data.contains("changelog") )
 		{
-			System.out.println("(v1.0) ::  Basic search function for totes.");
-			System.out.println("(v1.1) ::  Added some more search functinality.");
-			System.out.println("(v1.2) ::  Added ability to list things in totes.");
-			System.out.println("(v1.3) ::  Added support for sentence structures.");
-			System.out.println("(v1.4) ::  Added Easter Eggs and bug fixes.");
-			System.out.println("(v1.5) ::  Incorporated description-based search.");
-			System.out.println("(v1.6) ::  Bug fixes. Added some additional commands and Easter Eggs.");
-			System.out.println("(v1.7) ::  Improved Search Algorithm. Bug Fixes. Consolidated Memory Arrays.");
-			System.out.println("(v1.8) ::  Critical Bug Fix.");
-			System.out.println("(v1.9) ::  Added ability to read and keep track of borrowed items from a file.");
+			bot.displayResults("(v1.0) ::  Basic search function for totes.");
+			bot.displayResults("(v1.1) ::  Added some more search functinality.");
+			bot.displayResults("(v1.2) ::  Added ability to list things in totes.");
+			bot.displayResults("(v1.3) ::  Added support for sentence structures.");
+			bot.displayResults("(v1.4) ::  Added Easter Eggs and bug fixes.");
+			bot.displayResults("(v1.5) ::  Incorporated description-based search.");
+			bot.displayResults("(v1.6) ::  Bug fixes. Added some additional commands and Easter Eggs.");
+			bot.displayResults("(v1.7) ::  Improved Search Algorithm. Bug Fixes. Consolidated Memory Arrays.");
+			bot.displayResults("(v1.8) ::  Critical Bug Fix.");
+			bot.displayResults("(v1.9) ::  Added ability to read and keep track of borrowed items from a file.");
 			skip = true;
 		}
 		if( data.contains("help") && !data.contains("find") || data.contains("help") && !data.contains("look") )
 		{
-			System.out.println("I can look for things by name or by description, theoretically.");
-			System.out.println("I can also list things in the totes.");
-			System.out.println("Say 'flush' to clear the output thingy.");
-			System.out.println("Say 'changelog' to view the changelog.");
-			System.out.println("You can also toggle debug mode by telling me to.");
+			bot.displayResults("I can look for things by name or by description, theoretically.");
+			bot.displayResults("I can also list things in the totes.");
+			bot.displayResults("Say 'flush' to clear the output thingy.");
+			bot.displayResults("Say 'changelog' to view the changelog.");
+			bot.displayResults("You can also toggle debug mode by telling me to.");
 			skip = true;
 		}
 		if( data.contains("todo") || data.contains("to-do") )
 		{
-			System.out.println("1. Memory Modification");
-			System.out.println("2. Emoji Support");
-			System.out.println("3. Consolidate pointers");
-			System.out.println("4. Save reponses to a text file for easy translation for international teams");
-			System.out.println("5. Organize cases [Standalone, Priority, Easter Egg, Repeatable]");
-			System.out.println("6. Add undo borrow function");
-			System.out.println("7. Add ability to search for items we have borrowed");
-			System.out.println("8. Update help function");
-			System.out.println("9. Add ability to return items");
+			bot.displayResults("1. Memory Modification");
+			bot.displayResults("2. Emoji Support");
+			bot.displayResults("3. Consolidate pointers");
+			bot.displayResults("4. Save reponses to a text file for easy translation for international teams");
+			bot.displayResults("5. Organize cases [Standalone, Priority, Easter Egg, Repeatable]");
+			bot.displayResults("6. Add undo borrow function");
+			bot.displayResults("7. Add ability to search for items we have borrowed");
+			bot.displayResults("8. Update help function");
+			bot.displayResults("9. Add ability to return items");
 			skip = true;
 		}
 		if( data.contains("git") )
 		{ 
-			System.out.println("Go away, Ryan.");
+			bot.displayResults("Go away, Ryan.");
 			skip = true;
 		}
 		if( data.contains("cls") )
 		{
-			System.out.println("Cls? What's that? I'm supposed to be based off of a human being, Pranav.");
+			bot.displayResults("Cls? What's that? I'm supposed to be based off of a human being, Pranav.");
 			skip = true;
 		}
 		if( (data.contains("reload") || data.contains("restore")) && data.contains("borrow") )
 		{
 			restoreBorrow();
-			System.out.println("I've successfully restored the borrow file.");
+			bot.displayResults("I've successfully restored the borrow file.");
 			skip = true;
 		}
 		else if( (data.contains("clear") || data.contains("reset") || data.contains("purge") || data.contains("clean") || data.contains("wipe") ) && data.contains("borrow") )
 		{
 			resetBorrow();
-			System.out.println("I've cleared all memories of what we've borrowed.");
-			System.out.println("I've saved a backup of it, though, so just let me know if you want to restore it.");
+			bot.displayResults("I've cleared all memories of what we've borrowed.");
+			bot.displayResults("I've saved a backup of it, though, so just let me know if you want to restore it.");
 			skip = true;
 		}
 		else if( data.contains("borrow") || data.contains("lend") || data.contains("lent") )
@@ -299,20 +303,20 @@ public class HannahBot {
 		{
 			if( data.contains("law") )
 			{
-				System.out.println("I'm offended.");
+				bot.displayResults("I'm offended.");
 				skip = true;
 			}
 		}
 		if( data.contains("debug") && data.contains(" on") )
 		{
 			debugMode = true;
-			System.out.println("Debug mode enabled.");
+			bot.displayResults("Debug mode enabled.");
 			skip = true;
 		}
 		else if( data.contains("debug") && data.contains(" off") )
 		{
 			debugMode = false;
-			System.out.println("Debug mode disabled.");
+			bot.displayResults("Debug mode disabled.");
 			skip = true;
 		}
 		else if( data.contains("debug") && data.contains("toggle") )
@@ -320,43 +324,43 @@ public class HannahBot {
 			debugMode = !debugMode;
 			if( debugMode )
 			{
-				System.out.println("Debug mode enabled.");
+				bot.displayResults("Debug mode enabled.");
 			}
 			else
 			{
-				System.out.println("Debug mode disabled.");
+				bot.displayResults("Debug mode disabled.");
 			}
 			skip = true;
 		}
 		if( data.startsWith("hi!") || data.startsWith("hi ") || data.startsWith("hello") || data.startsWith("greetings") || data.startsWith("hey") )
 		{
-			System.out.println("Hi.");
+			bot.displayResults("Hi.");
 			Thread.sleep(500);
 			ignoreExclaim = true;
 			skip = true;
 		}
 		if( data.contains("ziptie") && data.contains("dream") )
 		{
-			System.out.println("Allow me to refer you to our robot.");
+			bot.displayResults("Allow me to refer you to our robot.");
 		}
 		if( data.contains("door") || data.contains("hinge") )
 		{
-			System.out.println("Really? Again?");
+			bot.displayResults("Really? Again?");
 			skip = true;
 		}
 		if( data.contains("replacement") && data.contains("hannah") )
 		{
-			System.out.println("I'm not Hannah's replacement. Hannah is a wonderful and unique human being. I am a computer program.");
+			bot.displayResults("I'm not Hannah's replacement. Hannah is a wonderful and unique human being. I am a computer program.");
 			skip = true;
 		}
 		if( data.contains("backpack") )
 		{
-			System.out.println("If you're looking for a backpack, I would ask Pranav.");
+			bot.displayResults("If you're looking for a backpack, I would ask Pranav.");
 			skip = true;
 		}
 		if( data.contains("memes") )
 		{
-			System.out.println("Stop looking for memes.");
+			bot.displayResults("Stop looking for memes.");
 			skip = true;
 		}
 		if( !skip )
@@ -372,22 +376,22 @@ public class HannahBot {
 			}
 			if( checkPerson )
 			{
-				System.out.println("I'm a tote organizer. Go ask Rayna or something.");
+				bot.displayResults("I'm a tote organizer. Go ask Rayna or something.");
 			}
 			else if( data.contains("where") && data.contains("hannah") && !askHannah )
 			{
-				System.out.println("I'm right her- Oh.");
+				bot.displayResults("I'm right her- Oh.");
 				Thread.sleep(500);
-				System.out.println("You meant *that* Hannah.");
+				bot.displayResults("You meant *that* Hannah.");
 				askHannah = true;
 			}
 			else if( data.contains("where") && data.contains("hannah") && askHannah )
 			{
-				System.out.println("Haven't you already tried looking for me?");
+				bot.displayResults("Haven't you already tried looking for me?");
 			}
 			else if( data.contains("love") )
 			{
-				System.out.println("If you're looking for love, you'll have to look elsewhere.");
+				bot.displayResults("If you're looking for love, you'll have to look elsewhere.");
 			}
 			else if( data.contains("toolbox") )
 			{
@@ -443,7 +447,7 @@ public class HannahBot {
 		/* [Data] [Text] [Process] [009] */
 		if( debugMode )
 		{
-			System.out.println("Parse called with input '" + input + "'.");
+			bot.displayResults("Parse called with input '" + input + "'.");
 		}
 		String data = input.toLowerCase();
 		while( data.endsWith(" ") )
@@ -481,7 +485,7 @@ public class HannahBot {
 			{
 				if( debugMode )
 				{
-					System.out.println(keyword);
+					bot.displayResults(keyword);
 				}
 				keywords[keywordPointer] = keyword;
 				keywordPointer++;
@@ -492,172 +496,172 @@ public class HannahBot {
 	public static void menu()
 	{
 		/* [Cleanup] [Text] [Print] [010] */
-		System.out.println("How else may I help you?");
+		bot.displayResults("How else may I help you?");
 	}
 	public static void output()
 	{
 		/* [IO] [Text] [Print] */
 		if( debugMode )
 		{
-			System.out.println("Output called.");
+			bot.displayResults("Output called.");
 		}
 		if( resultPointer == 0 )
 		{
-			System.out.println("Sorry, I couldn't find what you were looking for. Maybe you meant something else?");
+			bot.displayResults("Sorry, I couldn't find what you were looking for. Maybe you meant something else?");
 		}
 		else
 		{
-			System.out.println("Okay, here's what I found:");
+			bot.displayResults("Okay, here's what I found:");
 		}
-		System.out.println("");
+		bot.displayResults("");
 		if( p[0] > 0 )
 		{
-			System.out.println("In the Toolbox, we should theoretically have the following items:");
+			bot.displayResults("In the Toolbox, we should theoretically have the following items:");
 			for( int f=0; f<p[0]; f++ )
 			{
 				if(antiRepeat(ToolBox[results[f][1]][0]))
 				{
 					if( ToolBox[results[f][1]][1] == "0" )
 					{
-						System.out.println(ToolBox[results[f][1]][0]);
+						bot.displayResults(ToolBox[results[f][1]][0]);
 					}
 					if( ToolBox[results[f][1]][1] != "0" )
 					{
-						System.out.println("* The " + ToolBox[results[f][1]][0] + " was lent to team " + ToolBox[results[f][1]][1] + ".");
+						bot.displayResults("* The " + ToolBox[results[f][1]][0] + " was lent to team " + ToolBox[results[f][1]][1] + ".");
 					}
 				}
 			}
-			System.out.println("");
+			bot.displayResults("");
 		}
 		if( p[1] > 0 )
 		{
-			System.out.println("In Tote A, we should theoretically have the following items:");
+			bot.displayResults("In Tote A, we should theoretically have the following items:");
 			for( int f=p[0]; f<p[0]+p[1]; f++ )
 			{
 				if(antiRepeat(ToteA[results[f][1]][0]))
 				{
 					if( ToteA[results[f][1]][1] == "0" )
 					{
-						System.out.println(ToteA[results[f][1]][0]);
+						bot.displayResults(ToteA[results[f][1]][0]);
 					}
 					if( ToteA[results[f][1]][1] != "0" )
 					{
-						System.out.println("* The " + ToteA[results[f][1]][0] + " was lent to team " + ToteA[results[f][1]][1] + ".");
+						bot.displayResults("* The " + ToteA[results[f][1]][0] + " was lent to team " + ToteA[results[f][1]][1] + ".");
 					}
 				}
 			}
-			System.out.println("");
+			bot.displayResults("");
 		}
 		if( p[2] > 0 )
 		{
-			System.out.println("In Tote B, we should theoretically have the following items:");
+			bot.displayResults("In Tote B, we should theoretically have the following items:");
 			for( int f=p[0]+p[1]; f<p[0]+p[1]+p[2]; f++ )
 			{
 				if(antiRepeat(ToteB[results[f][1]][0]))
 				{
 					if( ToteB[results[f][1]][1] == "0" )
 					{
-						System.out.println(ToteB[results[f][1]][0]);
+						bot.displayResults(ToteB[results[f][1]][0]);
 					}
 					if( ToteB[results[f][1]][1] != "0" )
 					{
-						System.out.println("* The " + ToteB[results[f][1]][0] + " was lent to team " + ToteB[results[f][1]][1] + ".");
+						bot.displayResults("* The " + ToteB[results[f][1]][0] + " was lent to team " + ToteB[results[f][1]][1] + ".");
 					}
 				}
 			}
-			System.out.println("");
+			bot.displayResults("");
 		}
 		if( p[3] > 0 )
 		{
-			System.out.println("In Tote C, we should theoretically have the following items:");
+			bot.displayResults("In Tote C, we should theoretically have the following items:");
 			for( int f=p[0]+p[1]+p[2]; f<p[0]+p[1]+p[2]+p[3]; f++ )
 			{
 				if(antiRepeat(ToteC[results[f][1]][0]))
 				{
 					if( ToteC[results[f][1]][1] == "0" )
 					{
-						System.out.println(ToteC[results[f][1]][0]);
+						bot.displayResults(ToteC[results[f][1]][0]);
 					}
 					if( ToteC[results[f][1]][1] != "0" )
 					{
-						System.out.println("* The " + ToteC[results[f][1]][0] + " was lent to team " + ToteC[results[f][1]][1] + ".");
+						bot.displayResults("* The " + ToteC[results[f][1]][0] + " was lent to team " + ToteC[results[f][1]][1] + ".");
 					}
 				}
 			}
-			System.out.println("");
+			bot.displayResults("");
 		}
 		if( p[4] > 0 )
 		{
-			System.out.println("In Tote D, we should theoretically have the following items:");
+			bot.displayResults("In Tote D, we should theoretically have the following items:");
 			for( int f=p[0]+p[1]+p[2]+p[3]; f<p[0]+p[1]+p[2]+p[3]+p[4]; f++ )
 			{
 				if(antiRepeat(ToteD[results[f][1]][0]))
 				{
 					if( ToteD[results[f][1]][1] == "0" )
 					{
-						System.out.println(ToteD[results[f][1]][0]);
+						bot.displayResults(ToteD[results[f][1]][0]);
 					}
 					if( ToteD[results[f][1]][1] != "0" )
 					{
-						System.out.println("* The " + ToteD[results[f][1]][0] + " was lent to team " + ToteD[results[f][1]][1] + ".");
+						bot.displayResults("* The " + ToteD[results[f][1]][0] + " was lent to team " + ToteD[results[f][1]][1] + ".");
 					}
 				}
 			}
-			System.out.println("");
+			bot.displayResults("");
 		}
 		if( p[5] > 0 )
 		{
-			System.out.println("In Tote E, we should theoretically have the following items:");
+			bot.displayResults("In Tote E, we should theoretically have the following items:");
 			for( int f=p[0]+p[1]+p[2]+p[3]+p[4]; f<p[0]+p[1]+p[2]+p[3]+p[4]+p[5]; f++ )
 			{
 				if(antiRepeat(ToteE[results[f][1]][0]))
 				{
 					if( ToteE[results[f][1]][1] == "0" )
 					{
-						System.out.println(ToteE[results[f][1]][0]);
+						bot.displayResults(ToteE[results[f][1]][0]);
 					}
 					if( ToteE[results[f][1]][1] != "0" )
 					{
-						System.out.println("* The " + ToteE[results[f][1]][0] + " was lent to team " + ToteE[results[f][1]][1] + ".");
+						bot.displayResults("* The " + ToteE[results[f][1]][0] + " was lent to team " + ToteE[results[f][1]][1] + ".");
 					}
 				}
 			}
-			System.out.println("");
+			bot.displayResults("");
 		}
 		if( p[6] > 0 )
 		{
-			System.out.println("In the Crate, we should theoretically have the following items:");
+			bot.displayResults("In the Crate, we should theoretically have the following items:");
 			for( int f=p[0]+p[1]+p[2]+p[3]+p[4]+p[5]; f<p[0]+p[1]+p[2]+p[3]+p[4]+p[5]+p[6]; f++ )
 			{
 				if(antiRepeat(Crate[results[f][1]][0]))
 				{
 					if( Crate[results[f][1]][1] == "0" )
 					{
-						System.out.println(Crate[results[f][1]][0]);
+						bot.displayResults(Crate[results[f][1]][0]);
 					}
 					if( ToolBox[results[f][1]][1] != "0" )
 					{
-						System.out.println("* The " + Crate[results[f][1]][0] + " was lent to team " + Crate[results[f][1]][1] + ".");
+						bot.displayResults("* The " + Crate[results[f][1]][0] + " was lent to team " + Crate[results[f][1]][1] + ".");
 					}
 				}
 			}
-			System.out.println("");
+			bot.displayResults("");
 		}
 		if( p[7] > 0 )
 		{
-			System.out.println("We should theoretically have borrowed the following items:");
+			bot.displayResults("We should theoretically have borrowed the following items:");
 			for( int f=p[0]+p[1]+p[2]+p[3]+p[4]+p[5]+p[6]; f<p[0]+p[1]+p[2]+p[3]+p[4]+p[5]+p[6]+p[7]; f++ )
 			{
 				if(antiRepeat(borrowedItem[results[f][1]]))
 				{
-					System.out.println(borrowedItem[results[f][1]]);
+					bot.displayResults(borrowedItem[results[f][1]]);
 				}
 			}
-			System.out.println("");
+			bot.displayResults("");
 		}
 		if( ziptie )
 		{
-			System.out.println("There's also a whole bunch in Trinity's hair.");
+			bot.displayResults("There's also a whole bunch in Trinity's hair.");
 		}
 	}
 	public static String input()
@@ -665,21 +669,11 @@ public class HannahBot {
 		/* [IO] [Text] [Input] [011] */
 		if( debugMode )
 		{
-			System.out.println("Input called.");
+			bot.displayResults("Input called.");
 		}
-		Scanner sc = new Scanner(System.in);
 		boolean repeat = true;
 		String query = "";
-		while( repeat )
-		{
-			repeat = false;
-			query = sc.nextLine();
-			if( query == "" )
-			{
-				repeat = true;
-				System.out.println("I'm going to need something more specific.");
-			}
-		}
+		query = bot.getSearch();
 		return query;
 	}
 	public static void search()
@@ -687,7 +681,7 @@ public class HannahBot {
 		/* [Organizer] [Text] [Process] [012] */
 		if( debugMode )
 		{
-			System.out.println("Search called.");
+			bot.displayResults("Search called.");
 		}
 		checkToolBox();
 		checkToteA();
@@ -703,7 +697,7 @@ public class HannahBot {
 		/* [Support] [Text] [Pointer] [013] */
 		if( debugMode )
 		{
-			System.out.println("AntiRepeat called with input '" + check + "'.");
+			bot.displayResults("AntiRepeat called with input '" + check + "'.");
 		}
 		boolean b = true;
 		for( int f=0; f<printedPointer; f++ )
@@ -868,7 +862,7 @@ public class HannahBot {
 		/* [Organizer] [Borrow] [IO] [021] */
 		if( debugMode )
 		{
-			System.out.println("Borrow called with input + '" + inout + "'.");
+			bot.displayResults("Borrow called with input + '" + inout + "'.");
 		}
 		boolean check = false;
 		boolean repeat = true;
@@ -885,7 +879,7 @@ public class HannahBot {
 		if( inout.equals("null") )
 		{
 			check = true;
-			System.out.println("Do you want to record what we borrowed, or what was borrowed from us?");
+			bot.displayResults("Do you want to record what we borrowed, or what was borrowed from us?");
 		}
 		String IO = "";
 		String Item = "";
@@ -895,7 +889,11 @@ public class HannahBot {
 			{
 			while( repeat )
 			{
-				String input = input();
+				String input = "";
+				while( input.equals("") )
+				{
+					input = input();
+				}
 				String data = input.toLowerCase();
 				while( data.endsWith(" ") )
 				{
@@ -925,7 +923,7 @@ public class HannahBot {
 				repeat = false;
 				if( in && out )
 				{
-					System.out.println("You're going to have to pick one or the other.");	
+					bot.displayResults("You're going to have to pick one or the other.");	
 					repeat = true;
 				}
 			}
@@ -936,24 +934,36 @@ public class HannahBot {
 		if( in )
 		{
 			IO = "B";
-			System.out.println("What item did we borrow?");
-			Item = input();
-			System.out.println("Which team did we borrow from?");
-			Team = input();
+			bot.displayResults("What item did we borrow?");
+			while(Item.equals(""))
+			{
+				Item = input();
+			}
+			bot.displayResults("Which team did we borrow from?");
+			while(Item.equals(""))
+			{
+				Team = input();
+			}
 			go = true;
 		}
 		if( out )
 		{
 			IO = "L";
-			System.out.println("What item did we lend?");
-			Item = input();
+			bot.displayResults("What item did we lend?");
+			while(Item.equals(""))
+			{
+				Item = input();
+			}
 			Item = Item.toLowerCase();
 			repeat = true;
-			System.out.println("Which team did we lend to?");
-			Team = input();
+			bot.displayResults("Which team did we lend to?");
+			while(Team.equals(""))
+			{
+				Team = input();
+			}
 			if( debugMode )
 			{
-				System.out.println("Checking item '" + Item + "'.");
+				bot.displayResults("Checking item '" + Item + "'.");
 			}
 			int tb = ToolBoxCB(Item);
 			int a = ToteACB(Item);
@@ -983,7 +993,7 @@ public class HannahBot {
 		}
 		if( xcase )
 		{
-			System.out.println("The '" + Item + "' has already been lent to " + xteam+ ".");
+			bot.displayResults("The '" + Item + "' has already been lent to " + xteam+ ".");
 		}
 		if(go)
 		{
@@ -992,11 +1002,11 @@ public class HannahBot {
 		}
 		else if( !go && !none && !xcase )
 		{
-			System.out.println("I dont think we have '" + Item + "'.");
+			bot.displayResults("I dont think we have '" + Item + "'.");
 		}
 		else if( !go && none && !xcase )
 		{
-			System.out.println("Okay.");
+			bot.displayResults("Okay.");
 		}
 	}
 	public static void loadBorrow()
@@ -1004,7 +1014,7 @@ public class HannahBot {
 		/* [Startup] [Borrow] [IO] [022] */
 		if( debugMode )
 		{
-			System.out.println("LoadBorrow called");
+			bot.displayResults("LoadBorrow called");
 		}
         String fileName = "borrow.txt";
         String line = null;
@@ -1031,7 +1041,7 @@ public class HannahBot {
 					}
 					catch(Exception e)
 					{
-						System.out.println("Warning: Syntax error!");
+						bot.displayResults("Warning: Syntax error!");
 						good = false;
 						break;
 					}
@@ -1055,7 +1065,7 @@ public class HannahBot {
 					}
 					catch(Exception e)
 					{
-						System.out.println("Warning: Syntax error!");
+						bot.displayResults("Warning: Syntax error!");
 						good = false;
 						break;
 					}
@@ -1119,8 +1129,8 @@ public class HannahBot {
 						}
 						else
 						{
-							System.out.println("I don't think we have '" + item + "'.");
-							System.out.println("You may want to check the borrow file, or reset it.");
+							bot.displayResults("I don't think we have '" + item + "'.");
+							bot.displayResults("You may want to check the borrow file, or reset it.");
 							break;
 						}
 					}
@@ -1131,12 +1141,12 @@ public class HannahBot {
         }
         catch(FileNotFoundException ex)
         {
-            System.out.println(
+            bot.displayResults(
                 "Unable to open file '" + fileName + "'");                
         }
         catch(IOException ex)
         {
-            System.out.println("Error reading file '" + fileName + "'");
+            bot.displayResults("Error reading file '" + fileName + "'");
         }
 	}
 	public static void write(String string)
@@ -1144,7 +1154,7 @@ public class HannahBot {
 		/* [IO] [Borrow] [023] */
 		if( debugMode )
 		{
-			System.out.println("Write called with input '" + string + "'.");
+			bot.displayResults("Write called with input '" + string + "'.");
 		}
 		try{
             FileWriter fstream = new FileWriter("borrow.txt",true);
@@ -1156,7 +1166,7 @@ public class HannahBot {
             	fbw.close();
             }
         }catch (Exception e) {
-            System.out.println("Couldn't print to the file.");
+            bot.displayResults("Couldn't print to the file.");
         }
 
     }
@@ -1165,7 +1175,7 @@ public class HannahBot {
 		/* [Organizer] [Borrow] [IO] [024] */
 		if( debugMode )
 		{
-			System.out.println("BorrowWrite called with input '" + writer + "'.");
+			bot.displayResults("BorrowWrite called with input '" + writer + "'.");
 		}
 		int end = writer.indexOf("~");
 		String BL = writer.substring(0,end);
@@ -1185,7 +1195,7 @@ public class HannahBot {
 		/* [Cleanup] [Borrow] [Memory] [025] */
 		if( debugMode )
 		{
-			System.out.println("ClearBorrow called.");
+			bot.displayResults("ClearBorrow called.");
 		}
 		PrintWriter writer;
 		try {
@@ -1193,7 +1203,7 @@ public class HannahBot {
 			writer.print("");
 			writer.close();
 		} catch (FileNotFoundException e) {
-			System.out.println("You can't reset something I don't have yet.");
+			bot.displayResults("You can't reset something I don't have yet.");
 		}
 	}
 	public static void resetBorrow()
@@ -1201,7 +1211,7 @@ public class HannahBot {
 		/* [Cleanup] [Borrow] [Memory] [026] */
 		if( debugMode )
 		{
-			System.out.println("ResetBorrow called.");
+			bot.displayResults("ResetBorrow called.");
 		}
 		loadToolBox();
 		loadToteA();
@@ -1268,7 +1278,7 @@ public class HannahBot {
 		}
 		catch(Exception e)
 		{
-			System.out.println("I had an issue while trying to read from the borrow file.");
+			bot.displayResults("I had an issue while trying to read from the borrow file.");
 		}
 	}
 	public static void restoreBorrow()
@@ -1276,7 +1286,7 @@ public class HannahBot {
 		/* [Cleanup] [Borrow] [Memory] [027] */
 		if( debugMode )
 		{
-			System.out.println("RestoreBorrow called.");
+			bot.displayResults("RestoreBorrow called.");
 		}
 		clearBorrow();
 		write("// adminRestart = false");
@@ -1310,7 +1320,7 @@ public class HannahBot {
 		/* [Borrow] [Text] [Print] [Info] [028] */
 		if( debugMode )
 		{
-			System.out.println("ListBorrow called.");
+			bot.displayResults("ListBorrow called.");
 		}
 		String fileName = "borrow.txt";
 		String piece0 = "We ";
@@ -1345,7 +1355,7 @@ public class HannahBot {
 					}
 					catch(Exception e)
 					{
-						System.out.println("Warning: Syntax error!");
+						bot.displayResults("Warning: Syntax error!");
 						good = false;
 						break;
 					}
@@ -1355,7 +1365,7 @@ public class HannahBot {
 						piece2 = tempString;
 						piece3 = "' from ";
 						piece4 = tempTeam;
-						System.out.println(piece0+piece1+piece2+piece3+piece4+piece5);
+						bot.displayResults(piece0+piece1+piece2+piece3+piece4+piece5);
 					}
 				}
 				else if( line.toLowerCase().equals("l") )
@@ -1372,7 +1382,7 @@ public class HannahBot {
 					}
 					catch(Exception e)
 					{
-						System.out.println("Warning: Syntax error!");
+						bot.displayResults("Warning: Syntax error!");
 						good = false;
 						break;
 					}
@@ -1382,25 +1392,25 @@ public class HannahBot {
 						piece2 = tempString;
 						piece3 = "' to ";
 						piece4 = tempTeam;
-						System.out.println(piece0+piece1+piece2+piece3+piece4+piece5);
+						bot.displayResults(piece0+piece1+piece2+piece3+piece4+piece5);
 					}
 				}
 			}
             if(!data)
         	{
-        		System.out.println("Nothing is in the borrow file.");
+        		bot.displayResults("Nothing is in the borrow file.");
         	}
             fileReader.close();
             bufferedReader.close();         
         }
         catch(FileNotFoundException ex)
         {
-            System.out.println(
+            bot.displayResults(
                 "Unable to open file '" + fileName + "'");                
         }
         catch(IOException ex)
         {
-            System.out.println("Error reading file '" + fileName + "'");
+            bot.displayResults("Error reading file '" + fileName + "'");
         }
     }
 	public static void loadLibrary()
@@ -1945,123 +1955,123 @@ public class HannahBot {
 	public static void listToolBox()
 	{
 		/* [Text] [Print] [Info] [053] */
-		System.out.println("The Toolbox contains the following:");
+		bot.displayResults("The Toolbox contains the following:");
 		for( int f=0; f<41; f++ )
 		{
 			if( ToolBox[f][1] == "0" )
 			{
-				System.out.println(ToolBox[f][0]);
+				bot.displayResults(ToolBox[f][0]);
 			}
 			if( ToolBox[f][1] != "0" )
 			{
-				System.out.println("The " + ToolBox[f][0] + " was lent to team " + ToolBox[f][1] + ".");
+				bot.displayResults("The " + ToolBox[f][0] + " was lent to team " + ToolBox[f][1] + ".");
 			}
 		}
-		System.out.println();
+		bot.displayResults("");
 	}
 	public static void listToteA()
 	{
 		/* [Text] [Print] [Info] [054] */
-		System.out.println("Tote A contains the following:");
+		bot.displayResults("Tote A contains the following:");
 		for( int f=0; f<20; f++ )
 		{
 			if( ToteA[f][1] == "0" )
 			{
-				System.out.println(ToteA[f][0]);
+				bot.displayResults(ToteA[f][0]);
 			}
 			if( ToteA[f][1] != "0" )
 			{
-				System.out.println("* The " + ToteA[f][0] + " was lent to team " + ToteA[f][1] + ".");
+				bot.displayResults("* The " + ToteA[f][0] + " was lent to team " + ToteA[f][1] + ".");
 			}		
 		}
-		System.out.println();
+		bot.displayResults("");
 	}
 	public static void listToteB()
 	{
 		/* [Text] [Print] [Info] [055] */
-		System.out.println("Tote B contains the following:");
+		bot.displayResults("Tote B contains the following:");
 		for( int f=0; f<11; f++ )
 		{
 			if( ToteB[f][1] == "0" )
 			{
-				System.out.println(ToteB[f][0]);
+				bot.displayResults(ToteB[f][0]);
 			}
 			if( ToteB[f][1] != "0" )
 			{
-				System.out.println("* The " + ToteB[f][0] + " was lent to team " + ToteB[f][1] + ".");
+				bot.displayResults("* The " + ToteB[f][0] + " was lent to team " + ToteB[f][1] + ".");
 			}		}
-		System.out.println();
+		bot.displayResults("");
 	}
 	public static void listToteC()
 	{
 		/* [Text] [Print] [Info] [055] */
-		System.out.println("Tote C contains the following:");
+		bot.displayResults("Tote C contains the following:");
 		for( int f=0; f<18; f++ )
 		{
 			if( ToteC[f][1] == "0" )
 			{
-				System.out.println(ToteC[f][0]);
+				bot.displayResults(ToteC[f][0]);
 			}
 			if( ToteC[f][1] != "0" )
 			{
-				System.out.println("* The " + ToteC[f][0] + " was lent to team " + ToteC[f][1] + ".");
+				bot.displayResults("* The " + ToteC[f][0] + " was lent to team " + ToteC[f][1] + ".");
 			}		}
-		System.out.println();
+		bot.displayResults("");
 	}
 	public static void listToteD()
 	{
 		/* [Text] [Print] [Info] [056] */
-		System.out.println("Tote D contains the following:");
+		bot.displayResults("Tote D contains the following:");
 		for( int f=0; f<25; f++ )
 		{
 			if( ToteD[f][1] == "0" )
 			{
-				System.out.println(ToteD[f][0]);
+				bot.displayResults(ToteD[f][0]);
 			}
 			if( ToteD[f][1] != "0" )
 			{
-				System.out.println("* The " + ToteD[f][0] + " was lent to team " + ToteD[f][1] + ".");
+				bot.displayResults("* The " + ToteD[f][0] + " was lent to team " + ToteD[f][1] + ".");
 			}		}
-		System.out.println();
+		bot.displayResults("");
 	}
 	public static void listToteE()
 	{
 		/* [Text] [Print] [Info] [057] */
-		System.out.println("Tote E contains the following:");
+		bot.displayResults("Tote E contains the following:");
 		for( int f=0; f<8; f++ )
 		{
 			if( ToteE[f][1] == "0" )
 			{
-				System.out.println(ToteE[f][0]);
+				bot.displayResults(ToteE[f][0]);
 			}
 			if( ToteE[f][1] != "0" )
 			{
-				System.out.println("* The " + ToteE[f][0] + " was lent to team " + ToteE[f][1] + ".");
+				bot.displayResults("* The " + ToteE[f][0] + " was lent to team " + ToteE[f][1] + ".");
 			}		}
-		System.out.println();
+		bot.displayResults("");
 	}
 	public static void listCrate()
 	{
 		/* [Text] [Print] [Info] [058] */
-		System.out.println("The Crate contains the following:");
+		bot.displayResults("The Crate contains the following:");
 		for( int f=0; f<16; f++ )
 		{
 			if( Crate[f][1] == "0" )
 			{
-				System.out.println(Crate[f][0]);
+				bot.displayResults(Crate[f][0]);
 			}
 			if( Crate[f][1] != "0" )
 			{
-				System.out.println("* The " + Crate[f][0] + " was lent to team " + Crate[f][1] + ".");
+				bot.displayResults("* The " + Crate[f][0] + " was lent to team " + Crate[f][1] + ".");
 			}		}
-		System.out.println();
+		bot.displayResults("");
 	}
 	public static void shutDown()
 	{
 		/* [Cleanup] [Terminate] [059] */
 		if( debugMode )
 		{
-			System.out.println("ShutDown called.");
+			bot.displayResults("ShutDown called.");
 		}
 		on = false;
 	}
