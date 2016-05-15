@@ -3,6 +3,22 @@ import java.io.*;
 
 public class HannahBot {
 
+	public static String[] borrowFile = new String[10000];
+	public static int borrowFilePointer = 0;
+	public static String[] borrowedItem = new String[10000];
+	public static String[] borrowedTeam = new String[10000];
+	public static int borrowedPointer = 0;
+	public static String[] lentItem = new String[10000];
+	public static int[][] lentLoc = new int[10000][2];
+	public static String[] lentTeam = new String[10000];
+	public static int lentPointer = 0;
+	public static String[] borrowedItemBU = new String[10000];
+	public static String[] borrowedTeamBU = new String[10000];
+	public static int borrowedPointerBU = 0;
+	public static String[] lentItemBU = new String[10000];
+	public static int[][] lentLocBU = new int[10000][2];
+	public static String[] lentTeamBU = new String[10000];
+	public static int lentPointerBU = 0;
 	public static int[][] results = new int[10000][2];
 	public static String[] exact = new String[10000];
 	public static int[] exactLocation = new int[10000];
@@ -10,7 +26,7 @@ public class HannahBot {
 	public static String[] printed = new String[10000];
 	public static int printedPointer = 1;
 	public static int resultPointer = 0;
-	public static int[] p = new int[7];
+	public static int[] p = new int[8];
 	public static String[] keywords = new String[10000];
 	public static int keywordPointer = 0;
 	public static int TLLength = 42;
@@ -22,13 +38,20 @@ public class HannahBot {
 	public static int CLength = 16;
 	public static int ELength = 23;
 	public static int PLength = 29;
-	public static String[] ToolBox = new String[42];
-	public static String[] ToteA = new String[20];
-	public static String[] ToteB = new String[11];
-	public static String[] ToteC = new String[18];
-	public static String[] ToteD = new String[25];
-	public static String[] ToteE = new String[8];
-	public static String[] Crate = new String[16];
+	public static String[][] ToolBox = new String[42][2];
+	public static String[][] ToteA = new String[20][2];
+	public static String[][] ToteB = new String[11][2];
+	public static String[][] ToteC = new String[18][2];
+	public static String[][] ToteD = new String[25][2];
+	public static String[][] ToteE = new String[8][2];
+	public static String[][] Crate = new String[16][2];
+	public static String[][] ToolBoxBB = new String[42][2];
+	public static String[][] ToteABB = new String[20][2];
+	public static String[][] ToteBBB = new String[11][2];
+	public static String[][] ToteCBB = new String[18][2];
+	public static String[][] ToteDBB = new String[25][2];
+	public static String[][] ToteEBB = new String[8][2];
+	public static String[][] CrateBB = new String[16][2];
 	public static String[] TLDesc = new String[42];
 	public static String[] TADesc = new String[20];
 	public static String[] TBDesc = new String[11];
@@ -41,46 +64,391 @@ public class HannahBot {
 	public static boolean askHannah = false;
 	public static boolean debugMode = false;
 	public static boolean ziptie = false;
+	public static boolean adminRestart = true;
+	public static boolean on = true;
+	public static boolean borrowCheck = true;
+	
 	protected static BotGUI bot = new BotGUI();
-
+	
 	public static void main(String args[]) throws InterruptedException
 	{
+		/* [Organizer] [Main] [001] */
 		initialize();
-		while( true )
+		while( on )
 		{
 			conductor();
 		}
 	}
 	public static void initialize()
 	{
+		/* [Organizer] [Load] [002] */
+		bot.displayResults("Loading libraries...");
 		loadLibrary();
+		bot.displayResults("Libraries loaded!");
+		if( !loaded() )
+		{
+			if(createFile() )
+			{
+				resetBorrow();
+			}
+		}
+		loadBorrow();
 		greet();
-		
+	}
+	public static boolean createFile()
+	{
+		/* [Startup] [Load] [Borrow] [003] */
+		try
+		{
+        	FileWriter fw = new FileWriter("borrow.txt", true);
+        	BufferedWriter bw = new BufferedWriter(fw);
+        	PrintWriter out = new PrintWriter(bw);
+        	fw.close();
+        	bw.close();
+        	out.close();
+		}
+		catch( Exception E )
+		{
+			bot.displayResults("Error creating file.");
+		}
+		return true;
+	}
+	public static boolean loaded()
+	{
+		/* [Startup] [Load] [Borrow] [004] */
+		boolean tf = false;
+		String fileName = "borrow.txt";
+        String line = null;
+        try {
+            FileReader fileReader = new FileReader(fileName);
+            BufferedReader bufferedReader = new BufferedReader(fileReader);
+            fileReader.close();
+            bufferedReader.close();
+            tf = true;
+        }
+        catch(Exception e)
+        {
+        	tf = false;
+        	bot.displayResults("Initial startup detected.");
+        	bot.displayResults("Creating new file.");
+        }
+		return tf;
 	}
 	public static void greet()
 	{
+		/* [Startup] [Text] [Print] [Info] [005] */
 		bot.displayResults("=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=[Hannah Bot]=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=");
 		bot.displayResults("");
-		bot.displayResults("   Hi, I'm HannahBot (v1.8). I can look for things, and tell you what's in our totes and boxes.");
-		bot.displayResults("Hannah Bot (v1.8) Theoretically(TM) supports description-based queries and all sentence structures.");
+		bot.displayResults("       Hi, I'm HannahBot (v1.9). I can look for things, and tell you what's in our totes and boxes.");
+		bot.displayResults("Hannah Bot (v1.9) Theoretically(TM) supports description-based queries and all sentence structures.");
+		bot.displayResults("Hannah Bot (v1.9) Theoretically(TM) can now read and keep track of borrowed items from a file.");
 		bot.displayResults("");
-		bot.displayResults("-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=(v1.8)=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-");
+		bot.displayResults("=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=(v2.0)=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=");
 		bot.displayResults("");
+		bot.displayResults("How may I help you?");
 	}
 	public static void conductor() throws InterruptedException
 	{
+		/* [Organizer] [Main] [006] */
+		if( debugMode )
+		{
+			bot.displayResults("Conductor called.");
+		}
 		reset();
-		String input = "";
-		input = bot.getSearch();
-		if(input != ""){
-			parse(input);
-			search();
-			output();
+		String input = input();
+		if( input!="" )
+		{
+			boolean normal = caser(input);
+			if( normal )
+			{
+				parse(input);
+				search();
+				output();
+			}
+			if( on )
+			{
+				menu();
+			}
+			else if( !on && borrowCheck )
+			{
+				bot.displayResults("Goodbye.");
+			}
 		}
 	}
-
+	public static void reset()
+	{
+		/* [Cleanup] [Pointer] [Borrow] [007] */
+		if( debugMode )
+		{
+			bot.displayResults("Reset called.");
+		}
+		resultPointer = 0;
+		keywordPointer = 0;
+		for( int f=0; f<printedPointer; f++ )
+		{
+			printed[f] = "";
+		}
+		printedPointer = 1;
+		ziptie = false;
+	}
+	public static boolean caser(String input) throws InterruptedException
+	{
+		/* [Organizer] [Text] [Process] [008] */
+		if( debugMode )
+		{
+			bot.displayResults("Caser called.");
+		}
+		boolean normal = false;
+		boolean skip = false;
+		boolean ignoreExclaim = false;
+		String data = input.toLowerCase();
+		if( data.contains("cya") || data.contains("bye") || data.contains("terminate") || data.contains("shut down") )
+		{
+			shutDown();
+			skip = true;
+		}
+		if( data.contains("flush") )
+		{
+			for( int f=0; f<50; f++ )
+			{
+				bot.displayResults("");
+			}
+			skip = true;
+		}
+		if( data.contains("changelog") )
+		{
+			bot.displayResults("(v1.0) ::  Basic search function for totes.");
+			bot.displayResults("(v1.1) ::  Added some more search functinality.");
+			bot.displayResults("(v1.2) ::  Added ability to list things in totes.");
+			bot.displayResults("(v1.3) ::  Added support for sentence structures.");
+			bot.displayResults("(v1.4) ::  Added Easter Eggs and bug fixes.");
+			bot.displayResults("(v1.5) ::  Incorporated description-based search.");
+			bot.displayResults("(v1.6) ::  Bug fixes. Added some additional commands and Easter Eggs.");
+			bot.displayResults("(v1.7) ::  Improved Search Algorithm. Bug Fixes. Consolidated Memory Arrays.");
+			bot.displayResults("(v1.8) ::  Critical Bug Fix.");
+			bot.displayResults("(v1.9) ::  Added ability to read and keep track of borrowed items from a file.");
+			skip = true;
+		}
+		if( data.contains("help") && !data.contains("find") || data.contains("help") && !data.contains("look") )
+		{
+			bot.displayResults("I can look for things by name or by description, theoretically.");
+			bot.displayResults("I can also list things in the totes.");
+			bot.displayResults("Say 'flush' to clear the output thingy.");
+			bot.displayResults("Say 'changelog' to view the changelog.");
+			bot.displayResults("You can also toggle debug mode by telling me to.");
+			skip = true;
+		}
+		if( data.contains("todo") || data.contains("to-do") )
+		{
+			bot.displayResults("1. Memory Modification");
+			bot.displayResults("2. Emoji Support");
+			bot.displayResults("3. Consolidate pointers");
+			bot.displayResults("4. Save reponses to a text file for easy translation for international teams");
+			bot.displayResults("5. Organize cases [Standalone, Priority, Easter Egg, Repeatable]");
+			bot.displayResults("6. Add undo borrow function");
+			bot.displayResults("7. Add ability to search for items we have borrowed");
+			bot.displayResults("8. Update help function");
+			bot.displayResults("9. Add ability to return items");
+			skip = true;
+		}
+		if( data.contains("git") )
+		{ 
+			bot.displayResults("Go away, Ryan.");
+			skip = true;
+		}
+		if( data.contains("cls") )
+		{
+			bot.displayResults("Cls? What's that? I'm supposed to be based off of a human being, Pranav.");
+			skip = true;
+		}
+		if( (data.contains("reload") || data.contains("restore")) && data.contains("borrow") )
+		{
+			restoreBorrow();
+			bot.displayResults("I've successfully restored the borrow file.");
+			skip = true;
+		}
+		else if( (data.contains("clear") || data.contains("reset") || data.contains("purge") || data.contains("clean") || data.contains("wipe") ) && data.contains("borrow") )
+		{
+			resetBorrow();
+			bot.displayResults("I've cleared all memories of what we've borrowed.");
+			bot.displayResults("I've saved a backup of it, though, so just let me know if you want to restore it.");
+			skip = true;
+		}
+		else if( data.contains("borrow") || data.contains("lend") || data.contains("lent") )
+		{
+			data = " " + data + " ";
+			if( data.contains("what") || data.contains("show") || data.contains("tell") || data.contains("list") || data.contains("print") || data.contains("see") || data.contains("are") || data.contains(" in ") )
+			{
+				listBorrow();
+			}
+			else if( data.contains("check") && !data.contains("out") )
+			{
+				listBorrow();
+			}
+			else if( (data.contains("we ") && data.contains("borrowed")) || (data.contains("borrow") && data.contains("from") && data.contains("we ")) || (data.contains(" us ") && data.contains("lent")) || (data.contains("lent") && data.contains("to") && data.contains(" us ")) )
+			{
+				borrow("in");
+			}
+			else if( (data.contains("us ") && data.contains("borrowed")) || (data.contains("borrow") && data.contains("from") && data.contains(" us ")) || (data.contains("we ") && data.contains("lent") && data.contains("to")) || (data.contains("we ") && data.contains("lent")) )
+			{
+				borrow("out");
+			}
+			else if( data.contains("borrow") || data.contains("lend") || data.contains("lent") )
+			{
+				borrow("null");
+			}
+			skip = true;
+		}
+		if( data.contains("three") || data.contains("3") )
+		{
+			if( data.contains("law") )
+			{
+				bot.displayResults("I'm offended.");
+				skip = true;
+			}
+		}
+		if( data.contains("debug") && data.contains(" on") )
+		{
+			debugMode = true;
+			bot.displayResults("Debug mode enabled.");
+			skip = true;
+		}
+		else if( data.contains("debug") && data.contains(" off") )
+		{
+			debugMode = false;
+			bot.displayResults("Debug mode disabled.");
+			skip = true;
+		}
+		else if( data.contains("debug") && data.contains("toggle") )
+		{
+			debugMode = !debugMode;
+			if( debugMode )
+			{
+				bot.displayResults("Debug mode enabled.");
+			}
+			else
+			{
+				bot.displayResults("Debug mode disabled.");
+			}
+			skip = true;
+		}
+		if( data.startsWith("hi!") || data.startsWith("hi ") || data.startsWith("hello") || data.startsWith("greetings") || data.startsWith("hey") )
+		{
+			bot.displayResults("Hi.");
+			Thread.sleep(500);
+			ignoreExclaim = true;
+			skip = true;
+		}
+		if( data.contains("ziptie") && data.contains("dream") )
+		{
+			bot.displayResults("Allow me to refer you to our robot.");
+		}
+		if( data.contains("door") || data.contains("hinge") )
+		{
+			bot.displayResults("Really? Again?");
+			skip = true;
+		}
+		if( data.contains("replacement") && data.contains("hannah") )
+		{
+			bot.displayResults("I'm not Hannah's replacement. Hannah is a wonderful and unique human being. I am a computer program.");
+			skip = true;
+		}
+		if( data.contains("backpack") )
+		{
+			bot.displayResults("If you're looking for a backpack, I would ask Pranav.");
+			skip = true;
+		}
+		if( data.contains("memes") )
+		{
+			bot.displayResults("Stop looking for memes.");
+			skip = true;
+		}
+		if( !skip )
+		{
+			boolean checkPerson = false;
+			for( int f=0; f<29; f++ )
+			{
+				if( data.contains(People[f]) && data.contains("where") )
+				{
+					checkPerson = true;
+					break;
+				}
+			}
+			if( checkPerson )
+			{
+				bot.displayResults("I'm a tote organizer. Go ask Rayna or something.");
+			}
+			else if( data.contains("where") && data.contains("hannah") && !askHannah )
+			{
+				bot.displayResults("I'm right her- Oh.");
+				Thread.sleep(500);
+				bot.displayResults("You meant *that* Hannah.");
+				askHannah = true;
+			}
+			else if( data.contains("where") && data.contains("hannah") && askHannah )
+			{
+				bot.displayResults("Haven't you already tried looking for me?");
+			}
+			else if( data.contains("love") )
+			{
+				bot.displayResults("If you're looking for love, you'll have to look elsewhere.");
+			}
+			else if( data.contains("toolbox") )
+			{
+				listToolBox();
+			}
+			else if( data.contains("tote a") )
+			{
+				listToteA();
+			}
+			else if( data.contains("tote b") )
+			{
+				listToteB();
+			}
+			else if( data.contains("tote c") )
+			{
+				listToteC();
+			}
+			else if( data.contains("tote d") )
+			{
+				listToteD();
+			}
+			else if( data.contains("tote e") )
+			{
+				listToteE();
+			}
+			else if( data.contains("crate") )
+			{
+				listCrate();
+			}
+			else if( data.contains("inventory") || data.contains("list") || data.contains(" all") || data.contains("everything") )
+			{
+				listToolBox();
+				listToteA();
+				listToteB();
+				listToteC();
+				listToteD();
+				listToteE();
+				listCrate();
+			}
+			else
+			{
+				normal = true;
+				if( data.contains("ziptie") || data.contains("zip tie") )
+				{
+					ziptie = true;
+				}
+			}
+		}
+		return normal;
+	}
 	public static void parse(String input)
 	{
+		/* [Data] [Text] [Process] [009] */
+		if( debugMode )
+		{
+			bot.displayResults("Parse called with input '" + input + "'.");
+		}
 		String data = input.toLowerCase();
 		while( data.endsWith(" ") )
 		{
@@ -115,28 +483,28 @@ public class HannahBot {
 			}
 			if( pass )
 			{
+				if( debugMode )
+				{
+					bot.displayResults(keyword);
+				}
 				keywords[keywordPointer] = keyword;
 				keywordPointer++;
 			}
 			data = temp;
 		}
 	}
-	public static void reset()
+	public static void menu()
 	{
-		resultPointer = 0;
-		keywordPointer = 0;
-		for( int f=0; f<printedPointer; f++ )
-		{
-			printed[f] = "";
-		}
-		printedPointer = 1;
-		ziptie = false;
+		/* [Cleanup] [Text] [Print] [010] */
+		bot.displayResults("How else may I help you?");
 	}
-	
-
-	
 	public static void output()
 	{
+		/* [IO] [Text] [Print] */
+		if( debugMode )
+		{
+			bot.displayResults("Output called.");
+		}
 		if( resultPointer == 0 )
 		{
 			bot.displayResults("Sorry, I couldn't find what you were looking for. Maybe you meant something else?");
@@ -151,10 +519,16 @@ public class HannahBot {
 			bot.displayResults("In the Toolbox, we should theoretically have the following items:");
 			for( int f=0; f<p[0]; f++ )
 			{
-				if(antiRepeat(ToolBox[results[f][1]]))
+				if(antiRepeat(ToolBox[results[f][1]][0]))
 				{
-					System.out.println(ToolBox[results[f][1]]);
-					bot.displayResults(ToolBox[results[f][1]]);
+					if( ToolBox[results[f][1]][1] == "0" )
+					{
+						bot.displayResults(ToolBox[results[f][1]][0]);
+					}
+					if( ToolBox[results[f][1]][1] != "0" )
+					{
+						bot.displayResults("* The " + ToolBox[results[f][1]][0] + " was lent to team " + ToolBox[results[f][1]][1] + ".");
+					}
 				}
 			}
 			bot.displayResults("");
@@ -164,10 +538,18 @@ public class HannahBot {
 			bot.displayResults("In Tote A, we should theoretically have the following items:");
 			for( int f=p[0]; f<p[0]+p[1]; f++ )
 			{
-				if(antiRepeat(ToteA[results[f][1]]))
+				if(antiRepeat(ToteA[results[f][1]][0]))
 				{
-					bot.displayResults(ToteA[results[f][1]]);
-				}			}
+					if( ToteA[results[f][1]][1] == "0" )
+					{
+						bot.displayResults(ToteA[results[f][1]][0]);
+					}
+					if( ToteA[results[f][1]][1] != "0" )
+					{
+						bot.displayResults("* The " + ToteA[results[f][1]][0] + " was lent to team " + ToteA[results[f][1]][1] + ".");
+					}
+				}
+			}
 			bot.displayResults("");
 		}
 		if( p[2] > 0 )
@@ -175,10 +557,18 @@ public class HannahBot {
 			bot.displayResults("In Tote B, we should theoretically have the following items:");
 			for( int f=p[0]+p[1]; f<p[0]+p[1]+p[2]; f++ )
 			{
-				if(antiRepeat(ToteB[results[f][1]]))
+				if(antiRepeat(ToteB[results[f][1]][0]))
 				{
-					bot.displayResults(ToteB[results[f][1]]);
-				}			}
+					if( ToteB[results[f][1]][1] == "0" )
+					{
+						bot.displayResults(ToteB[results[f][1]][0]);
+					}
+					if( ToteB[results[f][1]][1] != "0" )
+					{
+						bot.displayResults("* The " + ToteB[results[f][1]][0] + " was lent to team " + ToteB[results[f][1]][1] + ".");
+					}
+				}
+			}
 			bot.displayResults("");
 		}
 		if( p[3] > 0 )
@@ -186,10 +576,18 @@ public class HannahBot {
 			bot.displayResults("In Tote C, we should theoretically have the following items:");
 			for( int f=p[0]+p[1]+p[2]; f<p[0]+p[1]+p[2]+p[3]; f++ )
 			{
-				if(antiRepeat(ToteC[results[f][1]]))
+				if(antiRepeat(ToteC[results[f][1]][0]))
 				{
-					bot.displayResults(ToteC[results[f][1]]);
-				}			}
+					if( ToteC[results[f][1]][1] == "0" )
+					{
+						bot.displayResults(ToteC[results[f][1]][0]);
+					}
+					if( ToteC[results[f][1]][1] != "0" )
+					{
+						bot.displayResults("* The " + ToteC[results[f][1]][0] + " was lent to team " + ToteC[results[f][1]][1] + ".");
+					}
+				}
+			}
 			bot.displayResults("");
 		}
 		if( p[4] > 0 )
@@ -197,10 +595,18 @@ public class HannahBot {
 			bot.displayResults("In Tote D, we should theoretically have the following items:");
 			for( int f=p[0]+p[1]+p[2]+p[3]; f<p[0]+p[1]+p[2]+p[3]+p[4]; f++ )
 			{
-				if(antiRepeat(ToteD[results[f][1]]))
+				if(antiRepeat(ToteD[results[f][1]][0]))
 				{
-					bot.displayResults(ToteD[results[f][1]]);
-				}			}
+					if( ToteD[results[f][1]][1] == "0" )
+					{
+						bot.displayResults(ToteD[results[f][1]][0]);
+					}
+					if( ToteD[results[f][1]][1] != "0" )
+					{
+						bot.displayResults("* The " + ToteD[results[f][1]][0] + " was lent to team " + ToteD[results[f][1]][1] + ".");
+					}
+				}
+			}
 			bot.displayResults("");
 		}
 		if( p[5] > 0 )
@@ -208,10 +614,18 @@ public class HannahBot {
 			bot.displayResults("In Tote E, we should theoretically have the following items:");
 			for( int f=p[0]+p[1]+p[2]+p[3]+p[4]; f<p[0]+p[1]+p[2]+p[3]+p[4]+p[5]; f++ )
 			{
-				if(antiRepeat(ToteE[results[f][1]]))
+				if(antiRepeat(ToteE[results[f][1]][0]))
 				{
-					bot.displayResults(ToteE[results[f][1]]);
-				}			}
+					if( ToteE[results[f][1]][1] == "0" )
+					{
+						bot.displayResults(ToteE[results[f][1]][0]);
+					}
+					if( ToteE[results[f][1]][1] != "0" )
+					{
+						bot.displayResults("* The " + ToteE[results[f][1]][0] + " was lent to team " + ToteE[results[f][1]][1] + ".");
+					}
+				}
+			}
 			bot.displayResults("");
 		}
 		if( p[6] > 0 )
@@ -219,23 +633,56 @@ public class HannahBot {
 			bot.displayResults("In the Crate, we should theoretically have the following items:");
 			for( int f=p[0]+p[1]+p[2]+p[3]+p[4]+p[5]; f<p[0]+p[1]+p[2]+p[3]+p[4]+p[5]+p[6]; f++ )
 			{
-				if(antiRepeat(Crate[results[f][1]]))
+				if(antiRepeat(Crate[results[f][1]][0]))
 				{
-					bot.displayResults(Crate[results[f][1]]);
-				}			}
+					if( Crate[results[f][1]][1] == "0" )
+					{
+						bot.displayResults(Crate[results[f][1]][0]);
+					}
+					if( ToolBox[results[f][1]][1] != "0" )
+					{
+						bot.displayResults("* The " + Crate[results[f][1]][0] + " was lent to team " + Crate[results[f][1]][1] + ".");
+					}
+				}
+			}
 			bot.displayResults("");
 		}
-
+		if( p[7] > 0 )
+		{
+			bot.displayResults("We should theoretically have borrowed the following items:");
+			for( int f=p[0]+p[1]+p[2]+p[3]+p[4]+p[5]+p[6]; f<p[0]+p[1]+p[2]+p[3]+p[4]+p[5]+p[6]+p[7]; f++ )
+			{
+				if(antiRepeat(borrowedItem[results[f][1]]))
+				{
+					bot.displayResults(borrowedItem[results[f][1]]);
+				}
+			}
+			bot.displayResults("");
+		}
+		if( ziptie )
+		{
+			bot.displayResults("There's also a whole bunch in Trinity's hair.");
+		}
 	}
 	public static String input()
 	{
-		Scanner sc = new Scanner(System.in);
-		String query = sc.nextLine();
+		/* [IO] [Text] [Input] [011] */
+		if( debugMode )
+		{
+			bot.displayResults("Input called.");
+		}
+		boolean repeat = true;
+		String query = "";
+		query = bot.getSearch();
 		return query;
 	}
-	
 	public static void search()
 	{
+		/* [Organizer] [Text] [Process] [012] */
+		if( debugMode )
+		{
+			bot.displayResults("Search called.");
+		}
 		checkToolBox();
 		checkToteA();
 		checkToteB();
@@ -243,9 +690,33 @@ public class HannahBot {
 		checkToteD();
 		checkToteE();
 		checkCrate();
+		checkBorrowed();
+	}
+	public static boolean antiRepeat(String check)
+	{
+		/* [Support] [Text] [Pointer] [013] */
+		if( debugMode )
+		{
+			bot.displayResults("AntiRepeat called with input '" + check + "'.");
+		}
+		boolean b = true;
+		for( int f=0; f<printedPointer; f++ )
+		{
+			if(check.equals(printed[f]))
+			{
+				b = false;
+			}
+		}
+		if( b )
+		{
+			printed[printedPointer-1] = check;
+			printedPointer++;
+		}
+		return b;
 	}
 	public static void checkToolBox()
 	{
+		/* [Search] [Data] [Memory] [014] */
 		p[0] = 0;
 		for( int f=0; f<41; f++ )
 		{
@@ -263,6 +734,7 @@ public class HannahBot {
 	}
 	public static void checkToteA()
 	{
+		/* [Search] [Data] [Memory] [015] */
 		p[1] = 0;
 		for( int f=0; f<20; f++ )
 		{
@@ -280,6 +752,7 @@ public class HannahBot {
 	}
 	public static void checkToteB()
 	{
+		/* [Search] [Data] [Memory] [016] */
 		p[2] = 0;
 		for( int f=0; f<11; f++ )
 		{
@@ -297,6 +770,7 @@ public class HannahBot {
 	}
 	public static void checkToteC()
 	{
+		/* [Search] [Data] [Memory] [017] */
 		p[3] = 0;
 		for( int f=0; f<18; f++ )
 		{
@@ -314,6 +788,7 @@ public class HannahBot {
 	}
 	public static void checkToteD()
 	{
+		/* [Search] [Data] [Memory] [018] */
 		p[4] = 0;
 		for( int f=0; f<25; f++ )
 		{
@@ -331,6 +806,7 @@ public class HannahBot {
 	}
 	public static void checkToteE()
 	{
+		/* [Search] [Data] [Memory] [019] */
 		p[5] = 0;
 		for( int f=0; f<8; f++ )
 		{
@@ -348,6 +824,7 @@ public class HannahBot {
 	}
 	public static void checkCrate()
 	{
+		/* [Search] [Data] [Memory] [020] */
 		p[6] = 0;
 		for( int f=0; f<16; f++ )
 		{
@@ -363,8 +840,582 @@ public class HannahBot {
 			}
 		}
 	}
+	public static void checkBorrowed()
+	{
+		p[7] = 0;
+		for( int f=0; f<borrowedPointer; f++ )
+		{
+			for( int g=0; g<keywordPointer; g++ )
+			{
+				if( keywords[g].toLowerCase().contains(borrowedItem[f].toLowerCase()) || borrowedItem[f].toLowerCase().contains(keywords[g].toLowerCase()) )
+				{
+					p[7]++;
+					resultPointer++;
+					results[resultPointer-1][0] = 7;
+					results[resultPointer-1][1] = f;
+				}
+			}
+		}
+	}
+	public static void borrow(String inout)
+	{
+		/* [Organizer] [Borrow] [IO] [021] */
+		if( debugMode )
+		{
+			bot.displayResults("Borrow called with input + '" + inout + "'.");
+		}
+		boolean check = false;
+		boolean repeat = true;
+		boolean in = false;
+		boolean out = false;
+		if( inout.equals("in") )
+		{
+			in = true;
+		}
+		if( inout.equals("out") )
+		{
+			out = true;
+		}
+		if( inout.equals("null") )
+		{
+			check = true;
+			bot.displayResults("Do you want to record what we borrowed, or what was borrowed from us?");
+		}
+		String IO = "";
+		String Item = "";
+		String Team = "";
+		boolean none = false;
+		if( check )
+			{
+			while( repeat )
+			{
+				String input = "";
+				while( input.equals("") )
+				{
+					input = input();
+				}
+				String data = input.toLowerCase();
+				while( data.endsWith(" ") )
+				{
+					data = data.substring(0,data.length()-1);
+				}
+				if( data.endsWith(".") || data.endsWith("?") || data.endsWith("!") )
+				{
+					data = data.substring(0,data.length()-1);
+				}
+				while( data.endsWith(" ") )
+				{
+					data = data.substring(0,data.length()-1);
+				}
+				data = data + " ";
+				if( (data.contains("we ") && data.contains("borrow")) || (data.contains(" us ") && data.contains("lent")) )
+				{
+					in = true;
+				}
+				if( (data.contains("we ") && data.contains("lent")) || (data.contains(" us ") && data.contains("borrow")) )
+				{
+					out = true;
+				}
+				else
+				{
+					none = true;
+				}
+				repeat = false;
+				if( in && out )
+				{
+					bot.displayResults("You're going to have to pick one or the other.");	
+					repeat = true;
+				}
+			}
+		}
+		boolean go = false;
+		boolean xcase = false;
+		String xteam = "";
+		if( in )
+		{
+			IO = "B";
+			bot.displayResults("What item did we borrow?");
+			while(Item.equals(""))
+			{
+				Item = input();
+			}
+			bot.displayResults("Which team did we borrow from?");
+			while(Item.equals(""))
+			{
+				Team = input();
+			}
+			go = true;
+		}
+		if( out )
+		{
+			IO = "L";
+			bot.displayResults("What item did we lend?");
+			while(Item.equals(""))
+			{
+				Item = input();
+			}
+			Item = Item.toLowerCase();
+			repeat = true;
+			bot.displayResults("Which team did we lend to?");
+			while(Team.equals(""))
+			{
+				Team = input();
+			}
+			if( debugMode )
+			{
+				bot.displayResults("Checking item '" + Item + "'.");
+			}
+			int tb = ToolBoxCB(Item);
+			int a = ToteACB(Item);
+			int b = ToteBCB(Item);
+			int c = ToteCCB(Item);
+			int d = ToteDCB(Item);
+			int e = ToteECB(Item);
+			int crate = CrateCB(Item);
+			boolean prev = false;
+			for( int f=0; f<lentPointer; f++ )
+			{
+				if( lentItem[f].equals(Item) )
+				{
+					prev = true;
+					xteam = lentTeam[f];
+					break;
+				}
+			}
+			if( tb+a+b+c+d+e+crate != 0 && !prev )
+			{
+				go = true;
+			}
+			else if( prev )
+			{
+				xcase = true;
+			}
+		}
+		if( xcase )
+		{
+			bot.displayResults("The '" + Item + "' has already been lent to " + xteam+ ".");
+		}
+		if(go)
+		{
+			borrowWrite(IO + "~" + Item + "~" + Team + "~");
+			loadBorrow();
+		}
+		else if( !go && !none && !xcase )
+		{
+			bot.displayResults("I dont think we have '" + Item + "'.");
+		}
+		else if( !go && none && !xcase )
+		{
+			bot.displayResults("Okay.");
+		}
+	}
+	public static void loadBorrow()
+	{
+		/* [Startup] [Borrow] [IO] [022] */
+		if( debugMode )
+		{
+			bot.displayResults("LoadBorrow called");
+		}
+        String fileName = "borrow.txt";
+        String line = null;
+        try {
+            FileReader fileReader = new FileReader(fileName);
+            BufferedReader bufferedReader = new BufferedReader(fileReader);
+            while((line = bufferedReader.readLine()) != null)
+            {
+            	String item = "";
+            	if( line.startsWith("//") )
+            	{
+            		String ignore = line;
+            	}
+            	else if( line.toLowerCase().equals("b") )
+				{
+            		boolean good = true;
+            		line = bufferedReader.readLine();
+					String tempString = line;
+					String tempTeam = "0";
+					try
+					{
+						line = bufferedReader.readLine();
+						tempTeam = line;
+					}
+					catch(Exception e)
+					{
+						bot.displayResults("Warning: Syntax error!");
+						good = false;
+						break;
+					}
+					if( good )
+					{
+						borrowedItem[borrowedPointer] = tempString;
+						borrowedTeam[borrowedPointer] = tempTeam;
+						borrowedPointer++;
+					}
+				}
+				else if( line.toLowerCase().equals("l") )
+				{
+					boolean good = true;
+					line = bufferedReader.readLine();
+					String tempString = line;
+					String tempTeam = "0";
+					try
+					{
+						line = bufferedReader.readLine();
+						tempTeam = line;
+					}
+					catch(Exception e)
+					{
+						bot.displayResults("Warning: Syntax error!");
+						good = false;
+						break;
+					}
+					if( good )
+					{
+						item = tempString.toLowerCase();
+						int tb = ToolBoxCB(item);
+						int a = ToteACB(item);
+						int b = ToteBCB(item);
+						int c = ToteCCB(item);
+						int d = ToteDCB(item);
+						int e = ToteECB(item);
+						int crate = CrateCB(item);
+						if( tb+a+b+c+d+e+crate != 0 )
+						{
+							if( tb != 0 )
+							{
+								lentLoc[lentPointer][0] = 0;
+								lentLoc[lentPointer][1] = tb-1;
+								ToolBox[tb-1][1] = tempTeam;
+							}
+							if( a != 0 )
+							{
+								lentLoc[lentPointer][0] = 1;
+								lentLoc[lentPointer][1] = a-1;
+								ToteA[a-1][1] = tempTeam;
+							}
+							if( b != 0 )
+							{
+								lentLoc[lentPointer][0] = 2;
+								lentLoc[lentPointer][1] = b-1;
+								ToteB[b-1][1] = tempTeam;
+							}
+							if( c != 0 )
+							{
+								lentLoc[lentPointer][0] = 3;
+								lentLoc[lentPointer][1] = c-1;
+								ToteC[c-1][1] = tempTeam;
+							}
+							if( d != 0 )
+							{
+								lentLoc[lentPointer][0] = 4;
+								lentLoc[lentPointer][1] = d-1;
+								ToteD[d-1][1] = tempTeam;
+							}
+							if( e != 0 )
+							{
+								lentLoc[lentPointer][0] = 5;
+								lentLoc[lentPointer][1] = e-1;
+								ToteE[e-1][1] = tempTeam;
+							}
+							if( crate != 0 )
+							{
+								lentLoc[lentPointer][0] = 6;
+								lentLoc[lentPointer][1] = crate-1;
+								Crate[crate-1][1] = tempTeam;
+							}
+							lentItem[lentPointer] = tempString;
+							lentTeam[lentPointer] = tempTeam;
+							lentPointer++;
+						}
+						else
+						{
+							bot.displayResults("I don't think we have '" + item + "'.");
+							bot.displayResults("You may want to check the borrow file, or reset it.");
+							break;
+						}
+					}
+				}
+            }   
+            fileReader.close();
+            bufferedReader.close();         
+        }
+        catch(FileNotFoundException ex)
+        {
+            bot.displayResults(
+                "Unable to open file '" + fileName + "'");                
+        }
+        catch(IOException ex)
+        {
+            bot.displayResults("Error reading file '" + fileName + "'");
+        }
+	}
+	public static void write(String string)
+	{
+		/* [IO] [Borrow] [023] */
+		if( debugMode )
+		{
+			bot.displayResults("Write called with input '" + string + "'.");
+		}
+		try{
+            FileWriter fstream = new FileWriter("borrow.txt",true);
+            BufferedWriter fbw = new BufferedWriter(fstream);
+            if( string!=null )
+            {
+            	fbw.write(string);
+            	fbw.newLine();
+            	fbw.close();
+            }
+        }catch (Exception e) {
+            bot.displayResults("Couldn't print to the file.");
+        }
+
+    }
+	public static void borrowWrite(String writer)
+	{
+		/* [Organizer] [Borrow] [IO] [024] */
+		if( debugMode )
+		{
+			bot.displayResults("BorrowWrite called with input '" + writer + "'.");
+		}
+		int end = writer.indexOf("~");
+		String BL = writer.substring(0,end);
+		String temp = writer.substring(end+1,writer.length());
+		end = temp.indexOf("~");
+		String item = temp.substring(0,end);
+		temp = temp.substring(end+1,temp.length());
+		end = temp.indexOf("~");
+		String team = temp.substring(0,end);
+		temp = temp.substring(end+1,temp.length());
+		write(BL);
+		write(item);
+		write(team);
+	}
+	public static void clearBorrow()
+	{
+		/* [Cleanup] [Borrow] [Memory] [025] */
+		if( debugMode )
+		{
+			bot.displayResults("ClearBorrow called.");
+		}
+		PrintWriter writer;
+		try {
+			writer = new PrintWriter("borrow.txt");
+			writer.print("");
+			writer.close();
+		} catch (FileNotFoundException e) {
+			bot.displayResults("You can't reset something I don't have yet.");
+		}
+	}
+	public static void resetBorrow()
+	{
+		/* [Cleanup] [Borrow] [Memory] [026] */
+		if( debugMode )
+		{
+			bot.displayResults("ResetBorrow called.");
+		}
+		loadToolBox();
+		loadToteA();
+		loadToteB();
+		loadToteC();
+		loadToteD();
+		loadToteE();
+		loadCrate();
+		saveBorrow();
+		clearBorrow();
+		borrowedItemBU = borrowedItem;
+		borrowedTeamBU = borrowedTeam;
+		borrowedPointerBU = borrowedPointer;
+		lentItemBU = lentItem;
+		lentLocBU = lentLoc;
+		lentTeamBU = lentTeam;
+		lentPointerBU = lentPointer;
+		write("// adminRestart = false");
+		write("// This is the file where the borrowed items are stored.");
+		write("// Line 1: B/L (Borrowed/Lent)");
+		write("// Line 2: Item Name (Exact)");
+		write("// Line 3: Team No.");
+		borrowedPointer = 0;
+		lentPointer = 0;
+		for( int f=0; f<10000; f++ )
+		{
+			borrowedItem[f] = "";
+			borrowedTeam[f] = "";
+			lentItem[f] = "";
+			lentLoc[f][0] = 0;
+			lentLoc[f][1] = 0;
+			lentTeam[f] = "";
+		}
+		ToolBoxBB = ToolBox;
+		ToteABB = ToteA;
+		ToteBBB = ToteB;
+		ToteCBB = ToteC;
+		ToteDBB = ToteD;
+		ToteEBB = ToteE;
+		CrateBB = Crate;
+	}
+	public static void saveBorrow()
+	{
+		/* [Borrow] [Memory] [062] */
+		String fileName = "borrow.txt";
+		String line = null;
+		try {
+            FileReader fileReader = new FileReader(fileName);
+            BufferedReader bufferedReader = new BufferedReader(fileReader);
+            while((line = bufferedReader.readLine()) != null)
+            {
+            	if( line.startsWith("//") )
+            	{
+            		String ignore = line;
+            	}
+            	else if( line!=null )
+				{
+            		borrowFile[borrowFilePointer] = line;
+            		borrowFilePointer++;
+				}
+			} 
+            fileReader.close();
+            bufferedReader.close();
+		}
+		catch(Exception e)
+		{
+			bot.displayResults("I had an issue while trying to read from the borrow file.");
+		}
+	}
+	public static void restoreBorrow()
+	{
+		/* [Cleanup] [Borrow] [Memory] [027] */
+		if( debugMode )
+		{
+			bot.displayResults("RestoreBorrow called.");
+		}
+		clearBorrow();
+		write("// adminRestart = false");
+		write("// This is the file where the borrowed items are stored.");
+		write("// Line 1: B/L (Borrowed/Lent)");
+		write("// Line 2: Item Name (Exact)");
+		write("// Line 3: Team No.");
+		for( int f=0; f<borrowFilePointer+1; f++ )
+		{
+			write(borrowFile[f]);
+			borrowFile[f] = "";
+		}
+		borrowedItem = borrowedItemBU;
+		borrowedTeam = borrowedTeamBU;
+		borrowedPointer = borrowedPointerBU;
+		lentItem = lentItemBU;
+		lentLoc = lentLocBU;
+		lentTeam = lentTeamBU;
+		lentPointer = lentPointerBU;
+		borrowFilePointer = 0;
+		ToteA = ToteABB;
+		ToteB = ToteBBB;
+		ToteC = ToteCBB;
+		ToteD = ToteDBB;
+		ToteE = ToteEBB;
+		Crate = CrateBB;
+		loadBorrow();
+	}
+	public static void listBorrow()
+	{
+		/* [Borrow] [Text] [Print] [Info] [028] */
+		if( debugMode )
+		{
+			bot.displayResults("ListBorrow called.");
+		}
+		String fileName = "borrow.txt";
+		String piece0 = "We ";
+		String piece1 = "";
+		String piece2 = "";
+		String piece3 = "";
+		String piece4 = "";
+		String piece5 = ".";
+		String line = null;
+        try {
+            FileReader fileReader = new FileReader(fileName);
+            BufferedReader bufferedReader = new BufferedReader(fileReader);
+            boolean data = false;
+            while((line = bufferedReader.readLine()) != null)
+            {
+            	String item = "";
+            	if( line.startsWith("//") )
+            	{
+            		String ignore = line;
+            	}
+            	else if( line.toLowerCase().equals("b") )
+				{
+            		data = true;
+            		boolean good = true;
+            		line = bufferedReader.readLine();
+					String tempString = line;
+					String tempTeam = "0";
+					try
+					{
+						line = bufferedReader.readLine();
+						tempTeam = line;
+					}
+					catch(Exception e)
+					{
+						bot.displayResults("Warning: Syntax error!");
+						good = false;
+						break;
+					}
+					if( good )
+					{
+						piece1 = "borrowed '";
+						piece2 = tempString;
+						piece3 = "' from ";
+						piece4 = tempTeam;
+						bot.displayResults(piece0+piece1+piece2+piece3+piece4+piece5);
+					}
+				}
+				else if( line.toLowerCase().equals("l") )
+				{
+					data = true;
+					boolean good = true;
+					line = bufferedReader.readLine();
+					String tempString = line;
+					String tempTeam = "0";
+					try
+					{
+						line = bufferedReader.readLine();
+						tempTeam = line;
+					}
+					catch(Exception e)
+					{
+						bot.displayResults("Warning: Syntax error!");
+						good = false;
+						break;
+					}
+					if( good )
+					{
+						piece1 = "lent '";
+						piece2 = tempString;
+						piece3 = "' to ";
+						piece4 = tempTeam;
+						bot.displayResults(piece0+piece1+piece2+piece3+piece4+piece5);
+					}
+				}
+			}
+            if(!data)
+        	{
+        		bot.displayResults("Nothing is in the borrow file.");
+        	}
+            fileReader.close();
+            bufferedReader.close();         
+        }
+        catch(FileNotFoundException ex)
+        {
+            bot.displayResults(
+                "Unable to open file '" + fileName + "'");                
+        }
+        catch(IOException ex)
+        {
+            bot.displayResults("Error reading file '" + fileName + "'");
+        }
+    }
 	public static void loadLibrary()
 	{
+		/* [Startup] [Organizer] [Load] [Memory] [029] */
 		loadToolBox();
 		loadToteA();
 		loadToteB();
@@ -380,168 +1431,206 @@ public class HannahBot {
 		loadTEDesc();
 		loadCDesc();
 		loadExclusion();
+		loadPeople();
 	}
 	public static void loadToolBox()
 	{
-		ToolBox[0] = "Precision Screwdriver Set";
-		ToolBox[1] = "Goo-gone";
-		ToolBox[2] = "Files";
-		ToolBox[3] = "Erwin Clamps";
-		ToolBox[4] = "Metal Clamps";
-		ToolBox[5] = "Flashlight";
-		ToolBox[6] = "Craftsman's square";
-		ToolBox[7] = "Flathead";
-		ToolBox[8] = "Phillips";
-		ToolBox[9] = "Icepick";
-		ToolBox[10] = "Utility";
-		ToolBox[11] = "Deburring tool";
-		ToolBox[12] = "Paper ruler";
-		ToolBox[13] = "Loctite";
-		ToolBox[14] = "Bent Needlenose (Red & Black, orange)";
-		ToolBox[15] = "Wire Crusher (orange)";
-		ToolBox[16] = "Needlenose (orange)";
-		ToolBox[17] = "Drill Bit row thing";
-		ToolBox[18] = "Big Needlenose (Grey)";
-		ToolBox[19] = "Box Cutter";
-		ToolBox[20] = "Wire Stripper/Crimper";
-		ToolBox[21] = "Snub-Nose Pliers";
-		ToolBox[22] = "Needlenose (green)";
-		ToolBox[23] = "Stab-Stab";
-		ToolBox[24] = "Chain Breaker";
-		ToolBox[25] = "SAE Bit Row";
-		ToolBox[26] = "Snub-Nose Pliers (orange, black-red)";
-		ToolBox[27] = "SAE Hex Keys x2";
-		ToolBox[28] = "Wire Stripper";
-		ToolBox[29] = "Snips";
-		ToolBox[30] = "Blue Vise Grip";
-		ToolBox[31] = "Mallet";
-		ToolBox[32] = "Tiny snips";
-		ToolBox[33] = "Hammer";
-		ToolBox[34] = "Ruler";
-		ToolBox[35] = "Measuring Tape";
-		ToolBox[36] = "Robo-Grip";
-		ToolBox[37] = "Tiny Tape Measure";
-		ToolBox[38] = "Aviation Snips";
-		ToolBox[39] = "Wago";
-		ToolBox[40] = "Scissors";
+		/* [Load] [Memory] [030]*/
+		ToolBox[0][0] = "Precision Screwdriver Set";
+		ToolBox[1][0] = "Goo-gone";
+		ToolBox[2][0] = "Files";
+		ToolBox[3][0] = "Erwin Clamps";
+		ToolBox[4][0] = "Metal Clamps";
+		ToolBox[5][0] = "Flashlight";
+		ToolBox[6][0] = "Craftsman's square";
+		ToolBox[7][0] = "Flathead";
+		ToolBox[8][0] = "Phillips";
+		ToolBox[9][0] = "Icepick";
+		ToolBox[10][0] = "Utility";
+		ToolBox[11][0] = "Deburring tool";
+		ToolBox[12][0] = "Paper ruler";
+		ToolBox[13][0] = "Loctite";
+		ToolBox[14][0] = "Bent Needlenose (Red & Black, orange)";
+		ToolBox[15][0] = "Wire Crusher (orange)";
+		ToolBox[16][0] = "Needlenose (orange)";
+		ToolBox[17][0] = "Drill Bit row thing";
+		ToolBox[18][0] = "Big Needlenose (Grey)";
+		ToolBox[19][0] = "Box Cutter";
+		ToolBox[20][0] = "Wire Stripper/Crimper";
+		ToolBox[21][0] = "Snub-Nose Pliers";
+		ToolBox[22][0] = "Needlenose (green)";
+		ToolBox[23][0] = "Stab-Stab";
+		ToolBox[24][0] = "Chain Breaker";
+		ToolBox[25][0] = "SAE Bit Row";
+		ToolBox[26][0] = "Snub-Nose Pliers (orange, black-red)";
+		ToolBox[27][0] = "SAE Hex Keys x2";
+		ToolBox[28][0] = "Wire Stripper";
+		ToolBox[29][0] = "Snips";
+		ToolBox[30][0] = "Blue Vise Grip";
+		ToolBox[31][0] = "Mallet";
+		ToolBox[32][0] = "Tiny snips";
+		ToolBox[33][0] = "Hammer";
+		ToolBox[34][0] = "Ruler";
+		ToolBox[35][0] = "Measuring Tape";
+		ToolBox[36][0] = "Robo-Grip";
+		ToolBox[37][0] = "Tiny Tape Measure";
+		ToolBox[38][0] = "Aviation Snips";
+		ToolBox[39][0] = "Wago";
+		ToolBox[40][0] = "Scissors";
+		for( int f=0; f<41; f++ )
+		{
+			ToolBox[f][1] = "0";
+		}
 	}
 	public static void loadToteA()
 	{
-		ToteA[0] = "Rivet Box";
-		ToteA[1] = "Pneumatics Hardware Box";
-		ToteA[2] = "Zip Tie Box";
-		ToteA[3] = "Encoders";
-		ToteA[4] = "Pressure Tape";
-		ToteA[5] = "Hack Saw";
-		ToteA[6] = "PWM Crimp Tool";
-		ToteA[7] = "Pneumatic Wheels";
-		ToteA[8] = "Grease";
-		ToteA[9] = "craftsman drill bit set";
-		ToteA[10] = "rivet gun";
-		ToteA[11] = "Tape Box";
-		ToteA[12] = "Gorilla Tape";
-		ToteA[13] = "Clear Packing tape";
-		ToteA[14] = "Electrical Tape, Red";
-		ToteA[15] = "Electrical Tape, Black";
-		ToteA[16] = "Painter's Tape, Blue";
-		ToteA[17] = "Crazy glue ";
-		ToteA[18] = "Black Rachet Set";
-		ToteA[19] = "Drills + chargers";	}
+		/* [Load] [Memory] [031] */
+		ToteA[0][0] = "Rivet Box";
+		ToteA[1][0] = "Pneumatics Hardware Box";
+		ToteA[2][0] = "Zip Tie Box";
+		ToteA[3][0] = "Encoders";
+		ToteA[4][0] = "Pressure Tape";
+		ToteA[5][0] = "Hack Saw";
+		ToteA[6][0] = "PWM Crimp Tool";
+		ToteA[7][0] = "Pneumatic Wheels";
+		ToteA[8][0] = "Grease";
+		ToteA[9][0] = "Craftsman Drill Bit Set";
+		ToteA[10][0] = "Rivet Gun";
+		ToteA[11][0] = "Tape Box";
+		ToteA[12][0] = "Gorilla Tape";
+		ToteA[13][0] = "Clear Packing tape";
+		ToteA[14][0] = "Electrical Tape, Red";
+		ToteA[15][0] = "Electrical Tape, Black";
+		ToteA[16][0] = "Painter's Tape, Blue";
+		ToteA[17][0] = "Crazy glue ";
+		ToteA[18][0] = "Black Rachet Set";
+		ToteA[19][0] = "Drills + chargers";	
+		for( int f=0; f<20; f++ )
+		{
+			ToteA[f][1] = "0";
+		}
+	}
 	public static void loadToteB()
 	{
-		ToteB[0] = "Polycord Box (+tread, radio, camera)";
-		ToteB[1] = "Solder Box (+chain)";
-		ToteB[2] = "Vex Pro Box (versas/ringlight/victor)";
-		ToteB[3] = "SAE Tap Set";
-		ToteB[4] = "Spacer Box";
-		ToteB[5] = "Warrior Set";
-		ToteB[6] = "Box End Rachets";
-		ToteB[7] = "Compressed Air";
-		ToteB[8] = "Tap Fluid";
-		ToteB[9] = "Caliper";
-		ToteB[10] = "Blue Rachet Set";
+		/* [Load] [Memory] [032] */
+		ToteB[0][0] = "Polycord Box (+tread, radio, camera)";
+		ToteB[1][0] = "Solder Box (+chain)";
+		ToteB[2][0] = "Vex Pro Box (versas/ringlight/victor)";
+		ToteB[3][0] = "SAE Tap Set";
+		ToteB[4][0] = "Spacer Box";
+		ToteB[5][0] = "Warrior Set";
+		ToteB[6][0] = "Box End Rachets";
+		ToteB[7][0] = "Compressed Air";
+		ToteB[8][0] = "Tap Fluid";
+		ToteB[9][0] = "Caliper";
+		ToteB[10][0] = "Blue Rachet Set";
+		for( int f=0; f<11; f++ )
+		{
+			ToteB[f][1] = "0";
+		}
 	}
 	public static void loadToteC()
 	{
-		ToteC[0] = "Hardstop (orange)";
-		ToteC[1] = "Gears Stuff Box";
-		ToteC[2] = "Mcmaster box";
-		ToteC[3] = "Red Battery Wire";
-		ToteC[4] = "Black Battery Wire";
-		ToteC[5] = "Pickup hardware bag(small)";
-		ToteC[6] = "Wire box";
-		ToteC[7] = "Victors";
-		ToteC[8] = "Pneumatic Tubing Bag";
-		ToteC[9] = "Versas";
-		ToteC[10] = "Long Pistons";
-		ToteC[11] = "Air Tanks";
-		ToteC[12] = "Random Sheet Metal ";
-		ToteC[13] = "Sponsor panels";
-		ToteC[14] = "Breakers";
-		ToteC[15] = "Pneumatic Tubing Blue and Orange";
-		ToteC[16] = "Optical Sensor";
-		ToteC[17] = "Pickup hardware bag(big)";
+		/* [Load] [Memory] [033] */
+		ToteC[0][0] = "Hardstop (orange)";
+		ToteC[1][0] = "Gears Stuff Box";
+		ToteC[2][0] = "Mcmaster box";
+		ToteC[3][0] = "Red Battery Wire";
+		ToteC[4][0] = "Black Battery Wire";
+		ToteC[5][0] = "Pickup hardware bag(small)";
+		ToteC[6][0] = "Wire box";
+		ToteC[7][0] = "Victors";
+		ToteC[8][0] = "Pneumatic Tubing Bag";
+		ToteC[9][0] = "Versas";
+		ToteC[10][0] = "Long Pistons";
+		ToteC[11][0] = "Air Tanks";
+		ToteC[12][0] = "Random Sheet Metal ";
+		ToteC[13][0] = "Sponsor panels";
+		ToteC[14][0] = "Breakers";
+		ToteC[15][0] = "Pneumatic Tubing Blue and Orange";
+		ToteC[16][0] = "Optical Sensor";
+		ToteC[17][0] = "Pickup hardware bag(big)";
+		for( int f=0; f<18; f++ )
+		{
+			ToteC[f][1] = "0";
+		}
 	}
 	public static void loadToteD()
 	{
-		ToteD[0] = "Pit Bag";
-		ToteD[1] = "White Board";
-		ToteD[2] = "Staple Bag";
-		ToteD[3] = "Staple Gun";
-		ToteD[4] = "Paint brushes+paint";
-		ToteD[5] = "Red Fabric";
-		ToteD[6] = "Blue Fabric";
-		ToteD[7] = "Bumper Bolts + Nuts Bag";
-		ToteD[8] = "Standard";
-		ToteD[9] = "Power Strips ";
-		ToteD[10] = "Extension cords";
-		ToteD[11] = "Mutimeter";
-		ToteD[12] = "vise bit";
-		ToteD[13] = "Radio power cord";
-		ToteD[14] = "Ethernet";
-		ToteD[15] = "Ball";
-		ToteD[16] = "Crowbar";
-		ToteD[17] = "Crate Screws(box)";
-		ToteD[18] = "Pool noodle";
-		ToteD[19] = "1x1 tubing";
-		ToteD[20] = "Gorilla Tape";
-		ToteD[21] = "Velcro";
-		ToteD[22] = "Pneumatics plate";
-		ToteD[23] = "2 CIMs Box";
-		ToteD[24] = "4 Dry Erase Markers";
+		/* [Load] [Memory] [034] */
+		ToteD[0][0] = "Pit Bag";
+		ToteD[1][0] = "White Board";
+		ToteD[2][0] = "Staple Bag";
+		ToteD[3][0] = "Staple Gun";
+		ToteD[4][0] = "Paint brushes+paint";
+		ToteD[5][0] = "Red Fabric";
+		ToteD[6][0] = "Blue Fabric";
+		ToteD[7][0] = "Bumper Bolts + Nuts Bag";
+		ToteD[8][0] = "Standard";
+		ToteD[9][0] = "Power Strips ";
+		ToteD[10][0] = "Extension cords";
+		ToteD[11][0] = "Mutimeter";
+		ToteD[12][0] = "vise bit";
+		ToteD[13][0] = "Radio power cord";
+		ToteD[14][0] = "Ethernet";
+		ToteD[15][0] = "Ball";
+		ToteD[16][0] = "Crowbar";
+		ToteD[17][0] = "Crate Screws(box)";
+		ToteD[18][0] = "Pool noodle";
+		ToteD[19][0] = "1x1 tubing";
+		ToteD[20][0] = "Gorilla Tape";
+		ToteD[21][0] = "Velcro";
+		ToteD[22][0] = "Pneumatics plate";
+		ToteD[23][0] = "2 CIMs Box";
+		ToteD[24][0] = "4 Dry Erase Markers";
+		for( int f=0; f<25; f++ )
+		{
+			ToteD[f][1] = "0";
+		}
 	}
 	public static void loadToteE()
 	{
-		ToteE[0] = "Chain Box";
-		ToteE[1] = "Plates Stuff Box";
-		ToteE[2] = "Clear Screw Box";
-		ToteE[3] = "Mantis hardware bag";
-		ToteE[4] = "Crappy Drill Bit Set";
-		ToteE[5] = "Electrical Stuff box";
-		ToteE[6] = "Anderson Box";
-		ToteE[7] = "Rag Bag";
+		/* [Load] [Memory] [035] */
+		ToteE[0][0] = "Chain Box";
+		ToteE[1][0] = "Plates Stuff Box";
+		ToteE[2][0] = "Clear Screw Box";
+		ToteE[3][0] = "Mantis hardware bag";
+		ToteE[4][0] = "Crappy Drill Bit Set";
+		ToteE[5][0] = "Electrical Stuff box";
+		ToteE[6][0] = "Anderson Box";
+		ToteE[7][0] = "Rag Bag";
+		for( int f=0; f<8; f++ )
+		{
+			ToteE[f][1] = "0";
+		}
 	}
 	public static void loadCrate()
 	{
-		Crate[0] = "long hex stock (3)";
-		Crate[1] = "standard stand";
-		Crate[2] = "vise";
-		Crate[3] = "tarp ";
-		Crate[4] = "white shelves";
-		Crate[5] = "EZ Up";
-		Crate[6] = "robot";
-		Crate[7] = "Bumpers";
-		Crate[8] = "banner";
-		Crate[9] = "Blue Banner";
-		Crate[10] = "sheet metal";
-		Crate[11] = "big shelves";
-		Crate[12] = "Shop vac";
-		Crate[13] = "push cart (1)";
-		Crate[14] = "Orange Safety Kit";
-		Crate[15] = "knee pads";
+		/* [Load] [Memory] [036] */
+		Crate[0][0] = "long hex stock (3)";
+		Crate[1][0] = "standard stand";
+		Crate[2][0] = "vise";
+		Crate[3][0] = "tarp ";
+		Crate[4][0] = "white shelves";
+		Crate[5][0] = "EZ Up";
+		Crate[6][0] = "robot";
+		Crate[7][0] = "Bumpers";
+		Crate[8][0] = "banner";
+		Crate[9][0] = "Blue Banner";
+		Crate[10][0] = "sheet metal";
+		Crate[11][0] = "big shelves";
+		Crate[12][0] = "Shop vac";
+		Crate[13][0] = "push cart (1)";
+		Crate[14][0] = "Orange Safety Kit";
+		Crate[15][0] = "knee pads";
+		for( int f=0; f<16; f++ )
+		{
+			Crate[f][1] = "0";
+		}
 	}
 	public static void loadExclusion()
 	{
+		/* [Load] [Memory] [037] */
 		Exclusion[0] = "and";
 		Exclusion[1] = "or";
 		Exclusion[2] = "where";
@@ -566,12 +1655,45 @@ public class HannahBot {
 		Exclusion[21] = "tell";
 		Exclusion[22] = "could";
 	}
-
+	public static void loadPeople()
+	{
+		/* [Load] [Memory] [038] */
+		People[0] = "justin";
+		People[1] = "pranav";
+		People[2] = "aanya";
+		People[3] = "anya";
+		People[4] = "thuy";
+		People[5] = "evan";
+		People[6] = "rayna";
+		People[7] = "antoni";
+		People[8] = "kunal";
+		People[9] = "canoe";
+		People[10] = "hayley";
+		People[11] = "arrington";
+		People[12] = "tibbs";
+		People[13] = "jessica";
+		People[14] = "raymond";
+		People[15] = "alex";
+		People[16] = "robert";
+		People[17] = "nathan";
+		People[18] = "trinity";
+		People[19] = "reyna";
+		People[20] = "rohan";
+		People[21] = "russel";
+		People[22] = "matt";
+		People[23] = "matthew";
+		People[24] = "ryan";
+		People[25] = "joey";
+		People[26] = "kovalik";
+		People[27] = "joseph";
+		People[28] = "zain";
+	}
 	public static void loadTLDesc()
 	{
+		/* [Load] [Memory] [039] */
 		TLDesc[0] = "Precision Screwdrivers Sets screws ";
 		TLDesc[1] = "Goo-gone goo gone removers";
-		TLDesc[2] = "Files papers documents";
+		TLDesc[2] = "Files";
 		TLDesc[3] = "Erwin Clamps";
 		TLDesc[4] = "Metal Clamps";
 		TLDesc[5] = "Flashlights";
@@ -613,9 +1735,10 @@ public class HannahBot {
 	}
 	public static void loadTADesc()
 	{
+		/* [Load] [Memory] [040] */
 		TADesc[0] = "Rivets Boxes";
 		TADesc[1] = "Pneumatics Hardware Boxes";
-		TADesc[2] = "Zip Tie Boxes ziptie";
+		TADesc[2] = "Zip Tie Boxes ziptie zipties";
 		TADesc[3] = "Encoders";
 		TADesc[4] = "Pressure Tapes";
 		TADesc[5] = "Hack Saws";
@@ -635,6 +1758,7 @@ public class HannahBot {
 		TADesc[19] = "Drills + chargers";	}
 	public static void loadTBDesc()
 	{
+		/* [Load] [Memory] [041] */
 		TBDesc[0] = "Polycords Boxes (+treads, radios, cameras)";
 		TBDesc[1] = "Solder Boxes (+chains)";
 		TBDesc[2] = "Vex Pro Boxes (versas/ringlights/victors) vexpros";
@@ -649,13 +1773,14 @@ public class HannahBot {
 	}
 	public static void loadTCDesc()
 	{
+		/* [Load] [Memory] [042] */
 		TCDesc[0] = "Hardstops (orange)";
 		TCDesc[1] = "Gears Stuff Boxes";
 		TCDesc[2] = "Mcmaster boxes";
-		TCDesc[3] = "Red Battery batteries Wires electric cables cords";
-		TCDesc[4] = "Black Battery Wires batteries electric cables cords";
+		TCDesc[3] = "Red Battery batteries Wires electrical cables cords";
+		TCDesc[4] = "Black Battery Wires batteries electrical cables cords";
 		TCDesc[5] = "Pickup hardware bags(small)";
-		TCDesc[6] = "Wires cables electric cords boxes ";
+		TCDesc[6] = "Wires cables electrical cords boxes";
 		TCDesc[7] = "Victors motors";
 		TCDesc[8] = "Pneumatics Tubing Bags";
 		TCDesc[9] = "Versas";
@@ -663,13 +1788,14 @@ public class HannahBot {
 		TCDesc[11] = "Air Tanks pneumatics";
 		TCDesc[12] = "Random Sheets Metal scrap";
 		TCDesc[13] = "Sponsor panels";
-		TCDesc[14] = "Breakers electric";
+		TCDesc[14] = "Breakers electrical";
 		TCDesc[15] = "Pneumatics Tubing Blue and Orange";
 		TCDesc[16] = "Optical Sensors";
 		TCDesc[17] = "Pickup hardware bags(big)";
 	}
 	public static void loadTDDesc()
 	{
+		/* [Load] [Memory] [043] */
 		TDDesc[0] = "Pit Bags";
 		TDDesc[1] = "White Boards";
 		TDDesc[2] = "Staples Bags";
@@ -679,7 +1805,7 @@ public class HannahBot {
 		TDDesc[6] = "Blue Fabrics";
 		TDDesc[7] = "Bumpers Bolts + Nuts Bags";
 		TDDesc[8] = "Standards flags";
-		TDDesc[9] = "Power Strips electric";
+		TDDesc[9] = "Power Strips electrical";
 		TDDesc[10] = "Extension cords power";
 		TDDesc[11] = "Multimeters";
 		TDDesc[12] = "vise bits";
@@ -698,6 +1824,7 @@ public class HannahBot {
 	}
 	public static void loadTEDesc()
 	{
+		/* [Load] [Memory] [044] */
 		TEDesc[0] = "Chain Boxes";
 		TEDesc[1] = "Plates Stuff Boxes";
 		TEDesc[2] = "Clear Screw Boxes";
@@ -709,6 +1836,7 @@ public class HannahBot {
 	}
 	public static void loadCDesc()
 	{
+		/* [Load] [Memory] [045] */
 		CDesc[0] = "long hex stocks (3)";
 		CDesc[1] = "standard stands";
 		CDesc[2] = "vises";
@@ -726,22 +1854,225 @@ public class HannahBot {
 		CDesc[14] = "Orange Safety Kits";
 		CDesc[15] = "knee pads";
 	}
-	
-	public static boolean antiRepeat(String check)
+	public static int ToolBoxCB(String item)
 	{
-		boolean b = true;
-		for( int f=0; f<printedPointer; f++ )
+		/* [Search] [046] */
+		int loc = 0;
+		for( int f=0; f<41; f++ )
 		{
-			if(check.equals(printed[f]))
+			if( item.equals(ToolBox[f][0].toLowerCase()) )
 			{
-				b = false;
+				loc = f+1;
+				break;
 			}
 		}
-		if( b )
+		return loc;
+	}
+	public static int ToteACB(String item)
+	{
+		/* [Search] [047] */
+		int loc = 0;
+		for( int f=0; f<20; f++ )
 		{
-			printed[printedPointer-1] = check;
-			printedPointer++;
+			if( item.equals(ToteA[f][0].toLowerCase()) )
+			{
+				loc = f+1;
+				break;
+			}
 		}
-		return b;
+		return loc;
+	}
+	public static int ToteBCB(String item)
+	{
+		/* [Search] [048] */
+		int loc = 0;
+		for( int f=0; f<11; f++ )
+		{
+			if( item.equals(ToteB[f][0].toLowerCase()) )
+			{
+				loc = f+1;
+				break;
+			}
+		}
+		return loc;
+	}
+	public static int ToteCCB(String item)
+	{
+		/* [Search] [049] */
+		int loc = 0;
+		for( int f=0; f<18; f++ )
+		{
+			if( item.equals(ToteC[f][0].toLowerCase()) )
+			{
+				loc = f+1;
+				break;
+			}
+		}
+		return loc;
+	}
+	public static int ToteDCB(String item)
+	{
+		/* [Search] [050] */
+		int loc = 0;
+		for( int f=0; f<25; f++ )
+		{
+			if( item.equals(ToteD[f][0].toLowerCase()) )
+			{
+				loc = f+1;
+				break;
+			}
+		}
+		return loc;
+	}
+	public static int ToteECB(String item)
+	{
+		/* [Search] [051] */
+		int loc = 0;
+		for( int f=0; f<8; f++ )
+		{
+			if( item.equals(ToteE[f][0].toLowerCase()) )
+			{
+				loc = f+1;
+				break;
+			}
+		}
+		return loc;
+	}
+	public static int CrateCB(String item)
+	{
+		/* [Search] [052] */
+		int loc = 0;
+		for( int f=0; f<16; f++ )
+		{
+			if( item.equals(Crate[f][0].toLowerCase()) )
+			{
+				loc = f+1;
+				break;
+			}
+		}
+		return loc;
+	}
+	public static void listToolBox()
+	{
+		/* [Text] [Print] [Info] [053] */
+		bot.displayResults("The Toolbox contains the following:");
+		for( int f=0; f<41; f++ )
+		{
+			if( ToolBox[f][1] == "0" )
+			{
+				bot.displayResults(ToolBox[f][0]);
+			}
+			if( ToolBox[f][1] != "0" )
+			{
+				bot.displayResults("The " + ToolBox[f][0] + " was lent to team " + ToolBox[f][1] + ".");
+			}
+		}
+		bot.displayResults("");
+	}
+	public static void listToteA()
+	{
+		/* [Text] [Print] [Info] [054] */
+		bot.displayResults("Tote A contains the following:");
+		for( int f=0; f<20; f++ )
+		{
+			if( ToteA[f][1] == "0" )
+			{
+				bot.displayResults(ToteA[f][0]);
+			}
+			if( ToteA[f][1] != "0" )
+			{
+				bot.displayResults("* The " + ToteA[f][0] + " was lent to team " + ToteA[f][1] + ".");
+			}		
+		}
+		bot.displayResults("");
+	}
+	public static void listToteB()
+	{
+		/* [Text] [Print] [Info] [055] */
+		bot.displayResults("Tote B contains the following:");
+		for( int f=0; f<11; f++ )
+		{
+			if( ToteB[f][1] == "0" )
+			{
+				bot.displayResults(ToteB[f][0]);
+			}
+			if( ToteB[f][1] != "0" )
+			{
+				bot.displayResults("* The " + ToteB[f][0] + " was lent to team " + ToteB[f][1] + ".");
+			}		}
+		bot.displayResults("");
+	}
+	public static void listToteC()
+	{
+		/* [Text] [Print] [Info] [055] */
+		bot.displayResults("Tote C contains the following:");
+		for( int f=0; f<18; f++ )
+		{
+			if( ToteC[f][1] == "0" )
+			{
+				bot.displayResults(ToteC[f][0]);
+			}
+			if( ToteC[f][1] != "0" )
+			{
+				bot.displayResults("* The " + ToteC[f][0] + " was lent to team " + ToteC[f][1] + ".");
+			}		}
+		bot.displayResults("");
+	}
+	public static void listToteD()
+	{
+		/* [Text] [Print] [Info] [056] */
+		bot.displayResults("Tote D contains the following:");
+		for( int f=0; f<25; f++ )
+		{
+			if( ToteD[f][1] == "0" )
+			{
+				bot.displayResults(ToteD[f][0]);
+			}
+			if( ToteD[f][1] != "0" )
+			{
+				bot.displayResults("* The " + ToteD[f][0] + " was lent to team " + ToteD[f][1] + ".");
+			}		}
+		bot.displayResults("");
+	}
+	public static void listToteE()
+	{
+		/* [Text] [Print] [Info] [057] */
+		bot.displayResults("Tote E contains the following:");
+		for( int f=0; f<8; f++ )
+		{
+			if( ToteE[f][1] == "0" )
+			{
+				bot.displayResults(ToteE[f][0]);
+			}
+			if( ToteE[f][1] != "0" )
+			{
+				bot.displayResults("* The " + ToteE[f][0] + " was lent to team " + ToteE[f][1] + ".");
+			}		}
+		bot.displayResults("");
+	}
+	public static void listCrate()
+	{
+		/* [Text] [Print] [Info] [058] */
+		bot.displayResults("The Crate contains the following:");
+		for( int f=0; f<16; f++ )
+		{
+			if( Crate[f][1] == "0" )
+			{
+				bot.displayResults(Crate[f][0]);
+			}
+			if( Crate[f][1] != "0" )
+			{
+				bot.displayResults("* The " + Crate[f][0] + " was lent to team " + Crate[f][1] + ".");
+			}		}
+		bot.displayResults("");
+	}
+	public static void shutDown()
+	{
+		/* [Cleanup] [Terminate] [059] */
+		if( debugMode )
+		{
+			bot.displayResults("ShutDown called.");
+		}
+		on = false;
 	}
 }

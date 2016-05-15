@@ -1,0 +1,5 @@
+// adminRestart = false
+// This is the file where the borrowed items are stored.
+// Line 1: B/L (Borrowed/Lent)
+// Line 2: Item Name (Exact)
+// Line 3: Team No.
