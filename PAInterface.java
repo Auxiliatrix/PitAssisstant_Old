@@ -9,20 +9,28 @@ import java.io.IOException;
 
 import javax.imageio.ImageIO;
 import javax.swing.*;
+import javax.swing.text.BadLocationException;
+import javax.swing.text.Document;
+import javax.swing.text.Style;
+import javax.swing.text.StyleConstants;
 
 public class PAInterface extends JPanel implements ActionListener {
 	protected JTextField searchBar;
-    protected static JTextArea console;
+    protected static JTextPane console;
     protected JScrollPane scroll;
     protected static String input = "";
+    public static Color PAColor = Color.BLACK;
+    public static Color userColor = Color.BLUE;
+    protected Style style;
 
     public PAInterface() {
         super(new GridBagLayout());
  
-        console = new JTextArea(5, 20);
+        console = new JTextPane();
         console.setFont(new java.awt.Font("Courier New",Font.BOLD,18));
         console.setEditable(false);
-        console.setLineWrap(true);
+        style = console.addStyle("Style",null);
+        StyleConstants.setForeground(style, PAColor);
         scroll = new JScrollPane(console);
         
         searchBar = new JTextField(45);
@@ -40,8 +48,10 @@ public class PAInterface extends JPanel implements ActionListener {
         c.weighty = 1.0;
         add(scroll, c);
     }
-	protected void load(String name) {
+	protected void load(String name, Color pac, Color uc) {
         JFrame frame = new JFrame(name);
+        PAColor = pac;
+        userColor = uc;
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.add(new PAInterface());
         frame.pack();
@@ -73,12 +83,23 @@ public class PAInterface extends JPanel implements ActionListener {
 	}
 	protected void out(String output)
 	{
-		console.append(output + "\n");
+		Document doc = console.getDocument();
+		try {
+			doc.insertString(doc.getLength(), output+"\n", style);
+		} catch (BadLocationException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		//String content = console.getText();
+		//console.setText(content+output+"\n");
 		console.setCaretPosition(console.getDocument().getLength());
 	}
 	@Override
     public void actionPerformed(ActionEvent event) {
     	String getValue = searchBar.getText();
+    	StyleConstants.setForeground(style, userColor);
+    	out(getValue);
+    	StyleConstants.setForeground(style, PAColor);
 	    input = getValue;
 	    searchBar.setText("");
     }
@@ -87,11 +108,11 @@ public class PAInterface extends JPanel implements ActionListener {
 		console.setText("");
 		out("  =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-[Pit Assistant]-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=");
 		out("");
-		out("  Hi, I'm Pit Assistant (v3.4). I can look for things, and tell you what's in our totes and boxes.");
-		out("Pit Assisstant (v3.4) Theoretically(TM) supports description-based queries and all sentence structures.");
-		out("         Pit Assistant (v3.4) Theoretically(TM) keeps track of borrowed items from a file.");
+		out("  Hi, I'm Pit Assistant (v3.5). I can look for things, and tell you what's in our totes and boxes.");
+		out("Pit Assisstant (v3.5) Theoretically(TM) supports description-based queries and all sentence structures.");
+		out("         Pit Assistant (v3.5) Theoretically(TM) keeps track of borrowed items from a file.");
 		out("");
-		out("  =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=(v3.4)=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=");
+		out("  =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=(v3.5)=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=");
 		out("");
 	}
 }

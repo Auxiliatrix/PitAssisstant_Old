@@ -12,6 +12,7 @@
  *     notice, and this list of conditions.
  *     
  */
+import java.awt.Color;
 import java.io.*;
 
 import javax.print.DocFlavor.URL;
@@ -82,8 +83,9 @@ public class PitAssistant {
 	public static boolean adminRestart = true;
 	public static boolean on = true;
 	public static boolean borrowCheck = true;
-	public static String color = "black";
 	public static String name = "Pit Assistant";
+	public static Color PAColor = Color.BLACK;
+	public static Color userColor = Color.BLUE;
 	public static boolean reply = false;
 	
 	protected static PAInterface GUI = new PAInterface();
@@ -99,7 +101,7 @@ public class PitAssistant {
 	}
 	public static void initialize()
 	{
-		GUI.load("Pit Assistant");
+		GUI.load(name,PAColor,userColor);
 		/* [Organizer] [Load] [002] */
 		GUI.out("Loading libraries...");
 		loadLibrary();
@@ -158,11 +160,11 @@ public class PitAssistant {
 		/* [Startup] [Text] [Print] [Info] [005] */
 		GUI.out("  =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-[Pit Assistant]-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=");
 		GUI.out("");
-		GUI.out("  Hi, I'm Pit Assistant (v3.4). I can look for things, and tell you what's in our totes and boxes.");
-		GUI.out("Pit Assisstant (v3.4) Theoretically(TM) supports description-based queries and all sentence structures.");
+		GUI.out("  Hi, I'm Pit Assistant (v3.5). I can look for things, and tell you what's in our totes and boxes.");
+		GUI.out("Pit Assisstant (v3.5) Theoretically(TM) supports description-based queries and all sentence structures.");
 		GUI.out("         Pit Assistant (v3.4) Theoretically(TM) keeps track of borrowed items from a file.");
 		GUI.out("");
-		GUI.out("  =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=(v3.4)=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=");
+		GUI.out("  =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=(v3.5)=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=");
 		GUI.out("");
 		GUI.out("How may I help you?");
 	}
@@ -259,6 +261,7 @@ public class PitAssistant {
 			GUI.out("(v3.2)  ::  Added the 604 logo.");
 			GUI.out("(v3.3)  ::  Made PitAssistant Executable friendly.");
 			GUI.out("(v3.4)  ::  Fixed bug when borrowing from teams.");
+			GUI.out("(v3.5)  ::  Added colors and user input display.");
 			skip = true;
 		}
 		if( data.contains("help") && !data.contains("find") || data.contains("help") && !data.contains("look") )
@@ -282,8 +285,7 @@ public class PitAssistant {
 			GUI.out("7. Add ability to search for items we have borrowed");
 			GUI.out("8. Update help function");
 			GUI.out("9. Add ability to return items");
-			GUI.out("10. Make resultLabel scrollable");
-			GUI.out("11. Make GUI close on program termination");
+			GUI.out("10. Make GUI close on program termination");
 			skip = true;
 		}
 		if( data.contains("git") )
@@ -539,7 +541,7 @@ public class PitAssistant {
 		/* [Cleanup] [Text] [Print] [010] */
 		if( reply )
 		{
-			
+			reply = false;
 		}
 		else
 		{
