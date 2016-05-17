@@ -1,5 +1,5 @@
-import java.util.Scanner;
 import java.io.*;
+import java.net.URL;
 
 public class PitAssistant {
 
@@ -72,6 +72,9 @@ public class PitAssistant {
 	public static boolean reply = false;
 	
 	protected static PAInterface GUI = new PAInterface();
+	URL load = PAInterface.class.getResource("load");
+	URL in = PAInterface.class.getResource("in");
+	URL out = PAInterface.class.getResource("out");
 	
 	public static void main(String args[]) throws InterruptedException
 	{
@@ -141,13 +144,13 @@ public class PitAssistant {
 	public static void greet()
 	{
 		/* [Startup] [Text] [Print] [Info] [005] */
-		GUI.out("  =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=[Hannah Bot]=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=");
+		GUI.out("  =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-[Pit Assistant]-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=");
 		GUI.out("");
-		GUI.out("     Hi, I'm HannahBot (v3.0). I can look for things, and tell you what's in our totes and boxes.");
-		GUI.out("  Hannah Bot (v3.0) Theoretically(TM) supports description-based queries and all sentence structures.");
-		GUI.out("            Hannah Bot (v3.0) Theoretically(TM) keeps track of borrowed items from a file.");
+		GUI.out("  Hi, I'm Pit Assistant (v3.2). I can look for things, and tell you what's in our totes and boxes.");
+		GUI.out("Pit Assisstant (v3.2) Theoretically(TM) supports description-based queries and all sentence structures.");
+		GUI.out("         Pit Assistant (v3.2) Theoretically(TM) keeps track of borrowed items from a file.");
 		GUI.out("");
-		GUI.out("  =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=(v3.0)=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=");
+		GUI.out("  =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=(v3.2)=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=");
 		GUI.out("");
 		GUI.out("How may I help you?");
 	}
@@ -242,6 +245,7 @@ public class PitAssistant {
 			GUI.out("(v3.0)  ::  Created a basic GUI with a scroll bar. Mentioning the scroll bar it took 4 hours.");
 			GUI.out("(v3.1)  ::  Prepared program to be converted into an executable.");
 			GUI.out("(v3.2)  ::  Added the 604 logo.");
+			GUI.out("(v3.3)  ::  Made PitAssistant Executable friendly.");
 			skip = true;
 		}
 		if( data.contains("help") && !data.contains("find") || data.contains("help") && !data.contains("look") )
