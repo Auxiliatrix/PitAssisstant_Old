@@ -1,6 +1,20 @@
-// Pit Assistant Version 3.3
+/*
+ * Copyright (c) 2016, Sang Gi Kim. All rights reserved.
+ *
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions
+ * are met:
+ *
+ *   - Redistributions of source code must retain the above copyright
+ *     notice, and this list of conditions.
+ *
+ *   - Redistributions in binary form must reproduce the above copyright
+ *     notice, and this list of conditions.
+ *     
+ */
 import java.io.*;
-import java.net.URL;
+
+import javax.print.DocFlavor.URL;
 
 public class PitAssistant {
 
@@ -73,9 +87,6 @@ public class PitAssistant {
 	public static boolean reply = false;
 	
 	protected static PAInterface GUI = new PAInterface();
-	URL load = PAInterface.class.getResource("load");
-	URL in = PAInterface.class.getResource("in");
-	URL out = PAInterface.class.getResource("out");
 	
 	public static void main(String args[]) throws InterruptedException
 	{
