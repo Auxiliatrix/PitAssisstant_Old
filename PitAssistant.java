@@ -1,7 +1,7 @@
 import java.util.Scanner;
 import java.io.*;
 
-public class HannahBot {
+public class PitAssistant {
 
 	public static String[] borrowFile = new String[10000];
 	public static int borrowFilePointer = 0;
@@ -68,7 +68,7 @@ public class HannahBot {
 	public static boolean on = true;
 	public static boolean borrowCheck = true;
 	public static String color = "black";
-	public static String name = "Pit Assisstant";
+	public static String name = "Pit Assistant";
 	public static boolean reply = false;
 	
 	protected static PAInterface GUI = new PAInterface();
