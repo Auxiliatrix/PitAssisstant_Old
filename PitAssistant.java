@@ -258,6 +258,7 @@ public class PitAssistant {
 			GUI.out("(v3.1)  ::  Prepared program to be converted into an executable.");
 			GUI.out("(v3.2)  ::  Added the 604 logo.");
 			GUI.out("(v3.3)  ::  Made PitAssistant Executable friendly.");
+			GUI.out("(v3.4)  ::  Fixed bug when borrowing from teams.");
 			skip = true;
 		}
 		if( data.contains("help") && !data.contains("find") || data.contains("help") && !data.contains("look") )
