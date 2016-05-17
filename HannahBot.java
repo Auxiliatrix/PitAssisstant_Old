@@ -67,6 +67,9 @@ public class HannahBot {
 	public static boolean adminRestart = true;
 	public static boolean on = true;
 	public static boolean borrowCheck = true;
+	public static String color = "black";
+	public static String name = "Pit Assisstant";
+	public static boolean reply = false;
 	
 	protected static PAInterface GUI = new PAInterface();
 	
@@ -81,14 +84,14 @@ public class HannahBot {
 	}
 	public static void initialize()
 	{
-		GUI.load();
+		GUI.load("Pit Assistant");
 		/* [Organizer] [Load] [002] */
 		GUI.out("Loading libraries...");
 		loadLibrary();
 		GUI.out("Libraries loaded!");
-		if( !loaded() )
+		if( !loadedBorrow() )
 		{
-			if(createFile() )
+			if(createFile())
 			{
 				resetBorrow();
 			}
@@ -114,7 +117,7 @@ public class HannahBot {
 		}
 		return true;
 	}
-	public static boolean loaded()
+	public static boolean loadedBorrow()
 	{
 		/* [Startup] [Load] [Borrow] [004] */
 		boolean tf = false;
@@ -131,20 +134,20 @@ public class HannahBot {
         {
         	tf = false;
         	GUI.out("Initial startup detected.");
-        	GUI.out("Creating new file.");
+        	GUI.out("Creating new borrow file.");
         }
 		return tf;
 	}
 	public static void greet()
 	{
 		/* [Startup] [Text] [Print] [Info] [005] */
-		GUI.out("=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=[Hannah Bot]=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=");
+		GUI.out("  =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=[Hannah Bot]=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=");
 		GUI.out("");
-		GUI.out("       Hi, I'm HannahBot (v2.0). I can look for things, and tell you what's in our totes and boxes.");
-		GUI.out("Hannah Bot (v2.0) Theoretically(TM) supports description-based queries and all sentence structures.");
-		GUI.out("Hannah Bot (v2.0) Theoretically(TM) can now read and keep track of borrowed items from a file.");
+		GUI.out("     Hi, I'm HannahBot (v3.0). I can look for things, and tell you what's in our totes and boxes.");
+		GUI.out("  Hannah Bot (v3.0) Theoretically(TM) supports description-based queries and all sentence structures.");
+		GUI.out("            Hannah Bot (v3.0) Theoretically(TM) keeps track of borrowed items from a file.");
 		GUI.out("");
-		GUI.out("-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=(v2.0)=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=");
+		GUI.out("  =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=(v3.0)=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=");
 		GUI.out("");
 		GUI.out("How may I help you?");
 	}
@@ -201,7 +204,6 @@ public class HannahBot {
 		}
 		boolean normal = false;
 		boolean skip = false;
-		boolean ignoreExclaim = false;
 		String data = input.toLowerCase();
 		if( data.contains("cya") || data.contains("bye") || data.contains("terminate") || data.contains("shut down") )
 		{
@@ -218,16 +220,27 @@ public class HannahBot {
 		}
 		if( data.contains("changelog") )
 		{
-			GUI.out("(v1.0) ::  Basic search function for totes.");
-			GUI.out("(v1.1) ::  Added some more search functinality.");
-			GUI.out("(v1.2) ::  Added ability to list things in totes.");
-			GUI.out("(v1.3) ::  Added support for sentence structures.");
-			GUI.out("(v1.4) ::  Added Easter Eggs and bug fixes.");
-			GUI.out("(v1.5) ::  Incorporated description-based search.");
-			GUI.out("(v1.6) ::  Bug fixes. Added some additional commands and Easter Eggs.");
-			GUI.out("(v1.7) ::  Improved Search Algorithm. Bug Fixes. Consolidated Memory Arrays.");
-			GUI.out("(v1.8) ::  Critical Bug Fix.");
-			GUI.out("(v1.9) ::  Added ability to read and keep track of borrowed items from a file.");
+			GUI.out("(v1.0)  ::  Basic search function for totes.");
+			GUI.out("(v1.1)  ::  Added some more search functinality.");
+			GUI.out("(v1.2)  ::  Added ability to list things in totes.");
+			GUI.out("(v1.3)  ::  Added support for sentence structures.");
+			GUI.out("(v1.4)  ::  Added Easter Eggs and bug fixes.");
+			GUI.out("(v1.5)  ::  Incorporated description-based search.");
+			GUI.out("(v1.6)  ::  Bug fixes. Added some additional commands and Easter Eggs.");
+			GUI.out("(v1.7)  ::  Improved Search Algorithm. Bug Fixes. Consolidated Memory Arrays.");
+			GUI.out("(v1.8)  ::  Critical Bug Fix.");
+			GUI.out("(v1.9)  ::  Added ability to read and keep track of borrowed items from a file.");
+			GUI.out("(v1.10) ::  Found several bugs with reading from the borrow file.");
+			GUI.out("(v2.0)  ::  Fixed all 23 borrow function bugs. Borrow file is now saved permanently.");
+			GUI.out("(v2.1)  ::  Organized classes for easier debugging.");
+			GUI.out("(v2.2)  ::  Added ability to append the borrow file from within the program.");
+			GUI.out("(v2.3)  ::  Consolidated input function. Fixed bugs in borrow functionality.");
+			GUI.out("(v2.4)  ::  Added item validity checks for reading and writing.");
+			GUI.out("(v2.5)  ::  Started tagging classes for easier debugging.");
+			GUI.out("(v2.6)  ::  Added restore borrow file function.");
+			GUI.out("(v2.7)  ::  Made search function also search for borrowed items.");
+			GUI.out("(v3.0)  ::  Created a basic GUI with a scroll bar. Mentioning the scroll bar it took 4 hours.");
+			GUI.out("(v3.1)  ::  Prepared program to be converted into an executable.");
 			skip = true;
 		}
 		if( data.contains("help") && !data.contains("find") || data.contains("help") && !data.contains("look") )
@@ -236,6 +249,7 @@ public class HannahBot {
 			GUI.out("I can also list things in the totes.");
 			GUI.out("Say 'flush' to clear the output thingy.");
 			GUI.out("Say 'changelog' to view the changelog.");
+			GUI.out("You can tell me what items have been borrowed or lent.");
 			GUI.out("You can also toggle debug mode by telling me to.");
 			skip = true;
 		}
@@ -335,11 +349,17 @@ public class HannahBot {
 			}
 			skip = true;
 		}
-		if( data.startsWith("hi!") || data.startsWith("hi ") || data.startsWith("hello") || data.startsWith("greetings") || data.startsWith("hey") )
+		if( data.contains("hannah?") )
+		{
+			GUI.out("Yes?");
+			reply = true;
+			skip = true;
+		}
+		else if( data.startsWith("hi!") || data.startsWith("hi ") || data.startsWith("hello") || data.startsWith("greetings") || data.startsWith("hey") )
 		{
 			GUI.out("Hi.");
 			Thread.sleep(500);
-			ignoreExclaim = true;
+			reply = true;
 			skip = true;
 		}
 		if( data.contains("ziptie") && data.contains("dream") )
@@ -499,7 +519,14 @@ public class HannahBot {
 	public static void menu()
 	{
 		/* [Cleanup] [Text] [Print] [010] */
-		GUI.out("How else may I help you?");
+		if( reply )
+		{
+			
+		}
+		else
+		{
+			GUI.out("How else may I help you?");
+		}
 	}
 	public static void output()
 	{
@@ -1013,7 +1040,7 @@ public class HannahBot {
 	}
 	public static void loadBorrow()
 	{
-		/* [Startup] [Borrow] [IO] [022] */
+		/* [Startup] [Borrow] [Read] [IO] [022] */
 		if( debugMode )
 		{
 			GUI.out("LoadBorrow called");
@@ -1338,7 +1365,6 @@ public class HannahBot {
             boolean data = false;
             while((line = bufferedReader.readLine()) != null)
             {
-            	String item = "";
             	if( line.startsWith("//") )
             	{
             		String ignore = line;

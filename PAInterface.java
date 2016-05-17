@@ -37,14 +37,14 @@ public class PAInterface extends JPanel implements ActionListener {
         c.weighty = 1.0;
         add(scroll, c);
     }
-	protected void load() {
-        JFrame frame = new JFrame("PPAI");
+	protected void load(String name) {
+        JFrame frame = new JFrame(name);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.add(new PAInterface());
         frame.pack();
         frame.setVisible(true);
         frame.setResizable(false);
-        frame.setSize(1100,700);
+        frame.setSize(1150,700);
         frame.getContentPane().setBackground(Color.WHITE);
     }
 	
