@@ -2,9 +2,12 @@ import java.awt.Color;
 import java.awt.Font;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
+import java.awt.Image;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.IOException;
 
+import javax.imageio.ImageIO;
 import javax.swing.*;
 
 public class PAInterface extends JPanel implements ActionListener {
@@ -46,6 +49,13 @@ public class PAInterface extends JPanel implements ActionListener {
         frame.setResizable(false);
         frame.setSize(1150,700);
         frame.getContentPane().setBackground(Color.WHITE);
+        Image img = null;
+		try {
+			img = ImageIO.read(getClass().getResource("604logo.bmp"));
+		}catch (IOException e) {
+			System.out.println("Logo picture not found!");
+		}
+        frame.setIconImage(img);
     }
 	
 	public String in()

@@ -241,6 +241,7 @@ public class HannahBot {
 			GUI.out("(v2.7)  ::  Made search function also search for borrowed items.");
 			GUI.out("(v3.0)  ::  Created a basic GUI with a scroll bar. Mentioning the scroll bar it took 4 hours.");
 			GUI.out("(v3.1)  ::  Prepared program to be converted into an executable.");
+			GUI.out("(v3.2)  ::  Added the 604 logo.");
 			skip = true;
 		}
 		if( data.contains("help") && !data.contains("find") || data.contains("help") && !data.contains("look") )
