@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+	<meta charset="UTF-8">
+	<title>totes</title>
+	<link rel="stylesheet" href="css/style.css" type="text/css">
+	
+	<script src="node_modules/jquery/dist/jquery.min.js" type="text/javascript"></script>
+	<script src="node_modules/draggabilly/dist/draggabilly.pkgd.min.js" type="text/javascript"></script>
+	<script src="node_modules/angular/angular.min.js" type="text/javascript"></script>
+	
+	<link href='https://fonts.googleapis.com/css?family=Roboto' rel='stylesheet' type='text/css'>
+	<link href='node_modules/font-awesome/css/font-awesome.min.css' rel='stylesheet' type='text/css'>
+	<link href="http://fonts.googleapis.com/css?family=Corben:bold" rel="stylesheet" type="text/css">
+	<link href="http://fonts.googleapis.com/css?family=Nobile" rel="stylesheet" type="text/css">
+	<link href='https://fonts.googleapis.com/css?family=Poiret+One' rel='stylesheet' type='text/css'>
+</head>
+
+<body ng-app="totes" ng-controller="containerController">
+	<div id="overlay" ng-show="contentUIShow" ng-click="contentUIShow = false;"></div>
+	
+	<div class="mui-panel mui--z2" id="searchBarPanel">
+		<div class="mui-textfield mui-textfield--float-label" >
+			<input type="text" ng-model="searchText">
+			<label>Search</label>
+		</div>
+		
+		<div ng-repeat="result in results" ng-mouseenter="console.log('hovering over')">
+			{{result[0]}}
+		</div>
+	</div>
+	
+	<div class="mui-panel mui--z2" id="container" class="container">
+		<div class="mui-btn mui-btn--small mui-btn--primary mui-btn--fab" id="newToteBtn" ng-click="newTote()"><i class="fa fa-plus"></i></div>
+		
+		<div ng-repeat="x in totes" class="draggable" ng-style="getStyle(x[1])">
+			<div class="dText mui--no-user-select">{{x.name}}</div>
+			<div class="mui-btn mui-btn--small mui-btn--primary mui-btn--fab dButton" id="contentsButton" ng-click="showContents(x)"><i class="fa fa-archive"></i></div>
+			<div class="mui-btn mui-btn--small mui-btn--primary mui-btn--fab dButton" id="rotateButton" ng-click="onClick(x)"><i class="fa fa-repeat"></i></div>
+		</div>
+	</div>
+	
+	<div id="contentsModal" class="mui-panel mui--z2" ng-show="contentUIShow">
+		<h1>{{modalTote.name}}</h1>
+		<ul id="modalList">
+			<li ng-repeat="y in modalTote.contents">{{y}} <i class="fa fa-times" ng-click="modalTote.contents.splice(modalTote.contents.indexOf(y), 1);"></i></li>
+			<li><input type="text" placeholder="New Item" ng-model="newItem"><i class="fa fa-check" ng-show="newItem != ''" ng-click="modalTote.contents.push(newItem); newItem = ''"></i></li>
+		</ul>
+	</div>
+		<script src="js/index.js" type="text/javascript"></script>
+</body>
+
+</html>
