@@ -158,11 +158,11 @@ public class PitAssistant {
 		/* [Startup] [Text] [Print] [Info] [005] */
 		GUI.out("  =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-[Pit Assistant]-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=");
 		GUI.out("");
-		GUI.out("  Hi, I'm Pit Assistant (v3.2). I can look for things, and tell you what's in our totes and boxes.");
-		GUI.out("Pit Assisstant (v3.2) Theoretically(TM) supports description-based queries and all sentence structures.");
-		GUI.out("         Pit Assistant (v3.2) Theoretically(TM) keeps track of borrowed items from a file.");
+		GUI.out("  Hi, I'm Pit Assistant (v3.3). I can look for things, and tell you what's in our totes and boxes.");
+		GUI.out("Pit Assisstant (v3.3) Theoretically(TM) supports description-based queries and all sentence structures.");
+		GUI.out("         Pit Assistant (v3.3) Theoretically(TM) keeps track of borrowed items from a file.");
 		GUI.out("");
-		GUI.out("  =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=(v3.2)=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=");
+		GUI.out("  =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=(v3.3)=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=");
 		GUI.out("");
 		GUI.out("How may I help you?");
 	}
@@ -986,7 +986,7 @@ public class PitAssistant {
 				Item = input();
 			}
 			GUI.out("Which team did we borrow from?");
-			while(Item.equals(""))
+			while(Team.equals(""))
 			{
 				Team = input();
 			}
