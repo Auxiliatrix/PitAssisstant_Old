@@ -15,6 +15,7 @@ import javax.swing.text.Style;
 import javax.swing.text.StyleConstants;
 
 public class PAInterface extends JPanel implements ActionListener {
+	protected JFrame frame;
 	protected JTextField searchBar;
     protected static JTextPane console;
     protected JScrollPane scroll;
@@ -52,7 +53,7 @@ public class PAInterface extends JPanel implements ActionListener {
     }
 	protected void load(String program, String user, Color pac, Color uc)
 	{
-        JFrame frame = new JFrame(program);
+        frame = new JFrame(program);
         programName = program;
         userName = user;
         programColor = pac;
@@ -120,12 +121,19 @@ public class PAInterface extends JPanel implements ActionListener {
 		console.setText("");
 		out("  =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-[" + programName + "]-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=");
 		out("");
-		out("  Hi, I'm Pit Assistant (v3.7). I can look for things, and tell you what's in our totes and boxes.");
-		out("Pit Assisstant (v3.7) Theoretically(TM) supports description-based queries and all sentence structures.");
-		out("         Pit Assistant (v3.7) Theoretically(TM) keeps track of borrowed items from a file.");
-		out("       Pit Assistant (v3.7) also Theoretically(TM) supports and keeps track of user preferences.");
+		out("  Hi, I'm Pit Assistant (v3.8). I can look for things, and tell you what's in our totes and boxes.");
+		out("Pit Assisstant (v3.8) Theoretically(TM) supports description-based queries and all sentence structures.");
+		out("         Pit Assistant (v3.8) Theoretically(TM) keeps track of borrowed items from a file.");
+		out("       Pit Assistant (v3.8) also Theoretically(TM) supports and keeps track of user preferences.");
 		out("");
-		out("  =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=(v3.7)=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=");
+		out("  =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=(v3.8)=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=");
 		out("");
+	}
+	protected void command(String command)
+	{
+		if( command.equals("end") )
+		{
+			frame.dispose();
+		}
 	}
 }

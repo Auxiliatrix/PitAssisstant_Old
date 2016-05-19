@@ -85,6 +85,7 @@ public class PitAssistant {
 	public static boolean adminRestart = true;
 	public static boolean on = true;
 	public static boolean borrowCheck = true;
+	public static boolean prefCheck = true;
 	public static String programName = "Pit Assistant";
 	public static String userName = "";
 	public static boolean un = false;
@@ -392,12 +393,12 @@ public class PitAssistant {
 		/* [Startup] [Text] [Print] [Info] [005] */
 		GUI.out("  =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-["+programName+"]-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=");
 		GUI.out("");
-		GUI.out("  Hi, I'm Pit Assistant (v3.7). I can look for things, and tell you what's in our totes and boxes.");
-		GUI.out("Pit Assisstant (v3.7) Theoretically(TM) supports description-based queries and all sentence structures.");
-		GUI.out("         Pit Assistant (v3.7) Theoretically(TM) keeps track of borrowed items from a file.");
-		GUI.out("       Pit Assistant (v3.7) also Theoretically(TM) supports and keeps track of user preferences.");
+		GUI.out("  Hi, I'm Pit Assistant (v3.8). I can look for things, and tell you what's in our totes and boxes.");
+		GUI.out("Pit Assisstant (v3.8) Theoretically(TM) supports description-based queries and all sentence structures.");
+		GUI.out("         Pit Assistant (v3.8) Theoretically(TM) keeps track of borrowed items from a file.");
+		GUI.out("       Pit Assistant (v3.8) also Theoretically(TM) supports and keeps track of user preferences.");
 		GUI.out("");
-		GUI.out("  =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=(v3.7)=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=");
+		GUI.out("  =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=(v3.8)=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=");
 		GUI.out("");
 		GUI.out("How may I help you?");
 	}
@@ -419,9 +420,10 @@ public class PitAssistant {
 			{
 				menu();
 			}
-			else if( !on && borrowCheck )
+			else if( !on && borrowCheck && prefCheck )
 			{
 				GUI.out("Goodbye.");
+				GUI.command("end");
 			}
 		}
 	}
@@ -489,6 +491,7 @@ public class PitAssistant {
 			GUI.out("(v3.5)  ::  Added colors and user input display.");
 			GUI.out("(v3.6)  ::  Made colors changeable from within the program.");
 			GUI.out("(v3.7)  ::  Added reset and restore preferences functionality.");
+			GUI.out("(v3.8)  ::  Made window close on program termination.");
 			skip = true;
 		}
 		if( data.contains("help") && !data.contains("find") || data.contains("help") && !data.contains("look") )
@@ -512,8 +515,7 @@ public class PitAssistant {
 			GUI.out("7. Add ability to search for items we have borrowed");
 			GUI.out("8. Update help function");
 			GUI.out("9. Add ability to return items");
-			GUI.out("10. Make GUI close on program termination");
-			GUI.out("11. Add sentience easter egg");
+			GUI.out("10. Add sentience easter egg");
 			skip = true;
 		}
 		if( data.contains("git") )
