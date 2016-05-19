@@ -6,7 +6,7 @@ As of right now, PitAssisstant(HannahBot) is version 3.4, and supports descripti
 The code is open-source, so that you can all look at it and pretend to look smart while saying "yeah, I totally could have done that."
 Well, you didn't. 604 Quixilver's Programmers did. But it was mostly Sang Gi. Have fun!
 
-By the way, you can download the latest executable [here](tinyurl.com/PitAssistant3point4).
+By the way, you can download the latest executable [here](tinyurl.com/PitAssistant3dot8).
 
 ###Commands:
 - help - display commands
