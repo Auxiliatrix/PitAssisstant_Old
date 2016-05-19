@@ -83,10 +83,22 @@ public class PitAssistant {
 	public static boolean adminRestart = true;
 	public static boolean on = true;
 	public static boolean borrowCheck = true;
-	public static String name = "Pit Assistant";
-	public static Color PAColor = Color.BLACK;
+	public static String programName = "Pit Assistant";
+	public static String userName = "";
+	public static boolean un = false;
+	public static Color programColor = Color.BLACK;
 	public static Color userColor = Color.BLUE;
+	public static String backupProgramName = "";
+	public static String backupUserName = "";
+	public static boolean backupun = false;
+	public static Color backupProgramColor = Color.BLACK;
+	public static Color backupUserColor = Color.BLUE;
+	public static int sarcasm = 0;
+	public static int backupSarcasm = 0;
+	public static String language = "english";
+	public static String backupLanguage = "english";
 	public static boolean reply = false;
+	public static boolean started = false;
 	
 	protected static PAInterface GUI = new PAInterface();
 	
@@ -101,38 +113,32 @@ public class PitAssistant {
 	}
 	public static void initialize()
 	{
-		GUI.load(name,PAColor,userColor);
 		/* [Organizer] [Load] [002] */
-		GUI.out("Loading libraries...");
-		loadLibrary();
-		GUI.out("Libraries loaded!");
 		if( !loadedBorrow() )
 		{
-			if(createFile())
+			if(createBorrow())
 			{
 				resetBorrow();
 			}
 		}
+		if( !loadedPref() )
+		{
+			if(createPref())
+			{
+				resetPref();
+			}
+		}
 		loadBorrow();
-		greet();
-	}
-	public static boolean createFile()
-	{
-		/* [Startup] [Load] [Borrow] [003] */
-		try
+		loadPref();
+		if( !started )
 		{
-        	FileWriter fw = new FileWriter("borrow.txt", true);
-        	BufferedWriter bw = new BufferedWriter(fw);
-        	PrintWriter out = new PrintWriter(bw);
-        	fw.close();
-        	bw.close();
-        	out.close();
+			GUI.load(programName,userName,programColor,userColor);
+			GUI.out("Loading libraries...");
+			loadLibrary();
+			GUI.out("Libraries loaded!");
+			greet();
+			started = true;
 		}
-		catch( Exception E )
-		{
-			GUI.out("Error creating file.");
-		}
-		return true;
 	}
 	public static boolean loadedBorrow()
 	{
@@ -155,26 +161,216 @@ public class PitAssistant {
         }
 		return tf;
 	}
+	public static boolean loadedPref()
+	{
+		/* [Startup] [Load] [Preferences] [065] */
+		boolean tf = false;
+		String fileName = "preferences.txt";
+		String line = null;
+		try {
+			FileReader fileReader = new FileReader(fileName);
+			BufferedReader bufferedReader = new BufferedReader(fileReader);
+			fileReader.close();
+			bufferedReader.close();
+			tf = true;
+		}
+		catch(Exception e)
+		{
+			tf = false;
+			GUI.out("Preferences file not detected.");
+			GUI.out("Generating new preferences file.");
+		}
+		return tf;
+	}
+	public static boolean createBorrow()
+	{
+		/* [Startup] [Load] [Borrow] [003] */
+		try {
+        	FileWriter fw = new FileWriter("borrow.txt", true);
+        	BufferedWriter bw = new BufferedWriter(fw);
+        	PrintWriter out = new PrintWriter(bw);
+        	fw.close();
+        	bw.close();
+        	out.close();
+		}
+		catch(Exception E)
+		{
+			GUI.out("Error creating borrow file.");
+		}
+		return true;
+	}
+	public static boolean createPref()
+	{
+		/* [Startup] [Load] [Preferences] [066] */
+		try
+		{
+			FileWriter fw = new FileWriter("preferences.txt", true);
+			BufferedWriter bw = new BufferedWriter(fw);
+			PrintWriter out = new PrintWriter(bw);
+			fw.close();
+			bw.close();
+			out.close();
+		}
+		catch(Exception E)
+		{
+			GUI.out("Error creating preferences file.");
+		}
+		return true;
+	}
+	public static void resetBorrow()
+	{
+		/* [Cleanup] [Borrow] [Memory] [026] */
+		if( debugMode )
+		{
+			GUI.out("ResetBorrow called.");
+		}
+		loadToolBox();
+		loadToteA();
+		loadToteB();
+		loadToteC();
+		loadToteD();
+		loadToteE();
+		loadCrate();
+		saveBorrow();
+		clearBorrow();
+		borrowedItemBU = borrowedItem;
+		borrowedTeamBU = borrowedTeam;
+		borrowedPointerBU = borrowedPointer;
+		lentItemBU = lentItem;
+		lentLocBU = lentLoc;
+		lentTeamBU = lentTeam;
+		lentPointerBU = lentPointer;
+		borrowWrite("// adminRestart = false");
+		borrowWrite("// This is the file where the borrowed items are stored.");
+		borrowWrite("// Line 1: B/L (Borrowed/Lent)");
+		borrowWrite("// Line 2: Item Name (Exact)");
+		borrowWrite("// Line 3: Team No.");
+		borrowedPointer = 0;
+		lentPointer = 0;
+		for( int f=0; f<10000; f++ )
+		{
+			borrowedItem[f] = "";
+			borrowedTeam[f] = "";
+			lentItem[f] = "";
+			lentLoc[f][0] = 0;
+			lentLoc[f][1] = 0;
+			lentTeam[f] = "";
+		}
+		ToolBoxBB = ToolBox;
+		ToteABB = ToteA;
+		ToteBBB = ToteB;
+		ToteCBB = ToteC;
+		ToteDBB = ToteD;
+		ToteEBB = ToteE;
+		CrateBB = Crate;
+	}
+	public static void resetPref()
+	{
+		/* [Cleanup] [Preferences] [Memory] [067] */
+		un = false;
+		savePref();
+		clearPref();
+		prefWrite("// This is where your personal preferences are stored.");
+		prefWrite("programName");
+		prefWrite("Pit Assistant");
+		prefWrite("userName");
+		prefWrite("null");
+		prefWrite("programColor");
+		prefWrite("black");
+		prefWrite("userColor");
+		prefWrite("blue");
+		prefWrite("language");
+		prefWrite("english");
+		prefWrite("sarcasm");
+		prefWrite("0");
+	}
+	public static void saveBorrow()
+	{
+		/* [Borrow] [Memory] [062] */
+		String fileName = "borrow.txt";
+		String line = null;
+		try {
+            FileReader fileReader = new FileReader(fileName);
+            BufferedReader bufferedReader = new BufferedReader(fileReader);
+            while((line = bufferedReader.readLine()) != null)
+            {
+            	if( line.startsWith("//") )
+            	{
+            		String ignore = line;
+            	}
+            	else if( line!=null )
+				{
+            		borrowFile[borrowFilePointer] = line;
+            		borrowFilePointer++;
+				}
+			} 
+            fileReader.close();
+            bufferedReader.close();
+		}
+		catch(Exception e)
+		{
+			GUI.out("I had an issue while trying to read from the borrow file.");
+		}
+	}
+	public static void savePref()
+	{
+		backupProgramName = programName;
+		backupUserName = userName;
+		backupun = un;
+		backupProgramColor = programColor;
+		backupUserColor = userColor;
+		backupSarcasm = sarcasm;
+		backupLanguage = language;
+	}
+	public static void clearBorrow()
+	{
+		/* [Cleanup] [Borrow] [Memory] [025] */
+		if( debugMode )
+		{
+			GUI.out("ClearBorrow called.");
+		}
+		PrintWriter writer;
+		try {
+			writer = new PrintWriter("borrow.txt");
+			writer.print("");
+			writer.close();
+		} catch (FileNotFoundException e) {
+			GUI.out("You can't reset something I don't have yet.");
+		}
+	}
+	public static void clearPref()
+	{
+		/* [Cleanup] [Borrow] [Memory] [068] */
+		if( debugMode )
+		{
+			GUI.out("ClearPref called.");
+		}
+		PrintWriter writer;
+		try {
+			writer = new PrintWriter("preferences.txt");
+			writer.print("");
+			writer.close();
+		} catch (FileNotFoundException e) {
+			GUI.out("You can't reset something I don't have yet.");
+		}
+	}
 	public static void greet()
 	{
 		/* [Startup] [Text] [Print] [Info] [005] */
-		GUI.out("  =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-[Pit Assistant]-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=");
+		GUI.out("  =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-["+programName+"]-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=");
 		GUI.out("");
-		GUI.out("  Hi, I'm Pit Assistant (v3.5). I can look for things, and tell you what's in our totes and boxes.");
-		GUI.out("Pit Assisstant (v3.5) Theoretically(TM) supports description-based queries and all sentence structures.");
-		GUI.out("         Pit Assistant (v3.4) Theoretically(TM) keeps track of borrowed items from a file.");
+		GUI.out("  Hi, I'm Pit Assistant (v3.6). I can look for things, and tell you what's in our totes and boxes.");
+		GUI.out("Pit Assisstant (v3.6) Theoretically(TM) supports description-based queries and all sentence structures.");
+		GUI.out("         Pit Assistant (v3.6) Theoretically(TM) keeps track of borrowed items from a file.");
+		GUI.out("       Pit Assistant (v3.6) also Theoretically(TM) supports and keeps track of user preferences.");
 		GUI.out("");
-		GUI.out("  =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=(v3.5)=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=");
+		GUI.out("  =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=(v3.6)=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=");
 		GUI.out("");
 		GUI.out("How may I help you?");
 	}
 	public static void conductor() throws InterruptedException
 	{
 		/* [Organizer] [Main] [006] */
-		if( debugMode )
-		{
-			GUI.out("Conductor called.");
-		}
 		reset();
 		String input = input();
 		if( input!="" )
@@ -199,10 +395,6 @@ public class PitAssistant {
 	public static void reset()
 	{
 		/* [Cleanup] [Pointer] [Borrow] [007] */
-		if( debugMode )
-		{
-			GUI.out("Reset called.");
-		}
 		resultPointer = 0;
 		keywordPointer = 0;
 		for( int f=0; f<printedPointer; f++ )
@@ -222,7 +414,7 @@ public class PitAssistant {
 		boolean normal = false;
 		boolean skip = false;
 		String data = input.toLowerCase();
-		if( data.contains("cya") || data.contains("bye") || data.contains("terminate") || data.contains("shut down") )
+		if( (!data.contains("cyan") && data.contains("cya")) || data.contains("bye") || data.contains("terminate") || data.contains("shut down") )
 		{
 			shutDown();
 			skip = true;
@@ -262,11 +454,12 @@ public class PitAssistant {
 			GUI.out("(v3.3)  ::  Made PitAssistant Executable friendly.");
 			GUI.out("(v3.4)  ::  Fixed bug when borrowing from teams.");
 			GUI.out("(v3.5)  ::  Added colors and user input display.");
+			GUI.out("(v3.6)  ::  Made colors changeable from within the program.");
 			skip = true;
 		}
 		if( data.contains("help") && !data.contains("find") || data.contains("help") && !data.contains("look") )
 		{
-			GUI.out("I can look for things by name or by description, theoretically.");
+			GUI.out("I can look for things by programName or by description, theoretically.");
 			GUI.out("I can also list things in the totes.");
 			GUI.out("Say 'flush' to clear the output thingy.");
 			GUI.out("Say 'changelog' to view the changelog.");
@@ -286,11 +479,17 @@ public class PitAssistant {
 			GUI.out("8. Update help function");
 			GUI.out("9. Add ability to return items");
 			GUI.out("10. Make GUI close on program termination");
+			GUI.out("11. Add sentience easter egg");
 			skip = true;
 		}
 		if( data.contains("git") )
 		{ 
 			GUI.out("Go away, Ryan.");
+			skip = true;
+		}
+		if( data.contains(" ew") )
+		{
+			GUI.out("Well, I'm sorry.");
 			skip = true;
 		}
 		if( data.contains("cls") )
@@ -334,6 +533,33 @@ public class PitAssistant {
 			{
 				borrow("null");
 			}
+			skip = true;
+		}
+		if( data.contains("color") )
+		{
+			if( data.contains("change") || data.contains("set") || data.contains("turn") || data.contains("make") )
+			{
+				if( data.contains("my") )
+				{
+					colorChange("my",data);
+					skip = true;
+				}
+				else if( data.contains("your") )
+				{
+					colorChange("your",data);
+					skip = true;
+				}
+				else
+				{
+					colorChange("null",data);
+					skip = true;
+				}
+			}
+		}
+		if( data.contains("initialize") || data.contains("restart") )
+		{
+			GUI.out("Reinitializing.");
+			initialize();
 			skip = true;
 		}
 		if( data.contains("three") || data.contains("3") )
@@ -1046,7 +1272,7 @@ public class PitAssistant {
 		}
 		if(go)
 		{
-			borrowWrite(IO + "~" + Item + "~" + Team + "~");
+			toBorrow(IO + "~" + Item + "~" + Team + "~");
 			loadBorrow();
 		}
 		else if( !go && !none && !xcase )
@@ -1198,12 +1424,93 @@ public class PitAssistant {
             GUI.out("Error reading file '" + fileName + "'");
         }
 	}
-	public static void write(String string)
+	public static void loadPref()
+	{
+		/* [Startup] [Borrow] [Read] [IO] [022] */
+		if( debugMode )
+		{
+			GUI.out("LoadPref called");
+		}
+        String fileName = "preferences.txt";
+        String line = null;
+        try {
+            FileReader fileReader = new FileReader(fileName);
+            BufferedReader bufferedReader = new BufferedReader(fileReader);
+            while((line = bufferedReader.readLine()) != null)
+            {
+            	if( line.startsWith("//") )
+            	{
+            		String ignore = line;
+            	}
+            	else if( line.equals("programName") )
+				{
+            		line = bufferedReader.readLine();
+					programName = line;
+				}
+            	else if( line.equals("userName") )
+            	{
+            		line = bufferedReader.readLine();
+            		if( !line.equals(null) )
+            		{
+            			un = true;
+            			userName = line;
+            		}
+            	}
+            	else if( line.equals("programColor") )
+            	{
+            		line = bufferedReader.readLine();
+            		if( checkColor(line) )
+            		{
+            			programColor = colorConvert(line);
+            		}
+            		else if(!checkColor(line))
+            		{
+            			programColor = backupProgramColor;
+            		}
+            	}
+            	else if( line.equals("userColor") )
+            	{
+            		line = bufferedReader.readLine();
+            		if( checkColor(line) )
+            		{
+            			userColor = colorConvert(line);
+            		}
+            		else if(!checkColor(line))
+            		{
+            			userColor = backupUserColor;
+            		}
+            	}
+            	else if( line.equals("language") )
+            	{
+            		line = bufferedReader.readLine();
+            		language = line;
+            	}
+            	else if( line.equals("sarcasm") )
+            	{
+            		line = bufferedReader.readLine();
+            		sarcasm = Integer.parseInt(line);
+            	}
+            }   
+            fileReader.close();
+            bufferedReader.close();         
+        }
+        catch(FileNotFoundException ex)
+        {
+            GUI.out(
+                "Unable to open file '" + fileName + "'");                
+        }
+        catch(IOException ex)
+        {
+            GUI.out("Error reading file '" + fileName + "'");
+        }
+        GUI.prefChange(programName, userName, programColor, userColor);
+	}
+	public static void borrowWrite(String string)
 	{
 		/* [IO] [Borrow] [023] */
 		if( debugMode )
 		{
-			GUI.out("Write called with input '" + string + "'.");
+			GUI.out("BorrowWrite called with input '" + string + "'.");
 		}
 		try{
             FileWriter fstream = new FileWriter("borrow.txt",true);
@@ -1219,12 +1526,32 @@ public class PitAssistant {
         }
 
     }
-	public static void borrowWrite(String writer)
+	public static void prefWrite(String string)
+	{
+		/* [IO] [Preferences] [069] */
+		if( debugMode )
+		{
+			GUI.out("PrefWrite called with input '" + string + "'.");
+		}
+		try{
+            FileWriter fstream = new FileWriter("preferences.txt",true);
+            BufferedWriter fbw = new BufferedWriter(fstream);
+            if( string!=null )
+            {
+            	fbw.write(string);
+            	fbw.newLine();
+            	fbw.close();
+            }
+        }catch (Exception e) {
+            GUI.out("Couldn't print to the file.");
+        }
+	}
+	public static void toBorrow(String writer)
 	{
 		/* [Organizer] [Borrow] [IO] [024] */
 		if( debugMode )
 		{
-			GUI.out("BorrowWrite called with input '" + writer + "'.");
+			GUI.out("ToBorrow called with input '" + writer + "'.");
 		}
 		int end = writer.indexOf("~");
 		String BL = writer.substring(0,end);
@@ -1235,100 +1562,85 @@ public class PitAssistant {
 		end = temp.indexOf("~");
 		String team = temp.substring(0,end);
 		temp = temp.substring(end+1,temp.length());
-		write(BL);
-		write(item);
-		write(team);
+		borrowWrite(BL);
+		borrowWrite(item);
+		borrowWrite(team);
 	}
-	public static void clearBorrow()
+	public static boolean checkColor(String color)
 	{
-		/* [Cleanup] [Borrow] [Memory] [025] */
+		/* [Pref] [Color] [070] */
 		if( debugMode )
 		{
-			GUI.out("ClearBorrow called.");
+			GUI.out("CheckColor called with input '" + color + "'.");
 		}
-		PrintWriter writer;
-		try {
-			writer = new PrintWriter("borrow.txt");
-			writer.print("");
-			writer.close();
-		} catch (FileNotFoundException e) {
-			GUI.out("You can't reset something I don't have yet.");
+		boolean valid = false;
+		if( color.equals("black") || color.equals("blue") || color.equals("cyan") || color.equals("dark_gray") || color.equals("gray") || color.equals("green") || color.equals("light_gray") || color.equals("magenta") || color.equals("orange") || color.equals("pink") || color.equals("red") || color.equals("white") || color.equals("yellow") )
+		{
+			valid = true;
 		}
+		return valid;
 	}
-	public static void resetBorrow()
+	public static Color colorConvert(String color)
 	{
-		/* [Cleanup] [Borrow] [Memory] [026] */
+		/* [Pref] [Color] */
 		if( debugMode )
 		{
-			GUI.out("ResetBorrow called.");
+			GUI.out("ColorConvert called with input '" + color + "'.");
 		}
-		loadToolBox();
-		loadToteA();
-		loadToteB();
-		loadToteC();
-		loadToteD();
-		loadToteE();
-		loadCrate();
-		saveBorrow();
-		clearBorrow();
-		borrowedItemBU = borrowedItem;
-		borrowedTeamBU = borrowedTeam;
-		borrowedPointerBU = borrowedPointer;
-		lentItemBU = lentItem;
-		lentLocBU = lentLoc;
-		lentTeamBU = lentTeam;
-		lentPointerBU = lentPointer;
-		write("// adminRestart = false");
-		write("// This is the file where the borrowed items are stored.");
-		write("// Line 1: B/L (Borrowed/Lent)");
-		write("// Line 2: Item Name (Exact)");
-		write("// Line 3: Team No.");
-		borrowedPointer = 0;
-		lentPointer = 0;
-		for( int f=0; f<10000; f++ )
+		Color retColor = Color.BLACK;
+		if(color.equals("black"))
 		{
-			borrowedItem[f] = "";
-			borrowedTeam[f] = "";
-			lentItem[f] = "";
-			lentLoc[f][0] = 0;
-			lentLoc[f][1] = 0;
-			lentTeam[f] = "";
+			retColor = Color.BLACK;
 		}
-		ToolBoxBB = ToolBox;
-		ToteABB = ToteA;
-		ToteBBB = ToteB;
-		ToteCBB = ToteC;
-		ToteDBB = ToteD;
-		ToteEBB = ToteE;
-		CrateBB = Crate;
-	}
-	public static void saveBorrow()
-	{
-		/* [Borrow] [Memory] [062] */
-		String fileName = "borrow.txt";
-		String line = null;
-		try {
-            FileReader fileReader = new FileReader(fileName);
-            BufferedReader bufferedReader = new BufferedReader(fileReader);
-            while((line = bufferedReader.readLine()) != null)
-            {
-            	if( line.startsWith("//") )
-            	{
-            		String ignore = line;
-            	}
-            	else if( line!=null )
-				{
-            		borrowFile[borrowFilePointer] = line;
-            		borrowFilePointer++;
-				}
-			} 
-            fileReader.close();
-            bufferedReader.close();
-		}
-		catch(Exception e)
+		if(color.equals("blue"))
 		{
-			GUI.out("I had an issue while trying to read from the borrow file.");
+			retColor = Color.BLUE;
 		}
+		if(color.equals("cyan"))
+		{
+			retColor = Color.CYAN;
+		}
+		if(color.equals("dark_gray"))
+		{
+			retColor = Color.DARK_GRAY;
+		}
+		if(color.equals("gray"))
+		{
+			retColor = Color.GRAY;
+		}
+		if(color.equals("green"))
+		{
+			retColor = Color.GREEN;
+		}
+		if(color.equals("light_gray"))
+		{
+			retColor = Color.LIGHT_GRAY;
+		}
+		if(color.equals("magenta"))
+		{
+			retColor = Color.MAGENTA;
+		}
+		if(color.equals("orange"))
+		{
+			retColor = Color.ORANGE;
+		}
+		if(color.equals("pink"))
+		{
+			retColor = Color.PINK;
+		}
+		if(color.equals("red"))
+		{
+			retColor = Color.RED;
+		}
+		if(color.equals("white"))
+		{
+			retColor = Color.WHITE;
+		}
+		if(color.equals("yellow"))
+		{
+			retColor = Color.YELLOW;
+		}
+		return retColor;
 	}
 	public static void restoreBorrow()
 	{
@@ -1338,14 +1650,14 @@ public class PitAssistant {
 			GUI.out("RestoreBorrow called.");
 		}
 		clearBorrow();
-		write("// adminRestart = false");
-		write("// This is the file where the borrowed items are stored.");
-		write("// Line 1: B/L (Borrowed/Lent)");
-		write("// Line 2: Item Name (Exact)");
-		write("// Line 3: Team No.");
+		borrowWrite("// adminRestart = false");
+		borrowWrite("// This is the file where the borrowed items are stored.");
+		borrowWrite("// Line 1: B/L (Borrowed/Lent)");
+		borrowWrite("// Line 2: Item Name (Exact)");
+		borrowWrite("// Line 3: Team No.");
 		for( int f=0; f<borrowFilePointer+1; f++ )
 		{
-			write(borrowFile[f]);
+			borrowWrite(borrowFile[f]);
 			borrowFile[f] = "";
 		}
 		borrowedItem = borrowedItemBU;
@@ -1461,6 +1773,127 @@ public class PitAssistant {
             GUI.out("Error reading file '" + fileName + "'");
         }
     }
+	public static void colorChange(String who, String input)
+	{
+		/* [Color] [Pref] [GUI] [71] */
+		if( debugMode )
+		{
+			GUI.out("ColorChange called with input " + who + ", " + input + ".");
+		}
+		Color color = Color.BLACK;
+		String cw = "";
+		String cc = "";
+		boolean w = false;
+		boolean vc = true;
+		if( who.equals("my") )
+		{
+			color = userColor;
+			w = true;
+			cw = "userColor";
+		}
+		else if(who.equals("your"))
+		{
+			color = programColor;
+			w = true;
+			cw = "programColor";
+		}
+		else if(who.equals("null"))
+		{
+			GUI.out("Sure, just tell me which color you want changed.");
+			w = false;
+		}
+		if( w )
+		{
+			if( input.contains("black") )
+			{
+				color = Color.BLACK;
+				cc = "black";	
+			}
+			else if( input.contains("blue") )
+			{
+				color = Color.BLUE;
+				cc = "blue";
+			}
+			else if( input.contains("cyan") )
+			{
+				color = Color.CYAN;
+				cc = "cyan";
+			}
+			else if( input.contains("dark gray") )
+			{
+				color = Color.DARK_GRAY;
+				cc = "dark_gray";
+			}
+			else if( input.contains("gray") )
+			{
+				color = Color.GRAY;
+				cc = "gray";
+			}
+			else if( input.contains("green") )
+			{
+				color = Color.GREEN;
+				cc = "green";
+			}
+			else if( input.contains("light gray") )
+			{
+				color = Color.LIGHT_GRAY;
+				cc = "light_gray";
+			}
+			else if( input.contains("magenta") )
+			{
+				color = Color.MAGENTA;
+				cc = "magenta";
+			}
+			else if( input.contains("orange") )
+			{
+				color = Color.ORANGE;
+				cc = "orange";
+			}
+			else if( input.contains("pink") )
+			{
+				color = Color.PINK;
+				cc = "pink";
+			}
+			else if( input.contains("red") )
+			{
+				color = Color.RED;
+				cc = "red";
+			}
+			else if( input.contains("white") )
+			{
+				color = Color.WHITE;
+				cc = "white";
+			}
+			else if( input.contains("yellow") )
+			{
+				color = Color.YELLOW;
+				cc = "yellow";
+			}
+			else
+			{
+				GUI.out("I can only use the following colors:");
+				GUI.out("Black, blue, cyan, dark gray, green, light gray, magenta, pink, red, white, and yellow.");
+				vc = false;
+			}
+			if( vc )
+			{
+				prefWrite(cw);
+				if( who.equals("my") )
+				{
+					userColor = color;
+					prefWrite(cc);
+					GUI.out("Your color has been changed successfully to " + cc + ".");
+				}
+				else if( who.equals("your") )
+				{
+					programColor = color;
+					prefWrite(cc);
+					GUI.out("My color has been changed successfully to " + cc + ".");
+				}
+				loadPref();
+			}
+		}
+	}
 	public static void loadLibrary()
 	{
 		/* [Startup] [Organizer] [Load] [Memory] [029] */

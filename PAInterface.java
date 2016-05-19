@@ -19,8 +19,10 @@ public class PAInterface extends JPanel implements ActionListener {
     protected static JTextPane console;
     protected JScrollPane scroll;
     protected static String input = "";
-    public static Color PAColor = Color.BLACK;
+    public static Color programColor = Color.BLACK;
     public static Color userColor = Color.BLUE;
+    public static String programName = "";
+    public static String userName = "";
     protected Style style;
 
     public PAInterface() {
@@ -30,7 +32,7 @@ public class PAInterface extends JPanel implements ActionListener {
         console.setFont(new java.awt.Font("Courier New",Font.BOLD,18));
         console.setEditable(false);
         style = console.addStyle("Style",null);
-        StyleConstants.setForeground(style, PAColor);
+        StyleConstants.setForeground(style, programColor);
         scroll = new JScrollPane(console);
         
         searchBar = new JTextField(45);
@@ -48,10 +50,14 @@ public class PAInterface extends JPanel implements ActionListener {
         c.weighty = 1.0;
         add(scroll, c);
     }
-	protected void load(String name, Color pac, Color uc) {
-        JFrame frame = new JFrame(name);
-        PAColor = pac;
+	protected void load(String program, String user, Color pac, Color uc)
+	{
+        JFrame frame = new JFrame(program);
+        programName = program;
+        userName = user;
+        programColor = pac;
         userColor = uc;
+    	StyleConstants.setForeground(style, programColor);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.add(new PAInterface());
         frame.pack();
@@ -67,7 +73,14 @@ public class PAInterface extends JPanel implements ActionListener {
 		}
         frame.setIconImage(img);
     }
-	
+	protected void prefChange(String program, String user, Color pac, Color uc)
+	{
+		programName = program;
+		userName = user;
+		programColor = pac;
+		userColor = uc;
+    	StyleConstants.setForeground(style, programColor);
+	}
 	public String in()
 	{
 		if(input == "")
@@ -87,7 +100,6 @@ public class PAInterface extends JPanel implements ActionListener {
 		try {
 			doc.insertString(doc.getLength(), output+"\n", style);
 		} catch (BadLocationException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		//String content = console.getText();
@@ -99,20 +111,21 @@ public class PAInterface extends JPanel implements ActionListener {
     	String getValue = searchBar.getText();
     	StyleConstants.setForeground(style, userColor);
     	out(getValue);
-    	StyleConstants.setForeground(style, PAColor);
+    	StyleConstants.setForeground(style, programColor);
 	    input = getValue;
 	    searchBar.setText("");
     }
 	protected void flush()
 	{
 		console.setText("");
-		out("  =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-[Pit Assistant]-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=");
+		out("  =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-[" + programName + "]-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=");
 		out("");
-		out("  Hi, I'm Pit Assistant (v3.5). I can look for things, and tell you what's in our totes and boxes.");
-		out("Pit Assisstant (v3.5) Theoretically(TM) supports description-based queries and all sentence structures.");
-		out("         Pit Assistant (v3.5) Theoretically(TM) keeps track of borrowed items from a file.");
+		out("  Hi, I'm Pit Assistant (v3.6). I can look for things, and tell you what's in our totes and boxes.");
+		out("Pit Assisstant (v3.6) Theoretically(TM) supports description-based queries and all sentence structures.");
+		out("         Pit Assistant (v3.6) Theoretically(TM) keeps track of borrowed items from a file.");
+		out("       Pit Assistant (v3.6) also Theoretically(TM) supports and keeps track of user preferences.");
 		out("");
-		out("  =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=(v3.5)=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=");
+		out("  =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=(v3.6)=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=");
 		out("");
 	}
 }
