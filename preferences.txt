@@ -1,6 +1,6 @@
 // This is where your personal preferences are stored.
 programName
-HannahBot
+Pit Assistant
 userName
 null
 programColor
@@ -11,23 +11,3 @@ language
 english
 sarcasm
 0
-programColor
-blue
-programColor
-green
-programColor
-black
-programColor
-blue
-programColor
-green
-programColor
-black
-userColor
-pink
-programColor
-dark_gray
-programColor
-magenta
-userColor
-cyan

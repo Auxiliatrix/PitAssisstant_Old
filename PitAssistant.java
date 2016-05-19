@@ -21,6 +21,8 @@ public class PitAssistant {
 
 	public static String[] borrowFile = new String[10000];
 	public static int borrowFilePointer = 0;
+	public static String[] prefFile = new String[10000];
+	public static int prefFilePointer = 0;
 	public static String[] borrowedItem = new String[10000];
 	public static String[] borrowedTeam = new String[10000];
 	public static int borrowedPointer = 0;
@@ -267,7 +269,6 @@ public class PitAssistant {
 	public static void resetPref()
 	{
 		/* [Cleanup] [Preferences] [Memory] [067] */
-		un = false;
 		savePref();
 		clearPref();
 		prefWrite("// This is where your personal preferences are stored.");
@@ -283,6 +284,14 @@ public class PitAssistant {
 		prefWrite("english");
 		prefWrite("sarcasm");
 		prefWrite("0");
+		programName = "Pit Assistant";
+		userName = "";
+		un = false;
+		programColor = Color.BLACK;
+		userColor = Color.BLUE;
+		language = "english";
+		sarcasm = 0;
+		loadPref();
 	}
 	public static void saveBorrow()
 	{
@@ -314,6 +323,30 @@ public class PitAssistant {
 	}
 	public static void savePref()
 	{
+		String fileName = "preferences.txt";
+		String line = null;
+		try {
+            FileReader fileReader = new FileReader(fileName);
+            BufferedReader bufferedReader = new BufferedReader(fileReader);
+            while((line = bufferedReader.readLine()) != null)
+            {
+            	if( line.startsWith("//") )
+            	{
+            		String ignore = line;
+            	}
+            	else if( line!=null )
+				{
+            		prefFile[prefFilePointer] = line;
+            		prefFilePointer++;
+				}
+			} 
+            fileReader.close();
+            bufferedReader.close();
+		}
+		catch(Exception e)
+		{
+			GUI.out("I had an issue while trying to read from the preferences file.");
+		}
 		backupProgramName = programName;
 		backupUserName = userName;
 		backupun = un;
@@ -359,12 +392,12 @@ public class PitAssistant {
 		/* [Startup] [Text] [Print] [Info] [005] */
 		GUI.out("  =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-["+programName+"]-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=");
 		GUI.out("");
-		GUI.out("  Hi, I'm Pit Assistant (v3.6). I can look for things, and tell you what's in our totes and boxes.");
-		GUI.out("Pit Assisstant (v3.6) Theoretically(TM) supports description-based queries and all sentence structures.");
-		GUI.out("         Pit Assistant (v3.6) Theoretically(TM) keeps track of borrowed items from a file.");
-		GUI.out("       Pit Assistant (v3.6) also Theoretically(TM) supports and keeps track of user preferences.");
+		GUI.out("  Hi, I'm Pit Assistant (v3.7). I can look for things, and tell you what's in our totes and boxes.");
+		GUI.out("Pit Assisstant (v3.7) Theoretically(TM) supports description-based queries and all sentence structures.");
+		GUI.out("         Pit Assistant (v3.7) Theoretically(TM) keeps track of borrowed items from a file.");
+		GUI.out("       Pit Assistant (v3.7) also Theoretically(TM) supports and keeps track of user preferences.");
 		GUI.out("");
-		GUI.out("  =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=(v3.6)=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=");
+		GUI.out("  =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=(v3.7)=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=");
 		GUI.out("");
 		GUI.out("How may I help you?");
 	}
@@ -455,6 +488,7 @@ public class PitAssistant {
 			GUI.out("(v3.4)  ::  Fixed bug when borrowing from teams.");
 			GUI.out("(v3.5)  ::  Added colors and user input display.");
 			GUI.out("(v3.6)  ::  Made colors changeable from within the program.");
+			GUI.out("(v3.7)  ::  Added reset and restore preferences functionality.");
 			skip = true;
 		}
 		if( data.contains("help") && !data.contains("find") || data.contains("help") && !data.contains("look") )
@@ -487,7 +521,7 @@ public class PitAssistant {
 			GUI.out("Go away, Ryan.");
 			skip = true;
 		}
-		if( data.contains(" ew") )
+		if( (" "+data).contains(" ew") )
 		{
 			GUI.out("Well, I'm sorry.");
 			skip = true;
@@ -497,18 +531,36 @@ public class PitAssistant {
 			GUI.out("Cls? What's that? I'm supposed to be based off of a human being, Pranav.");
 			skip = true;
 		}
-		if( (data.contains("reload") || data.contains("restore")) && data.contains("borrow") )
+		if( data.contains("reload") || data.contains("restore") )
 		{
-			restoreBorrow();
-			GUI.out("I've successfully restored the borrow file.");
-			skip = true;
+			if( data.contains("borrow") )
+			{
+				restoreBorrow();
+				GUI.out("I've successfully restored the borrow file.");
+				skip = true;
+			}
+			else if( data.contains("pref") )
+			{
+				restorePref();
+				GUI.out("I've successfully restored your preferences.");
+				skip = true;
+			}
 		}
-		else if( (data.contains("clear") || data.contains("reset") || data.contains("purge") || data.contains("clean") || data.contains("wipe") ) && data.contains("borrow") )
+		else if( data.contains("clear") || data.contains("reset") || data.contains("purge") || data.contains("clean") || data.contains("wipe") )
 		{
-			resetBorrow();
-			GUI.out("I've cleared all memories of what we've borrowed.");
-			GUI.out("I've saved a backup of it, though, so just let me know if you want to restore it.");
-			skip = true;
+			if( data.contains("borrow") )
+			{
+				resetBorrow();
+				GUI.out("I've cleared all memories of what we've borrowed.");
+				GUI.out("I've saved a backup of it, though, so just let me know if you want to restore it.");
+				skip = true;
+			}
+			else if( data.contains("pref") )
+			{
+				resetPref();
+				GUI.out("I've reset your preferences.");
+				GUI.out("I've saved a backup, so just let me know if you want to restore them.");
+			}
 		}
 		else if( data.contains("borrow") || data.contains("lend") || data.contains("lent") )
 		{
@@ -1675,6 +1727,20 @@ public class PitAssistant {
 		ToteE = ToteEBB;
 		Crate = CrateBB;
 		loadBorrow();
+	}
+	public static void restorePref()
+	{
+		clearPref();
+		for( int f=0; f<prefFilePointer; f++ )
+		{
+			prefWrite(prefFile[prefFilePointer]);
+		}
+		programName = backupProgramName;
+		userName = backupUserName;
+		programColor = backupProgramColor;
+		userColor = backupUserColor;
+		prefFilePointer = 0;
+		loadPref();
 	}
 	public static void listBorrow()
 	{
