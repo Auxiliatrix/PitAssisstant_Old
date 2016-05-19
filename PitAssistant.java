@@ -393,12 +393,12 @@ public class PitAssistant {
 		/* [Startup] [Text] [Print] [Info] [005] */
 		GUI.out("  =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-["+programName+"]-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=");
 		GUI.out("");
-		GUI.out("  Hi, I'm Pit Assistant (v3.8). I can look for things, and tell you what's in our totes and boxes.");
-		GUI.out("Pit Assisstant (v3.8) Theoretically(TM) supports description-based queries and all sentence structures.");
-		GUI.out("         Pit Assistant (v3.8) Theoretically(TM) keeps track of borrowed items from a file.");
-		GUI.out("       Pit Assistant (v3.8) also Theoretically(TM) supports and keeps track of user preferences.");
+		GUI.out("  Hi, I'm Pit Assistant (v3.9). I can look for things, and tell you what's in our totes and boxes.");
+		GUI.out("Pit Assisstant (v3.9) Theoretically(TM) supports description-based queries and all sentence structures.");
+		GUI.out("         Pit Assistant (v3.9) Theoretically(TM) keeps track of borrowed items from a file.");
+		GUI.out("       Pit Assistant (v3.9) also Theoretically(TM) supports and keeps track of user preferences.");
 		GUI.out("");
-		GUI.out("  =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=(v3.8)=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=");
+		GUI.out("  =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=(v3.9)=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=");
 		GUI.out("");
 		GUI.out("How may I help you?");
 	}
@@ -492,6 +492,7 @@ public class PitAssistant {
 			GUI.out("(v3.6)  ::  Made colors changeable from within the program.");
 			GUI.out("(v3.7)  ::  Added reset and restore preferences functionality.");
 			GUI.out("(v3.8)  ::  Made window close on program termination.");
+			GUI.out("(v3.9)  ::  Added ability to set names to user and program.");
 			skip = true;
 		}
 		if( data.contains("help") && !data.contains("find") || data.contains("help") && !data.contains("look") )
@@ -562,6 +563,7 @@ public class PitAssistant {
 				resetPref();
 				GUI.out("I've reset your preferences.");
 				GUI.out("I've saved a backup, so just let me know if you want to restore them.");
+				skip = true;
 			}
 		}
 		else if( data.contains("borrow") || data.contains("lend") || data.contains("lent") )
@@ -589,9 +591,9 @@ public class PitAssistant {
 			}
 			skip = true;
 		}
-		if( data.contains("color") )
+		if( data.contains("change") || data.contains("set") || data.contains("turn") || data.contains("make") )
 		{
-			if( data.contains("change") || data.contains("set") || data.contains("turn") || data.contains("make") )
+			if( data.contains("color") )
 			{
 				if( data.contains("my") )
 				{
@@ -606,6 +608,24 @@ public class PitAssistant {
 				else
 				{
 					colorChange("null",data);
+					skip = true;
+				}
+			}
+			if( data.contains("name") )
+			{
+				if( data.contains("my") )
+				{
+					nameChange("my",input);
+					skip = true;
+				}
+				else if( data.contains("your") )
+				{
+					nameChange("your",input);
+					skip = true;
+				}
+				else
+				{
+					nameChange("null",data);
 					skip = true;
 				}
 			}
@@ -1841,6 +1861,81 @@ public class PitAssistant {
             GUI.out("Error reading file '" + fileName + "'");
         }
     }
+	public static void nameChange(String who, String input)
+	{
+		/* [Pref] [GUI] [72] */
+		String name = "";
+		boolean w = false;
+		if( debugMode )
+		{
+			GUI.out("NameChange called with input " + who + ", " + input + ".");
+		}
+		if( who.equals("my") )
+		{
+			name = userName;
+			w = true;
+		}
+		else if( who.equals("your") )
+		{
+			name = programName;
+			w = true;
+		}
+		else if( who.equals("null") )
+		{
+			GUI.out("Sure, but whose name?");
+			w = false;
+		}
+		boolean q = false;
+		int qc = 0;
+		char first = ' ';
+		char last = ' ';
+		for( int f=0; f<input.length(); f++ )
+		{
+			if( input.charAt(f) == ( '\'' ) || input.charAt(f) == ('\"') )
+			{
+				if( first == '\'' || first == '\"' )
+				{
+					last = input.charAt(f);
+				}
+				else
+				{
+					first = input.charAt(f);
+				}
+				qc++;
+			}
+		}
+		if( qc == 2 )
+		{
+			q = true;
+		}
+		else
+		{
+			GUI.out("Could you say that again, except with just the name in quotes?");
+		}
+		if( w && q )
+		{
+			int start = input.indexOf(first);
+			input = input.substring(start+1,input.length());
+			int end = input.indexOf(last);
+			name = input.substring(0,end);
+			if( who.equals("my") )
+			{
+				prefWrite("userName");
+				prefWrite(name);
+				userName = name;
+				loadPref();
+				GUI.out("Changed your name to '" + name + "'.");
+			}
+			else if( who.equals("your") )
+			{
+				prefWrite("programName");
+				prefWrite(name);
+				programName = name;
+				loadPref();
+				GUI.out("Changed my name to '" + name + "'.");
+			}
+		}
+	}
 	public static void colorChange(String who, String input)
 	{
 		/* [Color] [Pref] [GUI] [71] */
