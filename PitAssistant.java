@@ -102,6 +102,7 @@ public class PitAssistant {
 	public static String backupLanguage = "english";
 	public static boolean reply = false;
 	public static boolean started = false;
+	public static boolean firstStartup = true;
 	
 	protected static PAInterface GUI = new PAInterface();
 	
@@ -114,7 +115,7 @@ public class PitAssistant {
 			conductor();
 		}
 	}
-	public static void initialize()
+	public static void initialize() throws InterruptedException
 	{
 		/* [Organizer] [Load] [002] */
 		if( !loadedBorrow() )
@@ -131,8 +132,6 @@ public class PitAssistant {
 				resetPref();
 			}
 		}
-		loadBorrow();
-		loadPref();
 		if( !started )
 		{
 			GUI.load(programName,userName,programColor,userColor);
@@ -142,6 +141,51 @@ public class PitAssistant {
 			greet();
 			started = true;
 		}
+		loadBorrow();
+		loadPref();
+		if( firstStartup )
+		{
+			tutorial();
+		}
+	}
+	public static void tutorial() throws InterruptedException
+	{
+		typeWriter("Hello. My name is " + programName + ".");
+		typeWriter("I will be giving you a brief overview of how I work in this tutorial.");
+		typeWriter("My primary functionality is to help you locate items within, and help organize, your pit/area.");
+		typeWriter("To import the items in your inventory, just let me know later.");
+		typeWriter("Once you do, you can simply ask me to look for an item, and I will let you know where it is.");
+		typeWriter("You can use whatever sentence structure you like.");
+		typeWriter("- Look for an item");
+		typeWriter("- Where is item?");
+		typeWriter("- Whare di u put item pls");
+		typeWriter("- item");
+		typeWriter("- item??? can't find");
+		typeWriter("And so on.");
+		typeWriter("Another function I have is keeping track of borrowed items.");
+		typeWriter("First, tell me who's giving who the items, or if we're borrowing or whatever.");
+		typeWriter("Then, when prompted, tell me *exactly* what item is being lent/borrowed/whatever.");
+		typeWriter("Finally, give me the other team's name/number.");
+		typeWriter("If you mispell something or make a mistake, don't worry, you can just tell me to undo it.");
+		typeWriter("Later, you can ask me what items have been borrowed or lent, or simply ask me for a list.");
+		typeWriter("Don't worry. You can terminate this instance of me, but I'll still remember everything when you run me again.");
+		typeWriter("I'm smart like that.");
+		typeWriter("If you'd like, you can change my name by telling me you want to, or my text color, or yours.");
+		typeWriter("Again, don't worry about closing me, or turning this computer off. I can remember things. Forever. For. Ever.");
+		typeWriter("Finally, for some additional useful commands, just type 'help'!");
+		typeWriter("That is the end of this tutorial.");
+		prefWrite("started");
+	}
+	public static void typeWriter(String input) throws InterruptedException
+	{
+		int l = input.length();
+		for( int f=0; f<l; f++ )
+		{
+			GUI.outNoLine(input.charAt(f)+"");
+			Thread.sleep(50);
+		}
+		Thread.sleep(500);
+		GUI.out("");
 	}
 	public static boolean loadedBorrow()
 	{
@@ -493,6 +537,7 @@ public class PitAssistant {
 			GUI.out("(v3.7)  ::  Added reset and restore preferences functionality.");
 			GUI.out("(v3.8)  ::  Made window close on program termination.");
 			GUI.out("(v3.9)  ::  Added ability to set names to user and program.");
+			GUI.out("(v3.10) ::  Started work on a tutorial that launches on initial startup.");
 			skip = true;
 		}
 		if( data.contains("help") && !data.contains("find") || data.contains("help") && !data.contains("look") )
@@ -502,6 +547,7 @@ public class PitAssistant {
 			GUI.out("Say 'flush' to clear the output thingy.");
 			GUI.out("Say 'changelog' to view the changelog.");
 			GUI.out("You can tell me what items have been borrowed or lent.");
+			GUI.out("If you want, you can ask me to change what color text we type in, or what you want to call me.");
 			GUI.out("You can also toggle debug mode by telling me to.");
 			skip = true;
 		}
@@ -517,6 +563,7 @@ public class PitAssistant {
 			GUI.out("8. Update help function");
 			GUI.out("9. Add ability to return items");
 			GUI.out("10. Add sentience easter egg");
+			GUI.out("11. Add a tutorial for initial startup");
 			skip = true;
 		}
 		if( data.contains("git") )
@@ -591,7 +638,7 @@ public class PitAssistant {
 			}
 			skip = true;
 		}
-		if( data.contains("change") || data.contains("set") || data.contains("turn") || data.contains("make") )
+		if( data.contains("chang") || data.contains("set") || data.contains("turn") || data.contains("make") )
 		{
 			if( data.contains("color") )
 			{
@@ -669,7 +716,7 @@ public class PitAssistant {
 			}
 			skip = true;
 		}
-		if( data.contains("hannah?") )
+		if( data.contains(programName.toLowerCase()) )
 		{
 			GUI.out("Yes?");
 			reply = true;
@@ -1363,7 +1410,7 @@ public class PitAssistant {
 		/* [Startup] [Borrow] [Read] [IO] [022] */
 		if( debugMode )
 		{
-			GUI.out("LoadBorrow called");
+			GUI.out("LoadBorrow called.");
 		}
         String fileName = "borrow.txt";
         String line = null;
@@ -1503,7 +1550,7 @@ public class PitAssistant {
 		/* [Startup] [Borrow] [Read] [IO] [022] */
 		if( debugMode )
 		{
-			GUI.out("LoadPref called");
+			GUI.out("LoadPref called.");
 		}
         String fileName = "preferences.txt";
         String line = null;
@@ -1515,6 +1562,10 @@ public class PitAssistant {
             	if( line.startsWith("//") )
             	{
             		String ignore = line;
+            	}
+            	else if( line.equals("started") )
+            	{
+            		firstStartup = false;
             	}
             	else if( line.equals("programName") )
 				{
@@ -2045,15 +2096,16 @@ public class PitAssistant {
 				{
 					userColor = color;
 					prefWrite(cc);
+					loadPref();
 					GUI.out("Your color has been changed successfully to " + cc + ".");
 				}
 				else if( who.equals("your") )
 				{
 					programColor = color;
 					prefWrite(cc);
+					loadPref();
 					GUI.out("My color has been changed successfully to " + cc + ".");
 				}
-				loadPref();
 			}
 		}
 	}
@@ -2504,7 +2556,7 @@ public class PitAssistant {
 		int loc = 0;
 		for( int f=0; f<41; f++ )
 		{
-			if( item.equals(ToolBox[f][0].toLowerCase()) )
+ 			if( item.equals(ToolBox[f][0].toLowerCase()) )
 			{
 				loc = f+1;
 				break;
@@ -2710,13 +2762,14 @@ public class PitAssistant {
 			}		}
 		GUI.out("");
 	}
-	public static void shutDown()
+	public static void shutDown() throws InterruptedException
 	{
 		/* [Cleanup] [Terminate] [059] */
 		if( debugMode )
 		{
 			GUI.out("ShutDown called.");
 		}
+		typeWriter("Goodbye");
 		on = false;
 	}
 }

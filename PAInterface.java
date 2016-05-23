@@ -103,8 +103,16 @@ public class PAInterface extends JPanel implements ActionListener {
 		} catch (BadLocationException e) {
 			e.printStackTrace();
 		}
-		//String content = console.getText();
-		//console.setText(content+output+"\n");
+		console.setCaretPosition(console.getDocument().getLength());
+	}
+	protected void outNoLine(String output)
+	{
+		Document doc = console.getDocument();
+		try {
+			doc.insertString(doc.getLength(), output, style);
+		} catch (BadLocationException e) {
+			e.printStackTrace();
+		}
 		console.setCaretPosition(console.getDocument().getLength());
 	}
 	@Override
