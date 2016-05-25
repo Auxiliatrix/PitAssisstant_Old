@@ -15,10 +15,10 @@
 import java.awt.Color;
 import java.io.*;
 
-import javax.print.DocFlavor.URL;
-
 public class PitAssistant {
 
+	public static String[] nickName = new String[10000];
+	public static int nickNamePointer = 0;
 	public static String[] borrowFile = new String[10000];
 	public static int borrowFilePointer = 0;
 	public static String[] prefFile = new String[10000];
@@ -138,7 +138,6 @@ public class PitAssistant {
 			GUI.out("Loading libraries...");
 			loadLibrary();
 			GUI.out("Libraries loaded!");
-			greet();
 			started = true;
 		}
 		loadBorrow();
@@ -147,6 +146,7 @@ public class PitAssistant {
 		{
 			tutorial();
 		}
+		greet();
 	}
 	public static void tutorial() throws InterruptedException
 	{
@@ -329,6 +329,7 @@ public class PitAssistant {
 		prefWrite("english");
 		prefWrite("sarcasm");
 		prefWrite("0");
+		prefWrite("started");
 		programName = "Pit Assistant";
 		userName = "";
 		un = false;
@@ -437,12 +438,12 @@ public class PitAssistant {
 		/* [Startup] [Text] [Print] [Info] [005] */
 		GUI.out("  =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-["+programName+"]-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=");
 		GUI.out("");
-		GUI.out("  Hi, I'm Pit Assistant (v3.9). I can look for things, and tell you what's in our totes and boxes.");
-		GUI.out("Pit Assisstant (v3.9) Theoretically(TM) supports description-based queries and all sentence structures.");
-		GUI.out("         Pit Assistant (v3.9) Theoretically(TM) keeps track of borrowed items from a file.");
-		GUI.out("       Pit Assistant (v3.9) also Theoretically(TM) supports and keeps track of user preferences.");
+		GUI.out("  Hi, I'm Pit Assistant (v3.11). I can look for things, and tell you what's in our totes and boxes.");
+		GUI.out("Pit Assisstant (v3.11) Theoretically(TM) supports description-based queries and all sentence structures.");
+		GUI.out("         Pit Assistant (v3.11) Theoretically(TM) keeps track of borrowed items from a file.");
+		GUI.out("       Pit Assistant (v3.11) also Theoretically(TM) supports and keeps track of user preferences.");
 		GUI.out("");
-		GUI.out("  =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=(v3.9)=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=");
+		GUI.out("  =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=(v3.11)=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=");
 		GUI.out("");
 		GUI.out("How may I help you?");
 	}
@@ -466,7 +467,6 @@ public class PitAssistant {
 			}
 			else if( !on && borrowCheck && prefCheck )
 			{
-				GUI.out("Goodbye.");
 				GUI.command("end");
 			}
 		}
@@ -538,6 +538,7 @@ public class PitAssistant {
 			GUI.out("(v3.8)  ::  Made window close on program termination.");
 			GUI.out("(v3.9)  ::  Added ability to set names to user and program.");
 			GUI.out("(v3.10) ::  Started work on a tutorial that launches on initial startup.");
+			GUI.out("(v3.11) ::  Did some stuff with name parsing.");
 			skip = true;
 		}
 		if( data.contains("help") && !data.contains("find") || data.contains("help") && !data.contains("look") )
@@ -564,6 +565,30 @@ public class PitAssistant {
 			GUI.out("9. Add ability to return items");
 			GUI.out("10. Add sentience easter egg");
 			GUI.out("11. Add a tutorial for initial startup");
+			GUI.out("12. Add a pager maybe?");
+			skip = true;
+		}
+		if( data.contains("thank") )
+		{
+			if( data.startsWith("thank") || data.contains("you") )
+			{
+				GUI.out("You're welcome.");
+				skip = true;
+			}
+			else if( data.contains("goodness") || data.contains("god") )
+			{
+				GUI.out("Yay?");
+				skip = true;
+			}
+		}
+		if( data.contains("ugh") )
+		{
+			GUI.out("Sorry.");
+			skip = true;
+		}
+		if( (data+" ").contains("oops") )
+		{
+			GUI.out("Uh oh.");
 			skip = true;
 		}
 		if( data.contains("git") )
@@ -638,6 +663,15 @@ public class PitAssistant {
 			}
 			skip = true;
 		}
+		boolean name = false;
+		for( int f=0; f<nickNamePointer; f++ )
+		{
+			if( data.contains(nickName[f]) )
+			{
+				name = true;
+				break;
+			}
+		}
 		if( data.contains("chang") || data.contains("set") || data.contains("turn") || data.contains("make") )
 		{
 			if( data.contains("color") )
@@ -677,9 +711,23 @@ public class PitAssistant {
 				}
 			}
 		}
+		else if( name )
+		{
+			GUI.out("Yes?");
+			reply = true;
+			skip = true;
+		}
+		else if( data.startsWith("hi!") || data.startsWith("hi ") || data.startsWith("hello") || data.startsWith("greetings") || data.startsWith("hey") )
+		{
+			GUI.out("Hi.");
+			Thread.sleep(500);
+			reply = true;
+			skip = true;
+		}
 		if( data.contains("initialize") || data.contains("restart") )
 		{
 			GUI.out("Reinitializing.");
+			GUI.flush();
 			initialize();
 			skip = true;
 		}
@@ -714,19 +762,6 @@ public class PitAssistant {
 			{
 				GUI.out("Debug mode disabled.");
 			}
-			skip = true;
-		}
-		if( data.contains(programName.toLowerCase()) )
-		{
-			GUI.out("Yes?");
-			reply = true;
-			skip = true;
-		}
-		else if( data.startsWith("hi!") || data.startsWith("hi ") || data.startsWith("hello") || data.startsWith("greetings") || data.startsWith("hey") )
-		{
-			GUI.out("Hi.");
-			Thread.sleep(500);
-			reply = true;
 			skip = true;
 		}
 		if( data.contains("ziptie") && data.contains("dream") )
@@ -1629,6 +1664,7 @@ public class PitAssistant {
             GUI.out("Error reading file '" + fileName + "'");
         }
         GUI.prefChange(programName, userName, programColor, userColor);
+        parseName(programName);
 	}
 	public static void borrowWrite(String string)
 	{
@@ -2771,5 +2807,45 @@ public class PitAssistant {
 		}
 		typeWriter("Goodbye");
 		on = false;
+	}
+	public static void parseName(String name)
+	{
+		/* [Data] [Text] [Process] [073] */
+		nickNamePointer = 0;
+		for( int f=0; f<nickNamePointer; f++ )
+		{
+			nickName[f] = null;
+		}
+		if( debugMode )
+		{
+			GUI.out("ParseName called with input '" + name + "'.");
+		}
+		String data = name.toLowerCase();
+		while( data.endsWith(" ") )
+		{
+			data = data.substring(0,data.length()-1);
+		}
+		if( data.endsWith(".") || data.endsWith("?") || data.endsWith("!") )
+		{
+			data = data.substring(0,data.length()-1);
+		}
+		while( data.endsWith(" ") )
+		{
+			data = data.substring(0,data.length()-1);
+		}
+		data = data + " ";
+		while( data.contains(" ") )
+		{
+			int end = data.indexOf(" ");
+			String nick = data.substring(0,end);
+			String temp = data.substring(end+1,data.length());
+			if( debugMode )
+			{
+				GUI.out(nick);
+			}
+			nickName[nickNamePointer] = nick;
+			nickNamePointer++;
+			data = temp;
+		}
 	}
 }
