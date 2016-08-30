@@ -439,12 +439,12 @@ public class PitAssistant {
 		/* [Startup] [Text] [Print] [Info] [005] */
 		GUI.text("  =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-["+programName+"]-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=");
 		GUI.text("");
-		GUI.text("  Hi, I'm Pit Assistant (v3.11). I can look for things, and tell you what's in our totes and boxes.");
-		GUI.text("Pit Assisstant (v3.11) Theoretically(TM) supports description-based queries and all sentence structures.");
-		GUI.text("         Pit Assistant (v3.11) Theoretically(TM) keeps track of borrowed items from a file.");
-		GUI.text("       Pit Assistant (v3.11) also Theoretically(TM) supports and keeps track of user preferences.");
+		GUI.text("  Hi, I'm Pit Assistant (v4.1). I can look for things, and tell you what's in our totes and boxes.");
+		GUI.text("Pit Assisstant (v4.1) Theoretically(TM) supports description-based queries and all sentence structures.");
+		GUI.text("         Pit Assistant (v4.1) Theoretically(TM) keeps track of borrowed items from a file.");
+		GUI.text("       Pit Assistant (v4.1) also Theoretically(TM) supports and keeps track of user preferences.");
 		GUI.text("");
-		GUI.text("  =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=(v3.11)=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=");
+		GUI.text("  =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=(v4.1)=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=");
 		GUI.text("");
 		GUI.text("How may I help you?");
 	}
@@ -542,6 +542,7 @@ public class PitAssistant {
 			GUI.text("(v3.10) ::  Started work on a tutorial that launches on initial startup.");
 			GUI.text("(v3.11) ::  Did some stuff with name parsing.");
 			GUI.text("(v4.0)  ::  Added Voice Synthesis!");
+			GUI.text("(v4.1)  ::  Minor text fixes");
 			skip = true;
 		}
 		if( data.contains("help") && !data.contains("find") || data.contains("help") && !data.contains("look") )
