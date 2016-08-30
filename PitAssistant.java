@@ -753,19 +753,23 @@ public class PitAssistant {
 			if( MODE.equals("text") )
 			{
 				MODE = "voice";
+				skip = true;
 			}
 			else if( MODE.equals("voice") )
 			{
 				MODE = "text";
+				skip = true;
 			}
 		}
 		else if( data.contains("talk") || (data.contains("voice") && data.contains("use")) )
 		{
 			MODE = "voice";
+			skip = true;
 		}
 		else if( data.contains("shut up") || (data.contains("text") && data.contains("use")) )
 		{
-			
+			MODE = "text";
+			skip = true;
 		}
 		if( data.contains("debug") && data.contains(" on") )
 		{
