@@ -14,6 +14,10 @@ import javax.swing.text.Document;
 import javax.swing.text.Style;
 import javax.swing.text.StyleConstants;
 
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
+
+
 public class PAInterface extends JPanel implements ActionListener {
 	protected JFrame frame;
 	protected JTextField searchBar;
@@ -28,7 +32,7 @@ public class PAInterface extends JPanel implements ActionListener {
 
     public PAInterface() {
         super(new GridBagLayout());
- 
+		voce.SpeechInterface.init("../../../lib", true, false, "", "");
         console = new JTextPane();
         console.setFont(new java.awt.Font("Courier New",Font.BOLD,18));
         console.setEditable(false);
@@ -97,6 +101,18 @@ public class PAInterface extends JPanel implements ActionListener {
 	}
 	protected void out(String output)
 	{
+		String mode = PitAssistant.MODE;
+		if( mode.equals("text") )
+		{
+			text(output);
+		}
+		else if( mode.equals("voice") )
+		{
+			voice(output);
+		}
+	}
+	protected void text(String output)
+	{
 		Document doc = console.getDocument();
 		try {
 			doc.insertString(doc.getLength(), output+"\n", style);
@@ -105,7 +121,18 @@ public class PAInterface extends JPanel implements ActionListener {
 		}
 		console.setCaretPosition(console.getDocument().getLength());
 	}
-	protected void outNoLine(String output)
+	protected void voice(String output)
+	{
+		Document doc = console.getDocument();
+		try {
+			doc.insertString(doc.getLength(), output+"\n", style);
+		} catch (BadLocationException e) {
+			e.printStackTrace();
+		}
+		console.setCaretPosition(console.getDocument().getLength());
+		voce.SpeechInterface.synthesize(output);
+	}
+	protected void textNoLine(String output)
 	{
 		Document doc = console.getDocument();
 		try {
@@ -119,7 +146,7 @@ public class PAInterface extends JPanel implements ActionListener {
     public void actionPerformed(ActionEvent event) {
     	String getValue = searchBar.getText();
     	StyleConstants.setForeground(style, userColor);
-    	out(getValue);
+    	text(getValue);
     	StyleConstants.setForeground(style, programColor);
 	    input = getValue;
 	    searchBar.setText("");
@@ -127,20 +154,21 @@ public class PAInterface extends JPanel implements ActionListener {
 	protected void flush()
 	{
 		console.setText("");
-		out("  =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-[" + programName + "]-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=");
-		out("");
-		out("  Hi, I'm Pit Assistant (v3.11). I can look for things, and tell you what's in our totes and boxes.");
-		out("Pit Assisstant (v3.11) Theoretically(TM) supports description-based queries and all sentence structures.");
-		out("         Pit Assistant (v3.11) Theoretically(TM) keeps track of borrowed items from a file.");
-		out("       Pit Assistant (v3.11) also Theoretically(TM) supports and keeps track of user preferences.");
-		out("");
-		out("  =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=(v3.11)=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=");
-		out("");
+		text("  =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-[" + programName + "]-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=");
+		text("");
+		text("  Hi, I'm Pit Assistant (v3.11). I can look for things, and tell you what's in our totes and boxes.");
+		text("Pit Assisstant (v3.11) Theoretically(TM) supports description-based queries and all sentence structures.");
+		text("         Pit Assistant (v3.11) Theoretically(TM) keeps track of borrowed items from a file.");
+		text("       Pit Assistant (v3.11) also Theoretically(TM) supports and keeps track of user preferences.");
+		text("");
+		text("  =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=(v3.11)=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=");
+		text("");
 	}
 	protected void command(String command)
 	{
 		if( command.equals("end") )
 		{
+			voce.SpeechInterface.destroy();
 			frame.dispose();
 		}
 	}

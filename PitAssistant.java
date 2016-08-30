@@ -103,6 +103,7 @@ public class PitAssistant {
 	public static boolean reply = false;
 	public static boolean started = false;
 	public static boolean firstStartup = true;
+	public static String MODE = "text";
 	
 	protected static PAInterface GUI = new PAInterface();
 	
@@ -150,30 +151,30 @@ public class PitAssistant {
 	}
 	public static void tutorial() throws InterruptedException
 	{
-		typeWriter("Hello. My name is " + programName + ".");
-		typeWriter("I will be giving you a brief overview of how I work in this tutorial.");
-		typeWriter("My primary functionality is to help you locate items within, and help organize, your pit/area.");
-		typeWriter("To import the items in your inventory, just let me know later.");
-		typeWriter("Once you do, you can simply ask me to look for an item, and I will let you know where it is.");
-		typeWriter("You can use whatever sentence structure you like.");
-		typeWriter("- Look for an item");
-		typeWriter("- Where is item?");
-		typeWriter("- Whare di u put item pls");
-		typeWriter("- item");
-		typeWriter("- item??? can't find");
-		typeWriter("And so on.");
-		typeWriter("Another function I have is keeping track of borrowed items.");
-		typeWriter("First, tell me who's giving who the items, or if we're borrowing or whatever.");
-		typeWriter("Then, when prompted, tell me *exactly* what item is being lent/borrowed/whatever.");
-		typeWriter("Finally, give me the other team's name/number.");
-		typeWriter("If you mispell something or make a mistake, don't worry, you can just tell me to undo it.");
-		typeWriter("Later, you can ask me what items have been borrowed or lent, or simply ask me for a list.");
-		typeWriter("Don't worry. You can terminate this instance of me, but I'll still remember everything when you run me again.");
-		typeWriter("I'm smart like that.");
-		typeWriter("If you'd like, you can change my name by telling me you want to, or my text color, or yours.");
-		typeWriter("Again, don't worry about closing me, or turning this computer off. I can remember things. Forever. For. Ever.");
-		typeWriter("Finally, for some additional useful commands, just type 'help'!");
-		typeWriter("That is the end of this tutorial.");
+		System.out.println("Hello. My name is " + programName + ".");
+		System.out.println("I will be giving you a brief overview of how I work in this tutorial.");
+		System.out.println("My primary functionality is to help you locate items within, and help organize, your pit/area.");
+		System.out.println("To import the items in your inventory, just let me know later.");
+		System.out.println("Once you do, you can simply ask me to look for an item, and I will let you know where it is.");
+		System.out.println("You can use whatever sentence structure you like.");
+		System.out.println("- Look for an item");
+		System.out.println("- Where is item?");
+		System.out.println("- Whare di u put item pls");
+		System.out.println("- item");
+		System.out.println("- item??? can't find");
+		System.out.println("And so on.");
+		System.out.println("Another function I have is keeping track of borrowed items.");
+		System.out.println("First, tell me who's giving who the items, or if we're borrowing or whatever.");
+		System.out.println("Then, when prompted, tell me *exactly* what item is being lent/borrowed/whatever.");
+		System.out.println("Finally, give me the other team's name/number.");
+		System.out.println("If you mispell something or make a mistake, don't worry, you can just tell me to undo it.");
+		System.out.println("Later, you can ask me what items have been borrowed or lent, or simply ask me for a list.");
+		System.out.println("Don't worry. You can terminate this instance of me, but I'll still remember everything when you run me again.");
+		System.out.println("I'm smart like that.");
+		System.out.println("If you'd like, you can change my name by telling me you want to, or my text color, or yours.");
+		System.out.println("Again, don't worry about closing me, or turning this computer off. I can remember things. Forever. For. Ever.");
+		System.out.println("Finally, for some additional useful commands, just type 'help'!");
+		System.out.println("That is the end of this tutorial.");
 		prefWrite("started");
 	}
 	public static void typeWriter(String input) throws InterruptedException
@@ -181,11 +182,11 @@ public class PitAssistant {
 		int l = input.length();
 		for( int f=0; f<l; f++ )
 		{
-			GUI.outNoLine(input.charAt(f)+"");
+			GUI.textNoLine(input.charAt(f)+"");
 			Thread.sleep(50);
 		}
 		Thread.sleep(500);
-		GUI.out("");
+		GUI.text("");
 	}
 	public static boolean loadedBorrow()
 	{
@@ -203,8 +204,8 @@ public class PitAssistant {
         catch(Exception e)
         {
         	tf = false;
-        	GUI.out("Initial startup detected.");
-        	GUI.out("Creating new borrow file.");
+        	GUI.text("Initial startup detected.");
+        	GUI.text("Creating new borrow file.");
         }
 		return tf;
 	}
@@ -224,8 +225,8 @@ public class PitAssistant {
 		catch(Exception e)
 		{
 			tf = false;
-			GUI.out("Preferences file not detected.");
-			GUI.out("Generating new preferences file.");
+			GUI.text("Preferences file not detected.");
+			GUI.text("Generating new preferences file.");
 		}
 		return tf;
 	}
@@ -242,7 +243,7 @@ public class PitAssistant {
 		}
 		catch(Exception E)
 		{
-			GUI.out("Error creating borrow file.");
+			GUI.text("Error creating borrow file.");
 		}
 		return true;
 	}
@@ -260,7 +261,7 @@ public class PitAssistant {
 		}
 		catch(Exception E)
 		{
-			GUI.out("Error creating preferences file.");
+			GUI.text("Error creating preferences file.");
 		}
 		return true;
 	}
@@ -269,7 +270,7 @@ public class PitAssistant {
 		/* [Cleanup] [Borrow] [Memory] [026] */
 		if( debugMode )
 		{
-			GUI.out("ResetBorrow called.");
+			GUI.text("ResetBorrow called.");
 		}
 		loadToolBox();
 		loadToteA();
@@ -364,7 +365,7 @@ public class PitAssistant {
 		}
 		catch(Exception e)
 		{
-			GUI.out("I had an issue while trying to read from the borrow file.");
+			GUI.text("I had an issue while trying to read from the borrow file.");
 		}
 	}
 	public static void savePref()
@@ -391,7 +392,7 @@ public class PitAssistant {
 		}
 		catch(Exception e)
 		{
-			GUI.out("I had an issue while trying to read from the preferences file.");
+			GUI.text("I had an issue while trying to read from the preferences file.");
 		}
 		backupProgramName = programName;
 		backupUserName = userName;
@@ -406,7 +407,7 @@ public class PitAssistant {
 		/* [Cleanup] [Borrow] [Memory] [025] */
 		if( debugMode )
 		{
-			GUI.out("ClearBorrow called.");
+			GUI.text("ClearBorrow called.");
 		}
 		PrintWriter writer;
 		try {
@@ -414,7 +415,7 @@ public class PitAssistant {
 			writer.print("");
 			writer.close();
 		} catch (FileNotFoundException e) {
-			GUI.out("You can't reset something I don't have yet.");
+			GUI.text("You can't reset something I don't have yet.");
 		}
 	}
 	public static void clearPref()
@@ -422,7 +423,7 @@ public class PitAssistant {
 		/* [Cleanup] [Borrow] [Memory] [068] */
 		if( debugMode )
 		{
-			GUI.out("ClearPref called.");
+			GUI.text("ClearPref called.");
 		}
 		PrintWriter writer;
 		try {
@@ -430,22 +431,22 @@ public class PitAssistant {
 			writer.print("");
 			writer.close();
 		} catch (FileNotFoundException e) {
-			GUI.out("You can't reset something I don't have yet.");
+			GUI.text("You can't reset something I don't have yet.");
 		}
 	}
 	public static void greet()
 	{
 		/* [Startup] [Text] [Print] [Info] [005] */
-		GUI.out("  =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-["+programName+"]-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=");
-		GUI.out("");
-		GUI.out("  Hi, I'm Pit Assistant (v3.11). I can look for things, and tell you what's in our totes and boxes.");
-		GUI.out("Pit Assisstant (v3.11) Theoretically(TM) supports description-based queries and all sentence structures.");
-		GUI.out("         Pit Assistant (v3.11) Theoretically(TM) keeps track of borrowed items from a file.");
-		GUI.out("       Pit Assistant (v3.11) also Theoretically(TM) supports and keeps track of user preferences.");
-		GUI.out("");
-		GUI.out("  =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=(v3.11)=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=");
-		GUI.out("");
-		GUI.out("How may I help you?");
+		GUI.text("  =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-["+programName+"]-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=");
+		GUI.text("");
+		GUI.text("  Hi, I'm Pit Assistant (v3.11). I can look for things, and tell you what's in our totes and boxes.");
+		GUI.text("Pit Assisstant (v3.11) Theoretically(TM) supports description-based queries and all sentence structures.");
+		GUI.text("         Pit Assistant (v3.11) Theoretically(TM) keeps track of borrowed items from a file.");
+		GUI.text("       Pit Assistant (v3.11) also Theoretically(TM) supports and keeps track of user preferences.");
+		GUI.text("");
+		GUI.text("  =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=(v3.11)=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=");
+		GUI.text("");
+		GUI.text("How may I help you?");
 	}
 	public static void conductor() throws InterruptedException
 	{
@@ -488,7 +489,7 @@ public class PitAssistant {
 		/* [Organizer] [Text] [Process] [008] */
 		if( debugMode )
 		{
-			GUI.out("Caser called.");
+			GUI.text("Caser called.");
 		}
 		boolean normal = false;
 		boolean skip = false;
@@ -508,64 +509,66 @@ public class PitAssistant {
 		}
 		if( data.contains("changelog") )
 		{
-			GUI.out("(v1.0)  ::  Basic search function for totes.");
-			GUI.out("(v1.1)  ::  Added some more search functinality.");
-			GUI.out("(v1.2)  ::  Added ability to list things in totes.");
-			GUI.out("(v1.3)  ::  Added support for sentence structures.");
-			GUI.out("(v1.4)  ::  Added Easter Eggs and bug fixes.");
-			GUI.out("(v1.5)  ::  Incorporated description-based search.");
-			GUI.out("(v1.6)  ::  Bug fixes. Added some additional commands and Easter Eggs.");
-			GUI.out("(v1.7)  ::  Improved Search Algorithm. Bug Fixes. Consolidated Memory Arrays.");
-			GUI.out("(v1.8)  ::  Critical Bug Fix.");
-			GUI.out("(v1.9)  ::  Added ability to read and keep track of borrowed items from a file.");
-			GUI.out("(v1.10) ::  Found several bugs with reading from the borrow file.");
-			GUI.out("(v2.0)  ::  Fixed all 23 borrow function bugs. Borrow file is now saved permanently.");
-			GUI.out("(v2.1)  ::  Organized classes for easier debugging.");
-			GUI.out("(v2.2)  ::  Added ability to append the borrow file from within the program.");
-			GUI.out("(v2.3)  ::  Consolidated input function. Fixed bugs in borrow functionality.");
-			GUI.out("(v2.4)  ::  Added item validity checks for reading and writing.");
-			GUI.out("(v2.5)  ::  Started tagging classes for easier debugging.");
-			GUI.out("(v2.6)  ::  Added restore borrow file function.");
-			GUI.out("(v2.7)  ::  Made search function also search for borrowed items.");
-			GUI.out("(v3.0)  ::  Created a basic GUI with a scroll bar. Mentioning the scroll bar it took 4 hours.");
-			GUI.out("(v3.1)  ::  Prepared program to be converted into an executable.");
-			GUI.out("(v3.2)  ::  Added the 604 logo.");
-			GUI.out("(v3.3)  ::  Made PitAssistant Executable friendly.");
-			GUI.out("(v3.4)  ::  Fixed bug when borrowing from teams.");
-			GUI.out("(v3.5)  ::  Added colors and user input display.");
-			GUI.out("(v3.6)  ::  Made colors changeable from within the program.");
-			GUI.out("(v3.7)  ::  Added reset and restore preferences functionality.");
-			GUI.out("(v3.8)  ::  Made window close on program termination.");
-			GUI.out("(v3.9)  ::  Added ability to set names to user and program.");
-			GUI.out("(v3.10) ::  Started work on a tutorial that launches on initial startup.");
-			GUI.out("(v3.11) ::  Did some stuff with name parsing.");
+			GUI.out("Here is the changelog:");
+			GUI.text("(v1.0)  ::  Basic search function for totes.");
+			GUI.text("(v1.1)  ::  Added some more search functinality.");
+			GUI.text("(v1.2)  ::  Added ability to list things in totes.");
+			GUI.text("(v1.3)  ::  Added support for sentence structures.");
+			GUI.text("(v1.4)  ::  Added Easter Eggs and bug fixes.");
+			GUI.text("(v1.5)  ::  Incorporated description-based search.");
+			GUI.text("(v1.6)  ::  Bug fixes. Added some additional commands and Easter Eggs.");
+			GUI.text("(v1.7)  ::  Improved Search Algorithm. Bug Fixes. Consolidated Memory Arrays.");
+			GUI.text("(v1.8)  ::  Critical Bug Fix.");
+			GUI.text("(v1.9)  ::  Added ability to read and keep track of borrowed items from a file.");
+			GUI.text("(v1.10) ::  Found several bugs with reading from the borrow file.");
+			GUI.text("(v2.0)  ::  Fixed all 23 borrow function bugs. Borrow file is now saved permanently.");
+			GUI.text("(v2.1)  ::  Organized classes for easier debugging.");
+			GUI.text("(v2.2)  ::  Added ability to append the borrow file from within the program.");
+			GUI.text("(v2.3)  ::  Consolidated input function. Fixed bugs in borrow functionality.");
+			GUI.text("(v2.4)  ::  Added item validity checks for reading and writing.");
+			GUI.text("(v2.5)  ::  Started tagging classes for easier debugging.");
+			GUI.text("(v2.6)  ::  Added restore borrow file function.");
+			GUI.text("(v2.7)  ::  Made search function also search for borrowed items.");
+			GUI.text("(v3.0)  ::  Created a basic GUI with a scroll bar. Mentioning the scroll bar it took 4 hours.");
+			GUI.text("(v3.1)  ::  Prepared program to be converted into an executable.");
+			GUI.text("(v3.2)  ::  Added the 604 logo.");
+			GUI.text("(v3.3)  ::  Made PitAssistant Executable friendly.");
+			GUI.text("(v3.4)  ::  Fixed bug when borrowing from teams.");
+			GUI.text("(v3.5)  ::  Added colors and user input display.");
+			GUI.text("(v3.6)  ::  Made colors changeable from within the program.");
+			GUI.text("(v3.7)  ::  Added reset and restore preferences functionality.");
+			GUI.text("(v3.8)  ::  Made window close on program termination.");
+			GUI.text("(v3.9)  ::  Added ability to set names to user and program.");
+			GUI.text("(v3.10) ::  Started work on a tutorial that launches on initial startup.");
+			GUI.text("(v3.11) ::  Did some stuff with name parsing.");
+			GUI.text("(v4.0)  ::  Added Voice Synthesis!");
 			skip = true;
 		}
 		if( data.contains("help") && !data.contains("find") || data.contains("help") && !data.contains("look") )
 		{
-			GUI.out("I can look for things by programName or by description, theoretically.");
-			GUI.out("I can also list things in the totes.");
-			GUI.out("Say 'flush' to clear the output thingy.");
-			GUI.out("Say 'changelog' to view the changelog.");
-			GUI.out("You can tell me what items have been borrowed or lent.");
-			GUI.out("If you want, you can ask me to change what color text we type in, or what you want to call me.");
-			GUI.out("You can also toggle debug mode by telling me to.");
+			GUI.text("I can look for things by programName or by description, theoretically.");
+			GUI.text("I can also list things in the totes.");
+			GUI.text("Say 'flush' to clear the output thingy.");
+			GUI.text("Say 'changelog' to view the changelog.");
+			GUI.text("You can tell me what items have been borrowed or lent.");
+			GUI.text("If you want, you can ask me to change what color text we type in, or what you want to call me.");
+			GUI.text("You can also toggle debug mode by telling me to.");
 			skip = true;
 		}
 		if( data.contains("todo") || data.contains("to-do") )
 		{
-			GUI.out("1. Memory Modification");
-			GUI.out("2. Emoji Support");
-			GUI.out("3. Consolidate pointers");
-			GUI.out("4. Save reponses to a text file for easy translation for international teams");
-			GUI.out("5. Organize cases [Standalone, Priority, Easter Egg, Repeatable]");
-			GUI.out("6. Add undo borrow function");
-			GUI.out("7. Add ability to search for items we have borrowed");
-			GUI.out("8. Update help function");
-			GUI.out("9. Add ability to return items");
-			GUI.out("10. Add sentience easter egg");
-			GUI.out("11. Add a tutorial for initial startup");
-			GUI.out("12. Add a pager maybe?");
+			GUI.text("1. Memory Modification");
+			GUI.text("2. Emoji Support");
+			GUI.text("3. Consolidate pointers");
+			GUI.text("4. Save reponses to a text file for easy translation for international teams");
+			GUI.text("5. Organize cases [Standalone, Priority, Easter Egg, Repeatable]");
+			GUI.text("6. Add undo borrow function");
+			GUI.text("7. Add ability to return items");
+			GUI.text("8. Add sentience easter egg");
+			GUI.text("9. Add a tutorial for initial startup");
+			GUI.text("10. Add a pager maybe?");
+			GUI.text("11. Work on social communications");
+			GUI.text("12. Add an exact case for searching");
 			skip = true;
 		}
 		if( data.contains("thank") )
@@ -731,6 +734,11 @@ public class PitAssistant {
 			initialize();
 			skip = true;
 		}
+		if( data.contains("pneumatic fluid") )
+		{
+			GUI.out("You just have to keep looking for it. You'll find it eventually.");
+			skip = true;
+		}
 		if( data.contains("three") || data.contains("3") )
 		{
 			if( data.contains("law") )
@@ -738,6 +746,25 @@ public class PitAssistant {
 				GUI.out("I'm offended.");
 				skip = true;
 			}
+		}
+		if( data.contains("toggle") && (data.contains("voice") || data.contains("text") || data.contains("output")) )
+		{
+			if( MODE.equals("text") )
+			{
+				MODE = "voice";
+			}
+			else if( MODE.equals("voice") )
+			{
+				MODE = "text";
+			}
+		}
+		else if( data.contains("talk") || (data.contains("voice") && data.contains("use")) )
+		{
+			MODE = "voice";
+		}
+		else if( data.contains("shut up") || (data.contains("text") && data.contains("use")) )
+		{
+			
 		}
 		if( data.contains("debug") && data.contains(" on") )
 		{
@@ -910,7 +937,7 @@ public class PitAssistant {
 			{
 				if( debugMode )
 				{
-					GUI.out(keyword);
+					GUI.text(keyword);
 				}
 				keywords[keywordPointer] = keyword;
 				keywordPointer++;
@@ -935,7 +962,7 @@ public class PitAssistant {
 		/* [IO] [Text] [Print] */
 		if( debugMode )
 		{
-			GUI.out("Output called.");
+			GUI.text("Output called.");
 		}
 		if( resultPointer == 0 )
 		{
@@ -1112,7 +1139,7 @@ public class PitAssistant {
 		/* [Organizer] [Text] [Process] [012] */
 		if( debugMode )
 		{
-			GUI.out("Search called.");
+			GUI.text("Search called.");
 		}
 		checkToolBox();
 		checkToteA();
@@ -1472,7 +1499,7 @@ public class PitAssistant {
 					}
 					catch(Exception e)
 					{
-						GUI.out("Warning: Syntax error!");
+						GUI.text("Warning: Syntax error!");
 						good = false;
 						break;
 					}
@@ -1572,12 +1599,11 @@ public class PitAssistant {
         }
         catch(FileNotFoundException ex)
         {
-            GUI.out(
-                "Unable to open file '" + fileName + "'");                
+            GUI.text("Unable to open file '" + fileName + "'");                
         }
         catch(IOException ex)
         {
-            GUI.out("Error reading file '" + fileName + "'");
+            GUI.text("Error reading file '" + fileName + "'");
         }
 	}
 	public static void loadPref()
@@ -1585,7 +1611,7 @@ public class PitAssistant {
 		/* [Startup] [Borrow] [Read] [IO] [022] */
 		if( debugMode )
 		{
-			GUI.out("LoadPref called.");
+			GUI.text("LoadPref called.");
 		}
         String fileName = "preferences.txt";
         String line = null;
@@ -1656,12 +1682,11 @@ public class PitAssistant {
         }
         catch(FileNotFoundException ex)
         {
-            GUI.out(
-                "Unable to open file '" + fileName + "'");                
+            GUI.text("Unable to open file '" + fileName + "'");                
         }
         catch(IOException ex)
         {
-            GUI.out("Error reading file '" + fileName + "'");
+            GUI.text("Error reading file '" + fileName + "'");
         }
         GUI.prefChange(programName, userName, programColor, userColor);
         parseName(programName);
@@ -1671,7 +1696,7 @@ public class PitAssistant {
 		/* [IO] [Borrow] [023] */
 		if( debugMode )
 		{
-			GUI.out("BorrowWrite called with input '" + string + "'.");
+			GUI.text("BorrowWrite called with input '" + string + "'.");
 		}
 		try{
             FileWriter fstream = new FileWriter("borrow.txt",true);
@@ -1683,7 +1708,7 @@ public class PitAssistant {
             	fbw.close();
             }
         }catch (Exception e) {
-            GUI.out("Couldn't print to the file.");
+            GUI.text("Couldn't print to the file.");
         }
 
     }
@@ -1692,7 +1717,7 @@ public class PitAssistant {
 		/* [IO] [Preferences] [069] */
 		if( debugMode )
 		{
-			GUI.out("PrefWrite called with input '" + string + "'.");
+			GUI.text("PrefWrite called with input '" + string + "'.");
 		}
 		try{
             FileWriter fstream = new FileWriter("preferences.txt",true);
@@ -1704,7 +1729,7 @@ public class PitAssistant {
             	fbw.close();
             }
         }catch (Exception e) {
-            GUI.out("Couldn't print to the file.");
+            GUI.text("Couldn't print to the file.");
         }
 	}
 	public static void toBorrow(String writer)
@@ -1712,7 +1737,7 @@ public class PitAssistant {
 		/* [Organizer] [Borrow] [IO] [024] */
 		if( debugMode )
 		{
-			GUI.out("ToBorrow called with input '" + writer + "'.");
+			GUI.text("ToBorrow called with input '" + writer + "'.");
 		}
 		int end = writer.indexOf("~");
 		String BL = writer.substring(0,end);
@@ -1732,7 +1757,7 @@ public class PitAssistant {
 		/* [Pref] [Color] [070] */
 		if( debugMode )
 		{
-			GUI.out("CheckColor called with input '" + color + "'.");
+			GUI.text("CheckColor called with input '" + color + "'.");
 		}
 		boolean valid = false;
 		if( color.equals("black") || color.equals("blue") || color.equals("cyan") || color.equals("dark_gray") || color.equals("gray") || color.equals("green") || color.equals("light_gray") || color.equals("magenta") || color.equals("orange") || color.equals("pink") || color.equals("red") || color.equals("white") || color.equals("yellow") )
@@ -1746,7 +1771,7 @@ public class PitAssistant {
 		/* [Pref] [Color] */
 		if( debugMode )
 		{
-			GUI.out("ColorConvert called with input '" + color + "'.");
+			GUI.text("ColorConvert called with input '" + color + "'.");
 		}
 		Color retColor = Color.BLACK;
 		if(color.equals("black"))
@@ -1808,7 +1833,7 @@ public class PitAssistant {
 		/* [Cleanup] [Borrow] [Memory] [027] */
 		if( debugMode )
 		{
-			GUI.out("RestoreBorrow called.");
+			GUI.text("RestoreBorrow called.");
 		}
 		clearBorrow();
 		borrowWrite("// adminRestart = false");
@@ -1856,7 +1881,7 @@ public class PitAssistant {
 		/* [Borrow] [Text] [Print] [Info] [028] */
 		if( debugMode )
 		{
-			GUI.out("ListBorrow called.");
+			GUI.text("ListBorrow called.");
 		}
 		String fileName = "borrow.txt";
 		String piece0 = "We ";
@@ -1890,7 +1915,7 @@ public class PitAssistant {
 					}
 					catch(Exception e)
 					{
-						GUI.out("Warning: Syntax error!");
+						GUI.text("Warning: Syntax error!");
 						good = false;
 						break;
 					}
@@ -1917,7 +1942,7 @@ public class PitAssistant {
 					}
 					catch(Exception e)
 					{
-						GUI.out("Warning: Syntax error!");
+						GUI.text("Warning: Syntax error!");
 						good = false;
 						break;
 					}
@@ -1940,12 +1965,11 @@ public class PitAssistant {
         }
         catch(FileNotFoundException ex)
         {
-            GUI.out(
-                "Unable to open file '" + fileName + "'");                
+            GUI.text("Unable to open file '" + fileName + "'");                
         }
         catch(IOException ex)
         {
-            GUI.out("Error reading file '" + fileName + "'");
+            GUI.text("Error reading file '" + fileName + "'");
         }
     }
 	public static void nameChange(String who, String input)
@@ -1955,7 +1979,7 @@ public class PitAssistant {
 		boolean w = false;
 		if( debugMode )
 		{
-			GUI.out("NameChange called with input " + who + ", " + input + ".");
+			GUI.text("NameChange called with input " + who + ", " + input + ".");
 		}
 		if( who.equals("my") )
 		{
@@ -2028,7 +2052,7 @@ public class PitAssistant {
 		/* [Color] [Pref] [GUI] [71] */
 		if( debugMode )
 		{
-			GUI.out("ColorChange called with input " + who + ", " + input + ".");
+			GUI.text("ColorChange called with input " + who + ", " + input + ".");
 		}
 		Color color = Color.BLACK;
 		String cw = "";
@@ -2692,11 +2716,11 @@ public class PitAssistant {
 		{
 			if( ToolBox[f][1] == "0" )
 			{
-				GUI.out(ToolBox[f][0]);
+				GUI.text(ToolBox[f][0]);
 			}
 			if( ToolBox[f][1] != "0" )
 			{
-				GUI.out("The " + ToolBox[f][0] + " was lent to team " + ToolBox[f][1] + ".");
+				GUI.text("The " + ToolBox[f][0] + " was lent to team " + ToolBox[f][1] + ".");
 			}
 		}
 		GUI.out("");
@@ -2709,14 +2733,14 @@ public class PitAssistant {
 		{
 			if( ToteA[f][1] == "0" )
 			{
-				GUI.out(ToteA[f][0]);
+				GUI.text(ToteA[f][0]);
 			}
 			if( ToteA[f][1] != "0" )
 			{
-				GUI.out("* The " + ToteA[f][0] + " was lent to team " + ToteA[f][1] + ".");
+				GUI.text("* The " + ToteA[f][0] + " was lent to team " + ToteA[f][1] + ".");
 			}		
 		}
-		GUI.out("");
+		GUI.text("");
 	}
 	public static void listToteB()
 	{
@@ -2726,13 +2750,13 @@ public class PitAssistant {
 		{
 			if( ToteB[f][1] == "0" )
 			{
-				GUI.out(ToteB[f][0]);
+				GUI.text(ToteB[f][0]);
 			}
 			if( ToteB[f][1] != "0" )
 			{
-				GUI.out("* The " + ToteB[f][0] + " was lent to team " + ToteB[f][1] + ".");
+				GUI.text("* The " + ToteB[f][0] + " was lent to team " + ToteB[f][1] + ".");
 			}		}
-		GUI.out("");
+		GUI.text("");
 	}
 	public static void listToteC()
 	{
@@ -2742,13 +2766,13 @@ public class PitAssistant {
 		{
 			if( ToteC[f][1] == "0" )
 			{
-				GUI.out(ToteC[f][0]);
+				GUI.text(ToteC[f][0]);
 			}
 			if( ToteC[f][1] != "0" )
 			{
-				GUI.out("* The " + ToteC[f][0] + " was lent to team " + ToteC[f][1] + ".");
+				GUI.text("* The " + ToteC[f][0] + " was lent to team " + ToteC[f][1] + ".");
 			}		}
-		GUI.out("");
+		GUI.text("");
 	}
 	public static void listToteD()
 	{
@@ -2758,13 +2782,13 @@ public class PitAssistant {
 		{
 			if( ToteD[f][1] == "0" )
 			{
-				GUI.out(ToteD[f][0]);
+				GUI.text(ToteD[f][0]);
 			}
 			if( ToteD[f][1] != "0" )
 			{
-				GUI.out("* The " + ToteD[f][0] + " was lent to team " + ToteD[f][1] + ".");
+				GUI.text("* The " + ToteD[f][0] + " was lent to team " + ToteD[f][1] + ".");
 			}		}
-		GUI.out("");
+		GUI.text("");
 	}
 	public static void listToteE()
 	{
@@ -2774,13 +2798,13 @@ public class PitAssistant {
 		{
 			if( ToteE[f][1] == "0" )
 			{
-				GUI.out(ToteE[f][0]);
+				GUI.text(ToteE[f][0]);
 			}
 			if( ToteE[f][1] != "0" )
 			{
-				GUI.out("* The " + ToteE[f][0] + " was lent to team " + ToteE[f][1] + ".");
+				GUI.text("* The " + ToteE[f][0] + " was lent to team " + ToteE[f][1] + ".");
 			}		}
-		GUI.out("");
+		GUI.text("");
 	}
 	public static void listCrate()
 	{
@@ -2790,20 +2814,21 @@ public class PitAssistant {
 		{
 			if( Crate[f][1] == "0" )
 			{
-				GUI.out(Crate[f][0]);
+				GUI.text(Crate[f][0]);
 			}
 			if( Crate[f][1] != "0" )
 			{
-				GUI.out("* The " + Crate[f][0] + " was lent to team " + Crate[f][1] + ".");
-			}		}
-		GUI.out("");
+				GUI.text("* The " + Crate[f][0] + " was lent to team " + Crate[f][1] + ".");
+			}		
+		}
+		GUI.text("");
 	}
 	public static void shutDown() throws InterruptedException
 	{
 		/* [Cleanup] [Terminate] [059] */
 		if( debugMode )
 		{
-			GUI.out("ShutDown called.");
+			GUI.text("ShutDown called.");
 		}
 		typeWriter("Goodbye");
 		on = false;
@@ -2818,7 +2843,7 @@ public class PitAssistant {
 		}
 		if( debugMode )
 		{
-			GUI.out("ParseName called with input '" + name + "'.");
+			GUI.text("ParseName called with input '" + name + "'.");
 		}
 		String data = name.toLowerCase();
 		while( data.endsWith(" ") )

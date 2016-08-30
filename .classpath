@@ -2,5 +2,13 @@
 <classpath>
 	<classpathentry kind="src" path=""/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
+	<classpathentry kind="lib" path="C:/Users/Squea/PitAssisstant/PitAssistant/lib/cmu_us_kal.jar"/>
+	<classpathentry kind="lib" path="C:/Users/Squea/PitAssisstant/PitAssistant/lib/cmulex.jar"/>
+	<classpathentry kind="lib" path="C:/Users/Squea/PitAssisstant/PitAssistant/lib/en_us.jar"/>
+	<classpathentry kind="lib" path="C:/Users/Squea/PitAssisstant/PitAssistant/lib/freetts.jar"/>
+	<classpathentry kind="lib" path="C:/Users/Squea/PitAssisstant/PitAssistant/lib/jsapi.jar"/>
+	<classpathentry kind="lib" path="C:/Users/Squea/PitAssisstant/PitAssistant/lib/sphinx4.jar"/>
+	<classpathentry kind="lib" path="C:/Users/Squea/PitAssisstant/PitAssistant/lib/voce.jar"/>
+	<classpathentry kind="lib" path="C:/Users/Squea/PitAssisstant/PitAssistant/lib/WSJ_8gau_13dCep_16k_40mel_130Hz_6800Hz.jar"/>
 	<classpathentry kind="output" path=""/>
 </classpath>
