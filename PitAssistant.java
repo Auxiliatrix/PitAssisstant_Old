@@ -106,6 +106,7 @@ public class PitAssistant {
 	public static boolean started = false;
 	public static boolean firstStartup = true;
 	public static String MODE = "text";
+	public static boolean exactCase = false;
 	
 	protected static PAInterface GUI = new PAInterface();
 	
@@ -515,12 +516,12 @@ public class PitAssistant {
 		/* [Startup] [Text] [Print] [Info] [005] */
 		GUI.text("  =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-["+programName+"]-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=");
 		GUI.text("");
-		GUI.text("  Hi, I'm Pit Assistant (v4.2). I can look for things, and tell you what's in our totes and boxes.");
-		GUI.text("Pit Assisstant (v4.2) Theoretically(TM) supports description-based queries and all sentence structures.");
-		GUI.text("         Pit Assistant (v4.2) Theoretically(TM) keeps track of borrowed items from a file.");
-		GUI.text("       Pit Assistant (v4.2) also Theoretically(TM) supports and keeps track of user preferences.");
+		GUI.text("  Hi, I'm Pit Assistant (v4.3). I can look for things, and tell you what's in our totes and boxes.");
+		GUI.text("Pit Assisstant (v4.3) Theoretically(TM) supports description-based queries and all sentence structures.");
+		GUI.text("         Pit Assistant (v4.3) Theoretically(TM) keeps track of borrowed items from a file.");
+		GUI.text("       Pit Assistant (v4.3) also Theoretically(TM) supports and keeps track of user preferences.");
 		GUI.text("");
-		GUI.text("  =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=(v4.2)=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=");
+		GUI.text("  =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=(v4.3)=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=");
 		GUI.text("");
 		GUI.text("How may I help you?");
 	}
@@ -535,7 +536,10 @@ public class PitAssistant {
 			if( normal )
 			{
 				parse(input);
-				search();
+				if( !exactCase )
+				{
+					search();
+				}
 				output();
 			}
 			if( on )
@@ -620,6 +624,7 @@ public class PitAssistant {
 			GUI.text("(v4.0)  ::  Added Voice Synthesis!");
 			GUI.text("(v4.1)  ::  Minor text fixes");
 			GUI.text("(v4.2)  ::  Added registry mode.");
+			GUI.text("(v4.3)  ::  Added Exact Search cases!!");
 			skip = true;
 		}
 		if( data.contains("help") && !data.contains("find") || data.contains("help") && !data.contains("look") )
@@ -635,18 +640,17 @@ public class PitAssistant {
 		}
 		if( data.contains("todo") || data.contains("to-do") )
 		{
-			GUI.text("1. Memory Modification");
-			GUI.text("2. Emoji Support");
-			GUI.text("3. Consolidate pointers");
-			GUI.text("4. Save reponses to a text file for easy translation for international teams");
-			GUI.text("5. Organize cases [Standalone, Priority, Easter Egg, Repeatable]");
-			GUI.text("6. Add undo borrow function");
-			GUI.text("7. Add ability to return items");
-			GUI.text("8. Add sentience easter egg");
-			GUI.text("9. Add a tutorial for initial startup");
-			GUI.text("10. Add a pager maybe?");
-			GUI.text("11. Work on social communications");
-			GUI.text("12. Add an exact case for searching");
+			GUI.text("1.  *Memory Modification");
+			GUI.text("2.  Emoji Support");
+			GUI.text("3.  *Consolidate pointers");
+			GUI.text("4.  Save reponses to a text file for easy translation for international teams");
+			GUI.text("5.  Organize cases [Standalone, Priority, Easter Egg, Repeatable]");
+			GUI.text("6.  *Add undo borrow function");
+			GUI.text("7.  *Add ability to return items");
+			GUI.text("8.  Add sentience easter egg");
+			GUI.text("9.  Add a pager maybe?");
+			GUI.text("10. Work on social communications");
+			GUI.text("11. Make header stay same size regardless ofname");
 			skip = true;
 		}
 		if( data.contains("thank") )
@@ -1011,36 +1015,83 @@ public class PitAssistant {
 		{
 			data = data.substring(0,data.length()-1);
 		}
-		data = data + " ";
-		while( data.contains(" ") )
+		if( data.contains("'") || data.contains("\"") )
 		{
-			int end = data.indexOf(" ");
-			String keyword = data.substring(0,end);
-			String temp = data.substring(end+1,data.length());
-			boolean pass = true;
-			for( int f=0; f<23; f++ )
+			exactSearch(parseExact(data));
+			exactCase = true;
+		}
+		else
+		{
+			exactCase = false;
+			data = data + " ";
+			while( data.contains(" ") )
 			{
-				if(keyword.equals(Exclusion[f]))
+				int end = data.indexOf(" ");
+				String keyword = data.substring(0,end);
+				String temp = data.substring(end+1,data.length());
+				boolean pass = true;
+				for( int f=0; f<23; f++ )
+				{
+					if(keyword.equals(Exclusion[f]))
+					{
+						pass = false;
+						break;
+					}
+				}
+				if( keyword.length() < 3 )
 				{
 					pass = false;
-					break;
 				}
-			}
-			if( keyword.length() < 3 )
-			{
-				pass = false;
-			}
-			if( pass )
-			{
-				if( debugMode )
+				if( pass )
 				{
-					GUI.text(keyword);
+					if( debugMode )
+					{
+						GUI.text(keyword);
+					}
+					keywords[keywordPointer] = keyword;
+					keywordPointer++;
 				}
-				keywords[keywordPointer] = keyword;
-				keywordPointer++;
+				data = temp;
 			}
-			data = temp;
 		}
+	}
+	public static String parseExact(String data)
+	{
+		boolean q = false;
+		int qc = 0;
+		char first = ' ';
+		char last = ' ';
+		for( int f=0; f<data.length(); f++ )
+		{
+			if( data.charAt(f) == ( '\'' ) || data.charAt(f) == ('\"') )
+			{
+				if( first == '\'' || first == '\"' )
+				{
+					last = data.charAt(f);
+				}
+				else
+				{
+					first = data.charAt(f);
+				}
+				qc++;
+			}
+		}
+		if( qc == 2 )
+		{
+			q = true;
+		}
+		else
+		{
+			GUI.out("If you want to conduct an exact search, try again with the item in quotes.");
+		}
+		if( q )
+		{
+			int start = data.indexOf(first);
+			data = data.substring(start+1,data.length());
+			int end = data.indexOf(last);
+			data = data.substring(0,end);
+		}
+		return data;
 	}
 	public static void menu()
 	{
@@ -1061,163 +1112,278 @@ public class PitAssistant {
 		{
 			GUI.text("Output called.");
 		}
-		if( resultPointer == 0 )
+		if( resultPointer == 0 && !exactCase )
 		{
 			GUI.out("Sorry, I couldn't find what you were looking for. Maybe you meant something else?");
 		}
 		else
 		{
-			GUI.out("Okay, here's what I found:");
+			if( !exactCase )
+			{
+				GUI.out("Okay, here's what I found:");
+			}
 		}
 		GUI.out("");
-		if( p[0] > 0 )
+		if( exactCase )
 		{
-			GUI.out("In the Toolbox, we should theoretically have the following items:");
-			for( int f=0; f<p[0]; f++ )
+			if( p[0] > 0 )
 			{
-				if(antiRepeat(ToolBox[results[f][1]][0]))
+				if(antiRepeat(ToolBox[results[0][1]][0]))
 				{
-					if( ToolBox[results[f][1]][1] == "0" )
+					if( ToolBox[results[0][1]][1] == "0" )
 					{
-						GUI.out(ToolBox[results[f][1]][0]);
+						GUI.out("It will be in the ToolBox.");
 					}
-					if( ToolBox[results[f][1]][1] != "0" )
+					if( ToolBox[results[0][1]][1] != "0" )
 					{
-						GUI.out("* The " + ToolBox[results[f][1]][0] + " was lent to team " + ToolBox[results[f][1]][1] + ".");
+						GUI.out("* The " + ToolBox[results[0][1]][0] + " was lent to team " + ToolBox[results[0][1]][1] + ".");
 					}
+				}
+			}
+			else if( p[1] > 0 )
+			{
+				if(antiRepeat(ToteA[results[0][1]][0]))
+				{
+					if( ToteA[results[0][1]][1] == "0" )
+					{
+						GUI.out("It will be in Tote A.");
+					}
+					if( ToteA[results[0][1]][1] != "0" )
+					{
+						GUI.out("* The " + ToteA[results[0][1]][0] + " was lent to team " + ToteA[results[0][1]][1] + ".");
+					}
+				}
+			}
+			else if( p[2] > 0 )
+			{
+				if(antiRepeat(ToteB[results[0][1]][0]))
+				{
+					if( ToteB[results[0][1]][1] == "0" )
+					{
+						GUI.out("It will be in Tote B.");
+					}
+					if( ToteB[results[0][1]][1] != "0" )
+					{
+						GUI.out("* The " + ToteB[results[0][1]][0] + " was lent to team " + ToteB[results[0][1]][1] + ".");
+					}
+				}
+			}
+			else if( p[3] > 0 )
+			{
+				if(antiRepeat(ToteC[results[0][1]][0]))
+				{
+					if( ToteC[results[0][1]][1] == "0" )
+					{
+						GUI.out("It will be in Tote C.");
+					}
+					if( ToteC[results[0][1]][1] != "0" )
+					{
+						GUI.out("* The " + ToteC[results[0][1]][0] + " was lent to team " + ToteC[results[0][1]][1] + ".");
+					}
+				}				
+			}
+			else if( p[4] > 0 )
+			{
+				if(antiRepeat(ToteD[results[0][1]][0]))
+				{
+					if( ToteD[results[0][1]][1] == "0" )
+					{
+						GUI.out("It will be in Tote D.");
+					}
+					if( ToteD[results[0][1]][1] != "0" )
+					{
+						GUI.out("* The " + ToteD[results[0][1]][0] + " was lent to team " + ToteD[results[0][1]][1] + ".");
+					}
+				}				
+			}
+			else if( p[5] > 0 )
+			{
+				if(antiRepeat(ToteE[results[0][1]][0]))
+				{
+					if( ToteE[results[0][1]][1] == "0" )
+					{
+						GUI.out("It will be in Tote E.");
+					}
+					if( ToteE[results[0][1]][1] != "0" )
+					{
+						GUI.out("* The " + ToteE[results[0][1]][0] + " was lent to team " + ToteE[results[0][1]][1] + ".");
+					}
+				}				
+			}
+			else if( p[6] > 0 )
+			{
+				if(antiRepeat(Crate[results[0][1]][0]))
+				{
+					if( Crate[results[0][1]][1] == "0" )
+					{
+						GUI.out("It will be in the Crate.");
+					}
+					if( Crate[results[0][1]][1] != "0" )
+					{
+						GUI.out("* The " + Crate[results[0][1]][0] + " was lent to team " + Crate[results[0][1]][1] + ".");
+					}
+				}				
+			}
+			else if( p[7] > 0 )
+			{
+				if(antiRepeat(borrowedItem[results[0][1]]))
+				{
+					GUI.out("We should have borrowed it.");
 				}
 			}
 			GUI.out("");
 		}
-		if( p[1] > 0 )
+		else
 		{
-			GUI.out("In Tote A, we should theoretically have the following items:");
-			for( int f=p[0]; f<p[0]+p[1]; f++ )
+			if( p[0] > 0 )
 			{
-				if(antiRepeat(ToteA[results[f][1]][0]))
+				GUI.out("In the Toolbox, we should theoretically have the following items:");
+				for( int f=0; f<p[0]; f++ )
 				{
-					if( ToteA[results[f][1]][1] == "0" )
+					if(antiRepeat(ToolBox[results[f][1]][0]))
 					{
-						GUI.out(ToteA[results[f][1]][0]);
-					}
-					if( ToteA[results[f][1]][1] != "0" )
-					{
-						GUI.out("* The " + ToteA[results[f][1]][0] + " was lent to team " + ToteA[results[f][1]][1] + ".");
+						if( ToolBox[results[f][1]][1] == "0" )
+						{
+							GUI.out(ToolBox[results[f][1]][0]);
+						}
+						if( ToolBox[results[f][1]][1] != "0" )
+						{
+							GUI.out("* The " + ToolBox[results[f][1]][0] + " was lent to team " + ToolBox[results[f][1]][1] + ".");
+						}
 					}
 				}
+				GUI.out("");
 			}
-			GUI.out("");
-		}
-		if( p[2] > 0 )
-		{
-			GUI.out("In Tote B, we should theoretically have the following items:");
-			for( int f=p[0]+p[1]; f<p[0]+p[1]+p[2]; f++ )
+			if( p[1] > 0 )
 			{
-				if(antiRepeat(ToteB[results[f][1]][0]))
+				GUI.out("In Tote A, we should theoretically have the following items:");
+				for( int f=p[0]; f<p[0]+p[1]; f++ )
 				{
-					if( ToteB[results[f][1]][1] == "0" )
+					if(antiRepeat(ToteA[results[f][1]][0]))
 					{
-						GUI.out(ToteB[results[f][1]][0]);
-					}
-					if( ToteB[results[f][1]][1] != "0" )
-					{
-						GUI.out("* The " + ToteB[results[f][1]][0] + " was lent to team " + ToteB[results[f][1]][1] + ".");
+						if( ToteA[results[f][1]][1] == "0" )
+						{
+							GUI.out(ToteA[results[f][1]][0]);
+						}
+						if( ToteA[results[f][1]][1] != "0" )
+						{
+							GUI.out("* The " + ToteA[results[f][1]][0] + " was lent to team " + ToteA[results[f][1]][1] + ".");
+						}
 					}
 				}
+				GUI.out("");
 			}
-			GUI.out("");
-		}
-		if( p[3] > 0 )
-		{
-			GUI.out("In Tote C, we should theoretically have the following items:");
-			for( int f=p[0]+p[1]+p[2]; f<p[0]+p[1]+p[2]+p[3]; f++ )
+			if( p[2] > 0 )
 			{
-				if(antiRepeat(ToteC[results[f][1]][0]))
+				GUI.out("In Tote B, we should theoretically have the following items:");
+				for( int f=p[0]+p[1]; f<p[0]+p[1]+p[2]; f++ )
 				{
-					if( ToteC[results[f][1]][1] == "0" )
+					if(antiRepeat(ToteB[results[f][1]][0]))
 					{
-						GUI.out(ToteC[results[f][1]][0]);
-					}
-					if( ToteC[results[f][1]][1] != "0" )
-					{
-						GUI.out("* The " + ToteC[results[f][1]][0] + " was lent to team " + ToteC[results[f][1]][1] + ".");
+						if( ToteB[results[f][1]][1] == "0" )
+						{
+							GUI.out(ToteB[results[f][1]][0]);
+						}
+						if( ToteB[results[f][1]][1] != "0" )
+						{
+							GUI.out("* The " + ToteB[results[f][1]][0] + " was lent to team " + ToteB[results[f][1]][1] + ".");
+						}
 					}
 				}
+				GUI.out("");
 			}
-			GUI.out("");
-		}
-		if( p[4] > 0 )
-		{
-			GUI.out("In Tote D, we should theoretically have the following items:");
-			for( int f=p[0]+p[1]+p[2]+p[3]; f<p[0]+p[1]+p[2]+p[3]+p[4]; f++ )
+			if( p[3] > 0 )
 			{
-				if(antiRepeat(ToteD[results[f][1]][0]))
+				GUI.out("In Tote C, we should theoretically have the following items:");
+				for( int f=p[0]+p[1]+p[2]; f<p[0]+p[1]+p[2]+p[3]; f++ )
 				{
-					if( ToteD[results[f][1]][1] == "0" )
+					if(antiRepeat(ToteC[results[f][1]][0]))
 					{
-						GUI.out(ToteD[results[f][1]][0]);
-					}
-					if( ToteD[results[f][1]][1] != "0" )
-					{
-						GUI.out("* The " + ToteD[results[f][1]][0] + " was lent to team " + ToteD[results[f][1]][1] + ".");
+						if( ToteC[results[f][1]][1] == "0" )
+						{
+							GUI.out(ToteC[results[f][1]][0]);
+						}
+						if( ToteC[results[f][1]][1] != "0" )
+						{
+							GUI.out("* The " + ToteC[results[f][1]][0] + " was lent to team " + ToteC[results[f][1]][1] + ".");
+						}
 					}
 				}
+				GUI.out("");
 			}
-			GUI.out("");
-		}
-		if( p[5] > 0 )
-		{
-			GUI.out("In Tote E, we should theoretically have the following items:");
-			for( int f=p[0]+p[1]+p[2]+p[3]+p[4]; f<p[0]+p[1]+p[2]+p[3]+p[4]+p[5]; f++ )
+			if( p[4] > 0 )
 			{
-				if(antiRepeat(ToteE[results[f][1]][0]))
+				GUI.out("In Tote D, we should theoretically have the following items:");
+				for( int f=p[0]+p[1]+p[2]+p[3]; f<p[0]+p[1]+p[2]+p[3]+p[4]; f++ )
 				{
-					if( ToteE[results[f][1]][1] == "0" )
+					if(antiRepeat(ToteD[results[f][1]][0]))
 					{
-						GUI.out(ToteE[results[f][1]][0]);
-					}
-					if( ToteE[results[f][1]][1] != "0" )
-					{
-						GUI.out("* The " + ToteE[results[f][1]][0] + " was lent to team " + ToteE[results[f][1]][1] + ".");
+						if( ToteD[results[f][1]][1] == "0" )
+						{
+							GUI.out(ToteD[results[f][1]][0]);
+						}
+						if( ToteD[results[f][1]][1] != "0" )
+						{
+							GUI.out("* The " + ToteD[results[f][1]][0] + " was lent to team " + ToteD[results[f][1]][1] + ".");
+						}
 					}
 				}
+				GUI.out("");
 			}
-			GUI.out("");
-		}
-		if( p[6] > 0 )
-		{
-			GUI.out("In the Crate, we should theoretically have the following items:");
-			for( int f=p[0]+p[1]+p[2]+p[3]+p[4]+p[5]; f<p[0]+p[1]+p[2]+p[3]+p[4]+p[5]+p[6]; f++ )
+			if( p[5] > 0 )
 			{
-				if(antiRepeat(Crate[results[f][1]][0]))
+				GUI.out("In Tote E, we should theoretically have the following items:");
+				for( int f=p[0]+p[1]+p[2]+p[3]+p[4]; f<p[0]+p[1]+p[2]+p[3]+p[4]+p[5]; f++ )
 				{
-					if( Crate[results[f][1]][1] == "0" )
+					if(antiRepeat(ToteE[results[f][1]][0]))
 					{
-						GUI.out(Crate[results[f][1]][0]);
-					}
-					if( ToolBox[results[f][1]][1] != "0" )
-					{
-						GUI.out("* The " + Crate[results[f][1]][0] + " was lent to team " + Crate[results[f][1]][1] + ".");
+						if( ToteE[results[f][1]][1] == "0" )
+						{
+							GUI.out(ToteE[results[f][1]][0]);
+						}
+						if( ToteE[results[f][1]][1] != "0" )
+						{
+							GUI.out("* The " + ToteE[results[f][1]][0] + " was lent to team " + ToteE[results[f][1]][1] + ".");
+						}
 					}
 				}
+				GUI.out("");
 			}
-			GUI.out("");
-		}
-		if( p[7] > 0 )
-		{
-			GUI.out("We should theoretically have borrowed the following items:");
-			for( int f=p[0]+p[1]+p[2]+p[3]+p[4]+p[5]+p[6]; f<p[0]+p[1]+p[2]+p[3]+p[4]+p[5]+p[6]+p[7]; f++ )
+			if( p[6] > 0 )
 			{
-				if(antiRepeat(borrowedItem[results[f][1]]))
+				GUI.out("In the Crate, we should theoretically have the following items:");
+				for( int f=p[0]+p[1]+p[2]+p[3]+p[4]+p[5]; f<p[0]+p[1]+p[2]+p[3]+p[4]+p[5]+p[6]; f++ )
 				{
-					GUI.out(borrowedItem[results[f][1]]);
+					if(antiRepeat(Crate[results[f][1]][0]))
+					{
+						if( Crate[results[f][1]][1] == "0" )
+						{
+							GUI.out(Crate[results[f][1]][0]);
+						}
+						if( ToolBox[results[f][1]][1] != "0" )
+						{
+							GUI.out("* The " + Crate[results[f][1]][0] + " was lent to team " + Crate[results[f][1]][1] + ".");
+						}
+					}
 				}
+				GUI.out("");
 			}
-			GUI.out("");
-		}
-		if( ziptie )
-		{
-			GUI.out("There's also a whole bunch in Trinity's hair.");
+			if( p[7] > 0 )
+			{
+				GUI.out("We should theoretically have borrowed the following items:");
+				for( int f=p[0]+p[1]+p[2]+p[3]+p[4]+p[5]+p[6]; f<p[0]+p[1]+p[2]+p[3]+p[4]+p[5]+p[6]+p[7]; f++ )
+				{
+					if(antiRepeat(borrowedItem[results[f][1]]))
+					{
+						GUI.out(borrowedItem[results[f][1]]);
+					}
+				}
+				GUI.out("");
+				}	
+			if( ziptie )
+			{
+				GUI.out("There's also a whole bunch in Trinity's hair.");
+			}
 		}
 	}
 	public static String input()
@@ -1344,6 +1510,21 @@ public class PitAssistant {
 		checkCrate();
 		checkBorrowed();
 	}
+	public static void exactSearch(String term)
+	{
+		if( debugMode )
+		{
+			GUI.text("ExactSearch called with term " + term + ".");
+		}
+		exactToolBox(term);
+		exactToteA(term);
+		exactToteB(term);
+		exactToteC(term);
+		exactToteD(term);
+		exactToteE(term);
+		exactCrate(term);
+		exactBorrowed(term);
+	}
 	public static boolean antiRepeat(String check)
 	{
 		/* [Support] [Text] [Pointer] [013] */
@@ -1384,6 +1565,20 @@ public class PitAssistant {
 			}
 		}
 	}
+	public static void exactToolBox(String term)
+	{
+		p[0] = 0;
+		for( int f=0; f<41; f++ )
+		{
+			if( term.toLowerCase().equals(ToolBox[f][0].toLowerCase()) )
+			{
+				p[0]++;
+				resultPointer++;
+				results[resultPointer-1][0] = 0;
+				results[resultPointer-1][1] = f;
+			}
+		}
+	}
 	public static void checkToteA()
 	{
 		/* [Search] [Data] [Memory] [015] */
@@ -1399,6 +1594,20 @@ public class PitAssistant {
 					results[resultPointer-1][0] = 1;
 					results[resultPointer-1][1] = f;
 				}
+			}
+		}
+	}
+	public static void exactToteA(String term)
+	{
+		p[1] = 0;
+		for( int f=0; f<20; f++ )
+		{
+			if( term.toLowerCase().equals(ToteA[f][0].toLowerCase()) )
+			{
+				p[1]++;
+				resultPointer++;
+				results[resultPointer-1][0] = 1;
+				results[resultPointer-1][1] = f;
 			}
 		}
 	}
@@ -1420,6 +1629,20 @@ public class PitAssistant {
 			}
 		}
 	}
+	public static void exactToteB(String term)
+	{
+		p[2] = 0;
+		for( int f=0; f<11; f++ )
+		{
+			if( term.toLowerCase().equals(ToteB[f][0].toLowerCase()) )
+			{
+				p[2]++;
+				resultPointer++;
+				results[resultPointer-1][0] = 2;
+				results[resultPointer-1][1] = f;
+			}
+		}
+	}
 	public static void checkToteC()
 	{
 		/* [Search] [Data] [Memory] [017] */
@@ -1435,6 +1658,20 @@ public class PitAssistant {
 					results[resultPointer-1][0] = 3;
 					results[resultPointer-1][1] = f;
 				}
+			}
+		}
+	}
+	public static void exactToteC(String term)
+	{
+		p[3] = 0;
+		for( int f=0; f<18; f++ )
+		{
+			if( term.toLowerCase().equals(ToteC[f][0].toLowerCase()) )
+			{
+				p[3]++;
+				resultPointer++;
+				results[resultPointer-1][0] = 3;
+				results[resultPointer-1][1] = f;
 			}
 		}
 	}
@@ -1456,6 +1693,20 @@ public class PitAssistant {
 			}
 		}
 	}
+	public static void exactToteD(String term)
+	{
+		p[4] = 0;
+		for( int f=0; f<20; f++ )
+		{
+			if( term.toLowerCase().equals(ToteD[f][0].toLowerCase()) )
+			{
+				p[4]++;
+				resultPointer++;
+				results[resultPointer-1][0] = 4;
+				results[resultPointer-1][1] = f;
+			}
+		}
+	}
 	public static void checkToteE()
 	{
 		/* [Search] [Data] [Memory] [019] */
@@ -1471,6 +1722,20 @@ public class PitAssistant {
 					results[resultPointer-1][0] = 5;
 					results[resultPointer-1][1] = f;
 				}
+			}
+		}
+	}
+	public static void exactToteE(String term)
+	{
+		p[5] = 0;
+		for( int f=0; f<8; f++ )
+		{
+			if( term.toLowerCase().equals(ToteE[f][0].toLowerCase()) )
+			{
+				p[5]++;
+				resultPointer++;
+				results[resultPointer-1][0] = 5;
+				results[resultPointer-1][1] = f;
 			}
 		}
 	}
@@ -1492,6 +1757,20 @@ public class PitAssistant {
 			}
 		}
 	}
+	public static void exactCrate(String term)
+	{
+		p[6] = 0;
+		for( int f=0; f<16; f++ )
+		{
+			if( term.toLowerCase().equals(Crate[f][0].toLowerCase()) )
+			{
+				p[6]++;
+				resultPointer++;
+				results[resultPointer-1][0] = 6;
+				results[resultPointer-1][1] = f;
+			}
+		}
+	}
 	public static void checkBorrowed()
 	{
 		p[7] = 0;
@@ -1506,6 +1785,27 @@ public class PitAssistant {
 					results[resultPointer-1][0] = 7;
 					results[resultPointer-1][1] = f;
 				}
+				else if( (keywords[g].toLowerCase()+"s").contains(borrowedItem[f].toLowerCase()) || (borrowedItem[f]+"s").contains(keywords[g].toLowerCase()) )
+				{
+					p[7]++;
+					resultPointer++;
+					results[resultPointer-1][0] = 7;
+					results[resultPointer-1][1] = f;
+				}
+			}
+		}
+	}
+	public static void exactBorrowed(String term)
+	{
+		p[7] = 0;
+		for( int f=0; f<borrowedPointer; f++ )
+		{
+			if( term.toLowerCase().equals(borrowedItem[f].toLowerCase()) )
+			{
+				p[7]++;
+				resultPointer++;
+				results[resultPointer-1][0] = 7;
+				results[resultPointer-1][1] = f;
 			}
 		}
 	}
