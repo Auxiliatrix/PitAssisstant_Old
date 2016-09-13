@@ -23,6 +23,8 @@ public class PitAssistant {
 	public static int borrowFilePointer = 0;
 	public static String[] prefFile = new String[10000];
 	public static int prefFilePointer = 0;
+	public static String[] registerFile = new String[10000];
+	public static int registerFilePointer = 0;
 	public static String[] borrowedItem = new String[10000];
 	public static String[] borrowedTeam = new String[10000];
 	public static int borrowedPointer = 0;
@@ -119,6 +121,7 @@ public class PitAssistant {
 	public static void initialize() throws InterruptedException
 	{
 		/* [Organizer] [Load] [002] */
+		GUI.flush();
 		if( !loadedBorrow() )
 		{
 			if(createBorrow())
@@ -133,6 +136,13 @@ public class PitAssistant {
 				resetPref();
 			}
 		}
+		if( !loadedRegister() )
+		{
+			if(createRegister())
+			{
+
+			}
+		}
 		if( !started )
 		{
 			GUI.load(programName,userName,programColor,userColor);
@@ -143,6 +153,7 @@ public class PitAssistant {
 		}
 		loadBorrow();
 		loadPref();
+		loadRegister();
 		if( firstStartup )
 		{
 			tutorial();
@@ -230,6 +241,27 @@ public class PitAssistant {
 		}
 		return tf;
 	}
+	public static boolean loadedRegister()
+	{
+		/* [Startup] [Load] [Register] */
+		boolean tf = false;
+		String fileName = "register.txt";
+        String line = null;
+        try {
+            FileReader fileReader = new FileReader(fileName);
+            BufferedReader bufferedReader = new BufferedReader(fileReader);
+            fileReader.close();
+            bufferedReader.close();
+            tf = true;
+        }
+        catch(Exception e)
+        {
+        	tf = false;
+        	GUI.text("Register File not detected.");
+        	GUI.text("Creating new register file.");
+        }
+		return tf;
+	}
 	public static boolean createBorrow()
 	{
 		/* [Startup] [Load] [Borrow] [003] */
@@ -244,6 +276,23 @@ public class PitAssistant {
 		catch(Exception E)
 		{
 			GUI.text("Error creating borrow file.");
+		}
+		return true;
+	}
+	public static boolean createRegister()
+	{
+		/* [Startup] [Load] [Register] */
+		try {
+        	FileWriter fw = new FileWriter("register.txt", true);
+        	BufferedWriter bw = new BufferedWriter(fw);
+        	PrintWriter out = new PrintWriter(bw);
+        	fw.close();
+        	bw.close();
+        	out.close();
+		}
+		catch(Exception E)
+		{
+			GUI.text("Error creating register file.");
 		}
 		return true;
 	}
@@ -402,6 +451,33 @@ public class PitAssistant {
 		backupSarcasm = sarcasm;
 		backupLanguage = language;
 	}
+	public static void saveRegister()
+	{
+		String fileName = "register.txt";
+		String line = null;
+		try {
+            FileReader fileReader = new FileReader(fileName);
+            BufferedReader bufferedReader = new BufferedReader(fileReader);
+            while((line = bufferedReader.readLine()) != null)
+            {
+            	if( line.startsWith("//") )
+            	{
+            		String ignore = line;
+            	}
+            	else if( line!=null )
+				{
+            		registerFile[registerFilePointer] = line;
+            		registerFilePointer++;
+				}
+			} 
+            fileReader.close();
+            bufferedReader.close();
+		}
+		catch(Exception e)
+		{
+			GUI.text("I had an issue while trying to read from the register file.");
+		}
+	}
 	public static void clearBorrow()
 	{
 		/* [Cleanup] [Borrow] [Memory] [025] */
@@ -439,12 +515,12 @@ public class PitAssistant {
 		/* [Startup] [Text] [Print] [Info] [005] */
 		GUI.text("  =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-["+programName+"]-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=");
 		GUI.text("");
-		GUI.text("  Hi, I'm Pit Assistant (v4.1). I can look for things, and tell you what's in our totes and boxes.");
-		GUI.text("Pit Assisstant (v4.1) Theoretically(TM) supports description-based queries and all sentence structures.");
-		GUI.text("         Pit Assistant (v4.1) Theoretically(TM) keeps track of borrowed items from a file.");
-		GUI.text("       Pit Assistant (v4.1) also Theoretically(TM) supports and keeps track of user preferences.");
+		GUI.text("  Hi, I'm Pit Assistant (v4.2). I can look for things, and tell you what's in our totes and boxes.");
+		GUI.text("Pit Assisstant (v4.2) Theoretically(TM) supports description-based queries and all sentence structures.");
+		GUI.text("         Pit Assistant (v4.2) Theoretically(TM) keeps track of borrowed items from a file.");
+		GUI.text("       Pit Assistant (v4.2) also Theoretically(TM) supports and keeps track of user preferences.");
 		GUI.text("");
-		GUI.text("  =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=(v4.1)=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=");
+		GUI.text("  =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=(v4.2)=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=");
 		GUI.text("");
 		GUI.text("How may I help you?");
 	}
@@ -543,6 +619,7 @@ public class PitAssistant {
 			GUI.text("(v3.11) ::  Did some stuff with name parsing.");
 			GUI.text("(v4.0)  ::  Added Voice Synthesis!");
 			GUI.text("(v4.1)  ::  Minor text fixes");
+			GUI.text("(v4.2)  ::  Added registry mode.");
 			skip = true;
 		}
 		if( data.contains("help") && !data.contains("find") || data.contains("help") && !data.contains("look") )
@@ -748,27 +825,42 @@ public class PitAssistant {
 				skip = true;
 			}
 		}
+		if( data.contains("register") && data.contains("print") )
+		{
+			printRegister();
+			skip = true;
+		}
+		else if( (data.contains("mode") || data.contains("want to")) && (data.contains("register") || data.contains("registry") || data.contains("registration")) )
+		{
+			register();
+			GUI.out("Engaging Registery Mode.");
+			skip = true;
+		}
 		if( data.contains("toggle") && (data.contains("voice") || data.contains("text") || data.contains("output")) )
 		{
 			if( MODE.equals("text") )
 			{
 				MODE = "voice";
+				GUI.out("Speech synthesizer enabled.");
 				skip = true;
 			}
 			else if( MODE.equals("voice") )
 			{
 				MODE = "text";
+				GUI.out("Speech synthesizer disabled.");
 				skip = true;
 			}
 		}
-		else if( data.contains("talk") || (data.contains("voice") && data.contains("use")) )
+		else if( data.contains("talk") || ((data.contains("voice") && data.contains("use"))) || data.contains("speak to me") )
 		{
 			MODE = "voice";
+			GUI.out("Speech synthesizer enabled.");
 			skip = true;
 		}
 		else if( data.contains("shut up") || (data.contains("text") && data.contains("use")) )
 		{
 			MODE = "text";
+			GUI.out("Speech synthesizer disabled.");
 			skip = true;
 		}
 		if( data.contains("debug") && data.contains(" on") )
@@ -1138,6 +1230,103 @@ public class PitAssistant {
 			System.out.print(query);
 		}
 		return query;
+	}
+	public static void register()
+	{
+		while(true)
+		{
+			GUI.out("Type the word next to begin.");
+			String next = "";
+			while( next.equals("") )
+			{
+				next = input();
+			}
+			if( next.contains("next") )
+			{
+				break;
+			}
+		}
+		while( true )
+		{
+			GUI.out("Hello. What is your name?");
+			String name = "";
+			while( name.equals("") )
+			{
+				name = input();
+			}
+			registerWrite(name);
+			GUI.out("Please enter your email.");
+			String email = "";
+			while(true)
+			{
+				email = "";
+				while(email.equals(""))
+				{
+					email = input();
+				}
+				if( !email.contains("@") || !email.contains(".") )
+				{
+					GUI.out("Please enter a valid email.");
+				}
+				else
+				{
+					break;
+				}
+			}
+			registerWrite(email);
+			GUI.out("What grade are you in?");
+			String grade = "";
+			while( grade.equals("") )
+			{
+				grade = input();
+			}
+			GUI.out("Welcome to Programming, " + name + ".");
+			registerWrite(grade);
+			registerFile[registerFilePointer] = name;
+			registerFilePointer++;
+			registerFile[registerFilePointer] = email;
+			registerFilePointer++;
+			registerFile[registerFilePointer] = grade;
+			registerFilePointer++;
+			String command = "";
+			while( command.equals("") )
+			{
+				command = input();
+			}
+			if( command.equals("done") || command.equals("finished") )
+			{
+				break;
+			}
+			else if( command.equals("next") )
+			{
+				GUI.out("Next.");
+			}
+		}
+	}
+	public static void printRegister()
+	{
+		for( int f=0; f<registerFilePointer; f+=3 )
+		{
+			GUI.text("Name: " + registerFile[f]);
+			GUI.text("Email: " + registerFile[f+1]);
+			if( registerFile[f+2].equalsIgnoreCase("freshman") )
+			{
+				registerFile[f+2] = "9";
+			}
+			if( registerFile[f+2].equalsIgnoreCase("sophomore") )
+			{
+				registerFile[f+2] = "10";
+			}
+			if( registerFile[f+2].equalsIgnoreCase("junior") )
+			{
+				registerFile[f+2] = "11";
+			}
+			if( registerFile[f+2].equalsIgnoreCase("senior") )
+			{
+				registerFile[f+2] = "12";
+			}
+			GUI.text("Grade: " + registerFile[f+2]);
+		}
 	}
 	public static void search()
 	{
@@ -1696,6 +1885,42 @@ public class PitAssistant {
         GUI.prefChange(programName, userName, programColor, userColor);
         parseName(programName);
 	}
+	public static void loadRegister()
+	{
+		/* [Startup] [Register] [Read] [IO] [022] */
+		if( debugMode )
+		{
+			GUI.text("LoadRegister called.");
+		}
+        String fileName = "register.txt";
+        String line = null;
+        try {
+            FileReader fileReader = new FileReader(fileName);
+            BufferedReader bufferedReader = new BufferedReader(fileReader);
+            while((line = bufferedReader.readLine()) != null)
+            {
+            	if( line.startsWith("//") )
+            	{
+            		String ignore = line;
+            	}
+            	else
+            	{
+            		registerFile[registerFilePointer] = line;
+            		registerFilePointer++;
+            	}
+            }   
+            fileReader.close();
+            bufferedReader.close();         
+        }
+        catch(FileNotFoundException ex)
+        {
+            GUI.text("Unable to open file '" + fileName + "'");                
+        }
+        catch(IOException ex)
+        {
+            GUI.text("Error reading file '" + fileName + "'");
+        }
+	}
 	public static void borrowWrite(String string)
 	{
 		/* [IO] [Borrow] [023] */
@@ -1705,6 +1930,27 @@ public class PitAssistant {
 		}
 		try{
             FileWriter fstream = new FileWriter("borrow.txt",true);
+            BufferedWriter fbw = new BufferedWriter(fstream);
+            if( string!=null )
+            {
+            	fbw.write(string);
+            	fbw.newLine();
+            	fbw.close();
+            }
+        }catch (Exception e) {
+            GUI.text("Couldn't print to the file.");
+        }
+
+    }
+	public static void registerWrite(String string)
+	{
+		/* [IO] [Register] [023] */
+		if( debugMode )
+		{
+			GUI.text("RegisterWrite called with input '" + string + "'.");
+		}
+		try{
+            FileWriter fstream = new FileWriter("register.txt",true);
             BufferedWriter fbw = new BufferedWriter(fstream);
             if( string!=null )
             {
