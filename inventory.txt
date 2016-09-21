@@ -1,27 +1,163 @@
 // Format:
-// <*General Location Name>
+// <+General Location Name>
 // <Item Name>
 // <-altname>
 // <-otheraltname>
 // Example:
-// *Box 1
+// +Box 1
 // hammer
 // -6 pounder
 // -big owie
 // wrench
 // screws
 // -spiral nails
-// *Box 2
+// +Box 2
 // rivet gun
 // -riveter
 // wrench
-*Test Area I
-testItemA
--testdescriptiona
--testdescriptionb
-testItemB
--testdescriptionagaina
--testdesccriptionagainb
-*Test Area II
-testItemC
--testCs
++Tool Box (E)
+Precision Screwdriver Set
+Goo-gone
+Files
+Erwin Clamps
+Metal Clamps
+Flashlight
+Craftsman's square
+Flathead
+Phillips
+Icepick
+Utility
+Deburring tool
+Paper ruler
+Loctite
+Bent Needlenose (Red & Black, orange)
+Wire Crusher (orange)
+Needlenose (orange)
+Drill Bit row thing
+Big Needlenose (Grey)
+Box Cutter
+Wire Stripper
+-Wire Crimper
+Snub-Nose Pliers
+Needlenose (green)
+Stab-Stab
+Chain Breaker
++Tote A (Flowers)
+Rivet Box
+Spacer Box
+Zip Tie Box
+Pressure Tape
+Hack Saw
+Chain Box
+Blue Rachet Set
+Crappy Drill Bit Set
+craftsman drill bit set
+rivet gun
+Tape Box
+Gorilla Tape
+Clear Packing tape
+Electrical Tape, Red
+Electrical Tape, Black
+Painter's Tape, Blue
+Crazy glue 
+Gaffers Tape
+Black Rachet Set
+Drills
+Drill Chargers
+Rag Bag
+Warrior Set
+Mcmaster box
+Box End Rachets (B/Y box)
++Tote B
+Vex Pro Box
+-versas
+-ringlights
+-victors
+encoders
+Red Battery Wire
+Black Battery Wire
+Pickup hardware bag(small)
+Wire box
+PWM Crimp Tool
+Versas
+Random Sheet Metal
+Sponsor panels
+Breakers
+Electrical Stuff box
+Anderson Box
+Grease
+vise
+Clear Screw Box
+random lexan
+Pickup hardware bag (big)
+Polycord Box
+-tread
+-radio
+-camera
+SAE Tap Set
+hex stock
+Optical Sensor
+Encoders
+Victors
++Tote C
+Compressed Air
+Tap Fluid
+Caliper
+Pneumatic Tubing Bag
+Pneumatics Hardware Box
+Pneumatic Wheels
+Plates Stuff Box
+Gears Stuff Box
+Pneumatic Tubing Blue and Orange
+Air Tanks
+Mantis hardware bag
++Tote D
+Pit Bag
+White Board
+Bumper Bolts
+Nut Bag
+Standard
+Power Strips 
+Extension cords
+Mutimeter
+vise bit
+Radio power cord
+Ethernet
+Ball
+Bumper Fabric and Staples
+Pool noodle
+1x1 tubing
+Gorilla Tape
+Velcro
+Pneumatics plate
+kneepad
+2 CIMs Box
+4 Dry Erase Markers
+tarp 
++Total
+driverstation bag
+totes
+Push cart
+Safety Kit
+pickup
+compressor box
+-Compressor tip
+-Compressor Cord (red)
+-Compressor Cord (yellow)
+-Automatic rivet gun
+-Compressor
+Inspiration Box
+-binders
+Buttons
+Blue banners
+banner
+toolbox
+Robot cart
+Shop Vac
+big shelves
+long hex stock
+standard stand
+white shelves
+EZ Up
+robot
+Bumpers

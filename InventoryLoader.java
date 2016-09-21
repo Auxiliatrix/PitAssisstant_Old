@@ -89,7 +89,6 @@ public class InventoryLoader {
 	}
 	public static void saveIventory()
 	{
-		/* [Borrow] [Memory] [062] */
 		String fileName = "inventory.txt";
 		String line = null;
 		try {
@@ -131,7 +130,7 @@ public class InventoryLoader {
             	{
             		String ignore = line;
             	}
-            	else if( line.toLowerCase().startsWith("*") )
+            	else if( line.toLowerCase().startsWith("+") )
 				{
 					locations++;
 					locationNames[locations-1] = sub;

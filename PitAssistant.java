@@ -17,6 +17,26 @@ import java.io.*;
 
 public class PitAssistant {
 	
+	public static String[] fileDump;
+	public static int fileDumpPointer;
+	public static int locations;
+	// Number of General Locations
+	public static String[] locationNames;
+	// Names of the General Locations
+	public static int[] masterInventoryPointers;
+	// Contains General Location sizes
+	public static String[][][] masterInventory;
+	// Level 1: General Location
+	// Level 2: Index
+	// Level 2: Category { 0:Item || 1+:Description }
+	// Level 3: Contents
+	public static int[][] masterInventoryDescriptionsPointer;
+	
+	public static String[] inventoryFile;
+	public static int inventoryFilePointer;
+	
+	public static int[] found;
+	
 	// arrays and pointers??
 	public static String[] nickName = new String[10000];
 	public static int nickNamePointer = 0;
@@ -149,19 +169,29 @@ public class PitAssistant {
 		InventoryLoader.run();
 		if (!started) {
 			GUI.load(programName, userName, programColor, userColor);
-			GUI.out("Loading libraries...");
+			GUI.text("Loading libraries...");
 			loadLibrary();
-			GUI.out("Libraries loaded!");
+			GUI.text("Libraries loaded!");
 			started = true;
 		}
+		InventoryLoader.run();
+		fileDump = InventoryLoader.fileDump;
+		fileDumpPointer = InventoryLoader.fileDumpPointer;
+		locations = InventoryLoader.locations;
+		locationNames = InventoryLoader.locationNames;
+		masterInventoryPointers = InventoryLoader.masterInventoryPointers;
+		masterInventory = InventoryLoader.masterInventory;
+		masterInventoryDescriptionsPointer = InventoryLoader.masterInventoryDescriptionsPointer;
+		inventoryFile = InventoryLoader.inventoryFile;
+		inventoryFilePointer = InventoryLoader.inventoryFilePointer;
+		found = new int[locations];
+		Thread.sleep(1500);
+		GUI.flush();
 		loadBorrow();
 		loadPref();
 		loadRegister();
 		if (firstStartup) {
 			tutorial();
-		}
-		if (first) {
-			greet();
 		}
 	}
 
@@ -496,12 +526,12 @@ public class PitAssistant {
 		GUI.text("  =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-[" + programName
 				+ "]-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=");
 		GUI.text("");
-		GUI.text("  Hi, I'm Pit Assistant (v4.5). I can look for things, and tell you what's in our totes and boxes.");
-		GUI.text("Pit Assisstant (v4.5) Theoretically(TM) supports description-based queries and all sentence structures.");
-		GUI.text("         Pit Assistant (v4.5) Theoretically(TM) keeps track of borrowed items from a file.");
-		GUI.text("       Pit Assistant (v4.5) also Theoretically(TM) supports and keeps track of user preferences.");
+		GUI.text("  Hi, I'm Pit Assistant (v4.6). I can look for things, and tell you what's in our totes and boxes.");
+		GUI.text("Pit Assisstant (v4.6) Theoretically(TM) supports description-based queries and all sentence structures.");
+		GUI.text("         Pit Assistant (v4.6) Theoretically(TM) keeps track of borrowed items from a file.");
+		GUI.text("       Pit Assistant (v4.6) also Theoretically(TM) supports and keeps track of user preferences.");
 		GUI.text("");
-		GUI.text("  =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=(v4.5)=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=");
+		GUI.text("  =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=(v4.6)=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=");
 		GUI.text("");
 		GUI.text("How may I help you?");
 	}
@@ -597,6 +627,7 @@ public class PitAssistant {
 			GUI.text("(v4.3)  ::  Added Exact Search cases!!");
 			GUI.text("(v4.4)  ::  Added escape to register mode");
 			GUI.text("(v4.5)  ::  Prepared InventoryLoader for new modular inventory implementation");
+			GUI.text("(v4.6)  ::  Setup new recursive search algorithm for modular inventory implementation");
 			skip = true;
 		}
 		if (data.contains("help") && !data.contains("find")
@@ -612,6 +643,10 @@ public class PitAssistant {
 		}
 		if (data.contains("todo") || data.contains("to-do")) {
 			GUI.text("1.  *Memory Modification");
+			GUI.text("    - Modular Inventory Loader");
+			GUI.text("    - Modular Inventory Search");
+			GUI.text("    - Modular Inventory Borrow");
+			GUI.text("    - Modular Inventory Output");
 			GUI.text("2.  Emoji Support");
 			GUI.text("3.  *Consolidate pointers");
 			GUI.text("4.  Save reponses to a text file for easy translation for international teams");
@@ -1351,7 +1386,99 @@ public class PitAssistant {
 		checkCrate();
 		checkBorrowed();
 	}
+	public static void recursiveSearch()
+	{
+		if( debugMode )
+		{
+			GUI.text("RecursiveSearch called.");
+		}
+		for( int f=0; f<locations-1; f++ )
+		{
+			found[f] = 0;
+		}
+		for( int f=0; f<locations-1; f++ )
+		{
+			found[f] = 0;
+			for( int g=0; g<=masterInventoryPointers[f]; g++ )
+			{
+				for( int h=0; h<keywordPointer; h++ )
+				{
+					for( int i=0; i<masterInventoryDescriptionsPointer[f][g]; i++  )
+					{
+						if (keywords[h].toLowerCase().contains(masterInventory[f][g][i].toLowerCase())
+								|| masterInventory[f][g][i].toLowerCase().contains(
+										keywords[h].toLowerCase())) {
+							found[f]++;
+							resultPointer++;
+							results[resultPointer - 1][0] = f;
+							results[resultPointer - 1][1] = g;
+						}
+					}
+				}
+			}
+		}
+	}
+	public static void recursiveExactSearch(String term) {
+		if( debugMode )
+		{
+			GUI.text("RecursiveExactSearch called.");
+		}
+		for( int f=0; f<locations-1; f++ )
+		{
+			found[f] = 0;
+		}
+		for( int f=0; f<locations-1; f++ )
+		{
+			for( int g=0; g<masterInventoryPointers[f]; g++ )
+			{
+				for( int h=0; h<masterInventoryDescriptionsPointer[f][g]; h++ )
+				{
+					if( term.toLowerCase().equals(masterInventory[f][g][h].toLowerCase()) )
+					{
+						found[f]++;
+						results[resultPointer-1][0] = f;
+						results[resultPointer-1][1] = g;
+					}
+				}
+			}
+		}
+	}
+	public static void checkBorrowedR() {
+		found[locations] = 0;
+		for (int f = 0; f < borrowedPointer; f++) {
+			for (int g = 0; g < keywordPointer; g++) {
+				if (keywords[g].toLowerCase().contains(
+						borrowedItem[f].toLowerCase())
+						|| borrowedItem[f].toLowerCase().contains(
+								keywords[g].toLowerCase())) {
+					found[locations]++;
+					resultPointer++;
+					results[resultPointer - 1][0] = locations;
+					results[resultPointer - 1][1] = f;
+				} else if ((keywords[g].toLowerCase() + "s")
+						.contains(borrowedItem[f].toLowerCase())
+						|| (borrowedItem[f] + "s").contains(keywords[g]
+								.toLowerCase())) {
+					found[locations]++;
+					resultPointer++;
+					results[resultPointer - 1][0] = locations;
+					results[resultPointer - 1][1] = f;
+				}
+			}
+		}
+	}
 
+	public static void exactBorrowedR(String term) {
+		found[locations] = 0;
+		for (int f = 0; f < borrowedPointer; f++) {
+			if (term.toLowerCase().equals(borrowedItem[f].toLowerCase())) {
+				p[locations]++;
+				resultPointer++;
+				results[resultPointer - 1][0] = locations;
+				results[resultPointer - 1][1] = f;
+			}
+		}
+	}
 	public static void exactSearch(String term) {
 		if (debugMode) {
 			GUI.text("ExactSearch called with term " + term + ".");
@@ -1365,7 +1492,6 @@ public class PitAssistant {
 		exactCrate(term);
 		exactBorrowed(term);
 	}
-
 	public static boolean antiRepeat(String check) {
 		/* [Support] [Text] [Pointer] [013] */
 		if (debugMode) {
