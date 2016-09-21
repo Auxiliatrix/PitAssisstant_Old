@@ -1,0 +1,27 @@
+// Format:
+// <*General Location Name>
+// <Item Name>
+// <-altname>
+// <-otheraltname>
+// Example:
+// *Box 1
+// hammer
+// -6 pounder
+// -big owie
+// wrench
+// screws
+// -spiral nails
+// *Box 2
+// rivet gun
+// -riveter
+// wrench
+*Test Area I
+testItemA
+-testdescriptiona
+-testdescriptionb
+testItemB
+-testdescriptionagaina
+-testdesccriptionagainb
+*Test Area II
+testItemC
+-testCs
