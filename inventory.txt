@@ -15,7 +15,7 @@
 // rivet gun
 // -riveter
 // wrench
-+Tool Box (E)
++Tool Box
 Precision Screwdriver Set
 Goo-gone
 Files
@@ -42,7 +42,7 @@ Snub-Nose Pliers
 Needlenose (green)
 Stab-Stab
 Chain Breaker
-+Tote A (Flowers)
++Tote A
 Rivet Box
 Spacer Box
 Zip Tie Box
@@ -52,7 +52,7 @@ Chain Box
 Blue Rachet Set
 Crappy Drill Bit Set
 craftsman drill bit set
-rivet gun
+Rivet gun
 Tape Box
 Gorilla Tape
 Clear Packing tape

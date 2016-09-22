@@ -30,6 +30,8 @@ public class PitAssistant {
 	// Level 2: Index
 	// Level 2: Category { 0:Item || 1+:Description }
 	// Level 3: Contents
+	public static String[][] masterInventoryBorrow;
+	public static String[][] masterInventoryBB = new String[255][10000];
 	public static int[][] masterInventoryDescriptionsPointer;
 	
 	public static String[] inventoryFile;
@@ -181,12 +183,16 @@ public class PitAssistant {
 		locationNames = InventoryLoader.locationNames;
 		masterInventoryPointers = InventoryLoader.masterInventoryPointers;
 		masterInventory = InventoryLoader.masterInventory;
+		masterInventoryBorrow = InventoryLoader.masterInventoryBorrow;
 		masterInventoryDescriptionsPointer = InventoryLoader.masterInventoryDescriptionsPointer;
 		inventoryFile = InventoryLoader.inventoryFile;
 		inventoryFilePointer = InventoryLoader.inventoryFilePointer;
-		found = new int[locations];
+		found = new int[locations+1];
 		Thread.sleep(1500);
-		GUI.flush();
+		if( !debugMode )
+		{
+			GUI.flush();
+		}
 		loadBorrow();
 		loadPref();
 		loadRegister();
@@ -352,13 +358,13 @@ public class PitAssistant {
 		if (debugMode) {
 			GUI.text("ResetBorrow called.");
 		}
-		loadToolBox();
-		loadToteA();
-		loadToteB();
-		loadToteC();
-		loadToteD();
-		loadToteE();
-		loadCrate();
+		for( int f=0; f<locations; f++ )
+		{
+			for( int g=0; g<masterInventoryPointers[f]; g++ )
+			{
+				masterInventoryBorrow[f][g] = "0";
+			}
+		}
 		saveBorrow();
 		clearBorrow();
 		borrowedItemBU = borrowedItem;
@@ -383,13 +389,7 @@ public class PitAssistant {
 			lentLoc[f][1] = 0;
 			lentTeam[f] = "";
 		}
-		ToolBoxBB = ToolBox;
-		ToteABB = ToteA;
-		ToteBBB = ToteB;
-		ToteCBB = ToteC;
-		ToteDBB = ToteD;
-		ToteEBB = ToteE;
-		CrateBB = Crate;
+		masterInventoryBB = masterInventoryBorrow;
 	}
 
 	public static void resetPref() {
@@ -526,12 +526,12 @@ public class PitAssistant {
 		GUI.text("  =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-[" + programName
 				+ "]-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=");
 		GUI.text("");
-		GUI.text("  Hi, I'm Pit Assistant (v4.6). I can look for things, and tell you what's in our totes and boxes.");
-		GUI.text("Pit Assisstant (v4.6) Theoretically(TM) supports description-based queries and all sentence structures.");
-		GUI.text("         Pit Assistant (v4.6) Theoretically(TM) keeps track of borrowed items from a file.");
-		GUI.text("       Pit Assistant (v4.6) also Theoretically(TM) supports and keeps track of user preferences.");
+		GUI.text("  Hi, I'm Pit Assistant (v5.0). I can look for things, and tell you what's in our totes and boxes.");
+		GUI.text("Pit Assisstant (v5.0) Theoretically(TM) supports description-based queries and all sentence structures.");
+		GUI.text("         Pit Assistant (v5.0) Theoretically(TM) keeps track of borrowed items from a file.");
+		GUI.text("       Pit Assistant (v5.0) also Theoretically(TM) supports and keeps track of user preferences.");
 		GUI.text("");
-		GUI.text("  =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=(v4.6)=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=");
+		GUI.text("  =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=(v5.0)=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=");
 		GUI.text("");
 		GUI.text("How may I help you?");
 	}
@@ -541,13 +541,13 @@ public class PitAssistant {
 		reset();
 		String input = input();
 		if (input != "") {
-			boolean normal = caser(input);
+			boolean normal = cmd(input);
 			if (normal) {
 				parse(input);
 				if (!exactCase) {
-					search();
+					recursiveSearch();
 				}
-				output();
+				recursiveOutput();
 			}
 			if (on) {
 				menu();
@@ -568,6 +568,50 @@ public class PitAssistant {
 		ziptie = false;
 	}
 
+	public static boolean cmd(String input) throws InterruptedException {
+		if( debugMode )
+		{
+			GUI.text("Cmd called with input " + input + ".");
+		}
+		boolean normal = false;
+		String data = input.toLowerCase();
+		if( data.startsWith("cmd: ") )
+		{
+			String parsed = data.substring(5,data.length());
+			command(parsed);
+		}
+		else
+		{
+			normal = caser(input);
+		}
+		return normal;
+	}
+	public static void command(String input)
+	{
+		String sub = "";
+		int le = input.length();
+		if( debugMode )
+		{
+			GUI.text("Command called with input " + input  + ".");
+		}
+		if( input.startsWith("ls ") )
+		{
+			
+		}
+		else if( input.startsWith("get ") )
+		{
+			sub = input.substring(4,le);
+			if( debugMode )
+			{
+				GUI.text("get");
+				GUI.text(sub);
+			}
+			if( sub.equals("locations") )
+			{
+				GUI.text(locations+"");
+			}
+		}
+	}
 	public static boolean caser(String input) throws InterruptedException {
 		/* [Organizer] [Text] [Process] [008] */
 		if (debugMode) {
@@ -578,7 +622,7 @@ public class PitAssistant {
 		String data = input.toLowerCase();
 		if ((!data.contains("cyan") && data.contains("cya"))
 				|| data.contains("bye") || data.contains("terminate")
-				|| data.contains("shut down")) {
+				|| data.contains("shut down") || data.contains("shutdown") || data.contains("done here")) {
 			shutDown();
 			skip = true;
 		}
@@ -628,6 +672,8 @@ public class PitAssistant {
 			GUI.text("(v4.4)  ::  Added escape to register mode");
 			GUI.text("(v4.5)  ::  Prepared InventoryLoader for new modular inventory implementation");
 			GUI.text("(v4.6)  ::  Setup new recursive search algorithm for modular inventory implementation");
+			GUI.text("(v4.7)  ::  Finished modular inventory setup. Beginning the long and arduous process of debugging.");
+			GUI.text("(v5.0)  ::  Debugging complete (and way ahead of schedule). Modular Inventory is now up and running.");
 			skip = true;
 		}
 		if (data.contains("help") && !data.contains("find")
@@ -642,22 +688,19 @@ public class PitAssistant {
 			skip = true;
 		}
 		if (data.contains("todo") || data.contains("to-do")) {
-			GUI.text("1.  *Memory Modification");
-			GUI.text("    - Modular Inventory Loader");
-			GUI.text("    - Modular Inventory Search");
-			GUI.text("    - Modular Inventory Borrow");
-			GUI.text("    - Modular Inventory Output");
+			GUI.text("1.  BUG FIXES:");
+			GUI.text("   a) CRITICAL MEMORY LEAK");
+			GUI.text("");
 			GUI.text("2.  Emoji Support");
 			GUI.text("3.  *Consolidate pointers");
 			GUI.text("4.  Save reponses to a text file for easy translation for international teams");
 			GUI.text("5.  Organize cases [Standalone, Priority, Easter Egg, Repeatable]");
 			GUI.text("6.  *Add undo borrow function");
-			GUI.text("7.  *Add ability to return items");
-			GUI.text("8.  Add sentience easter egg");
-			GUI.text("9.  Add a pager maybe?");
-			GUI.text("10. Work on social communications");
-			GUI.text("11. Make header stay same size regardless of name");
-			GUI.text("12. Make note taking independent from borrow file");
+			GUI.text("7.  Add sentience easter egg");
+			GUI.text("8.  Add a pager maybe?");
+			GUI.text("9.  Work on social communications");
+			GUI.text("10. Make header stay same size regardless of name");
+			GUI.text("11. Make note taking independent from borrow file");
 			skip = true;
 		}
 		if (data.contains("thank")) {
@@ -915,29 +958,22 @@ public class PitAssistant {
 				GUI.out("Haven't you already tried looking for me?");
 			} else if (data.contains("love")) {
 				GUI.out("If you're looking for love, you'll have to look elsewhere.");
-			} else if (data.contains("toolbox")) {
-				listToolBox();
-			} else if (data.contains("tote a")) {
-				listToteA();
-			} else if (data.contains("tote b")) {
-				listToteB();
-			} else if (data.contains("tote c")) {
-				listToteC();
-			} else if (data.contains("tote d")) {
-				listToteD();
-			} else if (data.contains("tote e")) {
-				listToteE();
-			} else if (data.contains("crate")) {
-				listCrate();
-			} else if (data.contains("inventory") || data.contains("list")
+			}
+			else
+			{
+				for( int f=0; f<locations; f++ )
+				{
+					if( data.contains(locationNames[f].toLowerCase()) )
+					{
+						recursiveList(f);
+						skip = true;
+					}
+				}
+			}
+			if (data.contains("inventory") || data.contains("list")
 					|| data.contains(" all") || data.contains("everything")) {
-				listToolBox();
-				listToteA();
-				listToteB();
-				listToteC();
-				listToteD();
-				listToteE();
-				listCrate();
+				recursiveList(-1);
+				skip = true;
 			} else {
 				normal = true;
 				if (data.contains("ziptie") || data.contains("zip tie")) {
@@ -948,6 +984,23 @@ public class PitAssistant {
 		return normal;
 	}
 
+	public static void recursiveList(int which)
+	{
+		if( which == -1 )
+		{
+			for( int f=0; f<locations; f++ )
+			{
+				GUI.text(locationNames[f]);
+			}
+		}
+		else
+		{
+			for( int f=0; f<masterInventoryPointers[which]; f++ )
+			{
+				GUI.text(masterInventory[which][f][0]);
+			}
+		}
+	}
 	public static void parse(String input) {
 		/* [Data] [Text] [Process] [009] */
 		if (debugMode) {
@@ -963,8 +1016,8 @@ public class PitAssistant {
 		while (data.endsWith(" ")) {
 			data = data.substring(0, data.length() - 1);
 		}
-		if (data.contains("'") || data.contains("\"")) {
-			exactSearch(parseExact(data));
+		if (data.contains("\"") && !data.contains("name")) {
+			recursiveExactSearch(parseExact(data));
 			exactCase = true;
 		} else {
 			exactCase = false;
@@ -1033,8 +1086,92 @@ public class PitAssistant {
 		}
 	}
 
+	public static void recursiveOutput()
+	{
+		if( debugMode )
+		{
+			GUI.text("RecursiveOutput called.");
+		}
+		if( resultPointer == 0 && !exactCase )
+		{
+			GUI.out("Sorry, I couldn't find what you were looking for.");
+		}
+		else if( !exactCase )
+		{
+			GUI.out("Okay, here's what I found:");
+		}
+		GUI.out("");
+		if( exactCase )
+		{
+			for( int f=0; f<locations; f++ )
+			{
+				if( found[f] > 0 )
+				{
+					if( antiRepeat(masterInventory[f][results[0][1]][0]) )
+					{
+						GUI.out("It will be in " + locationNames[f] + ".");
+					}
+					if( masterInventoryBorrow[f][results[0][1]] != "0" )
+					{
+						GUI.out("* The " + masterInventory[f][results[0][1]][0] + " was lent to team " + masterInventoryBorrow[f][results[0][1]] + ".");
+					}
+				}
+			}
+			if( found[locations] > 0 )
+			{
+				if( antiRepeat(borrowedItem[results[0][1]]) )
+				{
+					GUI.out("We should have borrowed it.");
+				}
+			}
+		}
+		else
+		{
+			for( int f=0; f<locations; f++ )
+			{
+				if( found[f] > 0 )
+				{
+					GUI.out("In the " + locationNames[f] + ", we should theoretically have the following items:");
+					int totalSoFar = 0;
+					for( int g=0; g<f; g++ )
+					{
+						totalSoFar += found[g];
+					}
+					for( int g=totalSoFar; g<totalSoFar+found[f]; g++ )
+					{
+						if( antiRepeat(masterInventory[f][results[g][1]][0]) )
+						{
+							if( masterInventoryBorrow[f][results[g][1]] == "0" )
+							{
+								GUI.out(masterInventory[f][results[g][1]][0]);
+							}
+							else
+							{
+								GUI.out("* The " + masterInventory[f][results[g][1]][0] + " was lent to team " + masterInventoryBorrow[f][results[g][1]] + ".");
+							}
+						}
+					}
+					GUI.out("");
+				}
+			}
+			if (found[locations] > 0) {
+				GUI.out("We should theoretically have borrowed the following items:");
+				int totalWithoutBorrow = 0;
+				for( int f=0; f<locations-1; f++ )
+				{
+					totalWithoutBorrow += found[f];
+				}
+				for (int f = totalWithoutBorrow; f < totalWithoutBorrow + found[locations]; f++) {
+					if (antiRepeat(borrowedItem[results[f][1]])) {
+						GUI.out(borrowedItem[results[f][1]]);
+					}
+				}
+				GUI.out("");
+			}
+		}
+	}
+	/*
 	public static void output() {
-		/* [IO] [Text] [Print] */
 		if (debugMode) {
 			GUI.text("Output called.");
 		}
@@ -1261,7 +1398,7 @@ public class PitAssistant {
 			}
 		}
 	}
-
+	*/
 	public static String input() {
 		/* [IO] [Text] [Input] [011] */
 		String query = "";
@@ -1372,8 +1509,8 @@ public class PitAssistant {
 		}
 	}
 
+	/*
 	public static void search() {
-		/* [Organizer] [Text] [Process] [012] */
 		if (debugMode) {
 			GUI.text("Search called.");
 		}
@@ -1386,56 +1523,86 @@ public class PitAssistant {
 		checkCrate();
 		checkBorrowed();
 	}
+	*/
 	public static void recursiveSearch()
 	{
 		if( debugMode )
 		{
 			GUI.text("RecursiveSearch called.");
 		}
-		for( int f=0; f<locations-1; f++ )
+		for( int f=0; f<locations+1; f++ )
 		{
 			found[f] = 0;
 		}
-		for( int f=0; f<locations-1; f++ )
+		for( int f=0; f<locations; f++ )
 		{
-			found[f] = 0;
-			for( int g=0; g<=masterInventoryPointers[f]; g++ )
+			if( debugMode )
 			{
+				GUI.text("Searching in location " + locationNames[f] + ".");
+			}
+			found[f] = 0;
+			for( int g=0; g<masterInventoryPointers[f]; g++ )
+			{
+				boolean tf = false;
+				int adjust = g;
+				if( debugMode )
+				{
+					GUI.text("Testing against " + masterInventory[f][g][0]);
+				}
 				for( int h=0; h<keywordPointer; h++ )
 				{
-					for( int i=0; i<masterInventoryDescriptionsPointer[f][g]; i++  )
+					for( int i=0; i<=masterInventoryDescriptionsPointer[f][g]; i++  )
 					{
 						if (keywords[h].toLowerCase().contains(masterInventory[f][g][i].toLowerCase())
 								|| masterInventory[f][g][i].toLowerCase().contains(
 										keywords[h].toLowerCase())) {
-							found[f]++;
-							resultPointer++;
-							results[resultPointer - 1][0] = f;
-							results[resultPointer - 1][1] = g;
+							if( debugMode )
+							{
+								GUI.text("Match found: " + masterInventory[f][g][i]);
+								if( i > 0 )
+								{
+									adjust = g-1;
+								}
+								GUI.text("Location: " + locationNames[f] + ":" + adjust);
+							}
+							if( i > 0 )
+							{
+								adjust = g-1;
+							}
+							tf = true;
 						}
 					}
 				}
+				if(tf)
+				{
+					found[f]++;
+					resultPointer++;
+					results[resultPointer - 1][0] = f;
+					results[resultPointer - 1][1] = adjust;
+				}
 			}
 		}
+		checkBorrowedR();
 	}
 	public static void recursiveExactSearch(String term) {
 		if( debugMode )
 		{
 			GUI.text("RecursiveExactSearch called.");
 		}
-		for( int f=0; f<locations-1; f++ )
+		for( int f=0; f<locations+1; f++ )
 		{
 			found[f] = 0;
 		}
-		for( int f=0; f<locations-1; f++ )
+		for( int f=0; f<locations; f++ )
 		{
 			for( int g=0; g<masterInventoryPointers[f]; g++ )
 			{
-				for( int h=0; h<masterInventoryDescriptionsPointer[f][g]; h++ )
+				for( int h=0; h<=masterInventoryDescriptionsPointer[f][g]; h++ )
 				{
 					if( term.toLowerCase().equals(masterInventory[f][g][h].toLowerCase()) )
 					{
 						found[f]++;
+						resultPointer++;
 						results[resultPointer-1][0] = f;
 						results[resultPointer-1][1] = g;
 					}
@@ -1472,13 +1639,14 @@ public class PitAssistant {
 		found[locations] = 0;
 		for (int f = 0; f < borrowedPointer; f++) {
 			if (term.toLowerCase().equals(borrowedItem[f].toLowerCase())) {
-				p[locations]++;
+				found[locations]++;
 				resultPointer++;
 				results[resultPointer - 1][0] = locations;
 				results[resultPointer - 1][1] = f;
 			}
 		}
 	}
+	/*
 	public static void exactSearch(String term) {
 		if (debugMode) {
 			GUI.text("ExactSearch called with term " + term + ".");
@@ -1492,6 +1660,7 @@ public class PitAssistant {
 		exactCrate(term);
 		exactBorrowed(term);
 	}
+	*/
 	public static boolean antiRepeat(String check) {
 		/* [Support] [Text] [Pointer] [013] */
 		if (debugMode) {
@@ -1509,9 +1678,8 @@ public class PitAssistant {
 		}
 		return b;
 	}
-
+	/*
 	public static void checkToolBox() {
-		/* [Search] [Data] [Memory] [014] */
 		p[0] = 0;
 		for (int f = 0; f < 41; f++) {
 			for (int g = 0; g < keywordPointer; g++) {
@@ -1540,7 +1708,6 @@ public class PitAssistant {
 	}
 
 	public static void checkToteA() {
-		/* [Search] [Data] [Memory] [015] */
 		p[1] = 0;
 		for (int f = 0; f < 20; f++) {
 			for (int g = 0; g < keywordPointer; g++) {
@@ -1569,7 +1736,6 @@ public class PitAssistant {
 	}
 
 	public static void checkToteB() {
-		/* [Search] [Data] [Memory] [016] */
 		p[2] = 0;
 		for (int f = 0; f < 11; f++) {
 			for (int g = 0; g < keywordPointer; g++) {
@@ -1598,7 +1764,6 @@ public class PitAssistant {
 	}
 
 	public static void checkToteC() {
-		/* [Search] [Data] [Memory] [017] */
 		p[3] = 0;
 		for (int f = 0; f < 18; f++) {
 			for (int g = 0; g < keywordPointer; g++) {
@@ -1627,7 +1792,6 @@ public class PitAssistant {
 	}
 
 	public static void checkToteD() {
-		/* [Search] [Data] [Memory] [018] */
 		p[4] = 0;
 		for (int f = 0; f < 25; f++) {
 			for (int g = 0; g < keywordPointer; g++) {
@@ -1656,7 +1820,6 @@ public class PitAssistant {
 	}
 
 	public static void checkToteE() {
-		/* [Search] [Data] [Memory] [019] */
 		p[5] = 0;
 		for (int f = 0; f < 8; f++) {
 			for (int g = 0; g < keywordPointer; g++) {
@@ -1685,7 +1848,6 @@ public class PitAssistant {
 	}
 
 	public static void checkCrate() {
-		/* [Search] [Data] [Memory] [020] */
 		p[6] = 0;
 		for (int f = 0; f < 16; f++) {
 			for (int g = 0; g < keywordPointer; g++) {
@@ -1749,7 +1911,7 @@ public class PitAssistant {
 			}
 		}
 	}
-
+	*/
 	public static void borrow(String inout) {
 		/* [Organizer] [Borrow] [IO] [021] */
 		if (debugMode) {
@@ -1838,13 +2000,7 @@ public class PitAssistant {
 			if (debugMode) {
 				GUI.out("Checking item '" + Item + "'.");
 			}
-			int tb = ToolBoxCB(Item);
-			int a = ToteACB(Item);
-			int b = ToteBCB(Item);
-			int c = ToteCCB(Item);
-			int d = ToteDCB(Item);
-			int e = ToteECB(Item);
-			int crate = CrateCB(Item);
+			int[] loc = checkBorrow(Item);
 			boolean prev = false;
 			for (int f = 0; f < lentPointer; f++) {
 				if (lentItem[f].equals(Item)) {
@@ -1853,7 +2009,12 @@ public class PitAssistant {
 					break;
 				}
 			}
-			if (tb + a + b + c + d + e + crate != 0 && !prev) {
+			int total = 0;
+			for( int f=0; f<locations; f++ )
+			{
+				total = total + loc[f];
+			}
+			if (total != 0 && !prev) {
 				go = true;
 			} else if (prev) {
 				xcase = true;
@@ -1909,6 +2070,10 @@ public class PitAssistant {
 				} else if (line.toLowerCase().equals("l")) {
 					boolean good = true;
 					line = bufferedReader.readLine();
+					if( debugMode )
+					{
+						GUI.text("We have lent " + line + ".");
+					}
 					String tempString = line;
 					String tempTeam = "0";
 					try {
@@ -1920,49 +2085,29 @@ public class PitAssistant {
 						break;
 					}
 					if (good) {
+						GUI.text("It was lent to " + tempTeam + ".");
 						item = tempString.toLowerCase();
-						int tb = ToolBoxCB(item);
-						int a = ToteACB(item);
-						int b = ToteBCB(item);
-						int c = ToteCCB(item);
-						int d = ToteDCB(item);
-						int e = ToteECB(item);
-						int crate = CrateCB(item);
-						if (tb + a + b + c + d + e + crate != 0) {
-							if (tb != 0) {
-								lentLoc[lentPointer][0] = 0;
-								lentLoc[lentPointer][1] = tb - 1;
-								ToolBox[tb - 1][1] = tempTeam;
-							}
-							if (a != 0) {
-								lentLoc[lentPointer][0] = 1;
-								lentLoc[lentPointer][1] = a - 1;
-								ToteA[a - 1][1] = tempTeam;
-							}
-							if (b != 0) {
-								lentLoc[lentPointer][0] = 2;
-								lentLoc[lentPointer][1] = b - 1;
-								ToteB[b - 1][1] = tempTeam;
-							}
-							if (c != 0) {
-								lentLoc[lentPointer][0] = 3;
-								lentLoc[lentPointer][1] = c - 1;
-								ToteC[c - 1][1] = tempTeam;
-							}
-							if (d != 0) {
-								lentLoc[lentPointer][0] = 4;
-								lentLoc[lentPointer][1] = d - 1;
-								ToteD[d - 1][1] = tempTeam;
-							}
-							if (e != 0) {
-								lentLoc[lentPointer][0] = 5;
-								lentLoc[lentPointer][1] = e - 1;
-								ToteE[e - 1][1] = tempTeam;
-							}
-							if (crate != 0) {
-								lentLoc[lentPointer][0] = 6;
-								lentLoc[lentPointer][1] = crate - 1;
-								Crate[crate - 1][1] = tempTeam;
+						GUI.text("Parsing item as " + item + ".");
+						int loc[] = checkBorrow(item);
+						int total = 0;
+						for( int f=0; f<locations; f++ )
+						{
+							total = total+loc[f];
+						}
+						if (total != 0) {
+							for( int f=0; f<locations; f++ )
+							{
+								if( loc[f] != 0 )
+								{
+									if( debugMode )
+									{
+										GUI.text("The item was in " + locationNames[f] + ".");
+										GUI.text("The index was " + (loc[f]-1) + ".");
+									}
+									lentLoc[lentPointer][0] = f;
+									lentLoc[lentPointer][1] = loc[f]-1;
+									masterInventoryBorrow[f][loc[f]-1] = tempTeam;
+								}
 							}
 							lentItem[lentPointer] = tempString;
 							lentTeam[lentPointer] = tempTeam;
@@ -2276,12 +2421,7 @@ public class PitAssistant {
 		lentTeam = lentTeamBU;
 		lentPointer = lentPointerBU;
 		borrowFilePointer = 0;
-		ToteA = ToteABB;
-		ToteB = ToteBBB;
-		ToteC = ToteCBB;
-		ToteD = ToteDBB;
-		ToteE = ToteEBB;
-		Crate = CrateBB;
+		masterInventoryBorrow = masterInventoryBB;
 		loadBorrow();
 	}
 
@@ -2527,8 +2667,7 @@ public class PitAssistant {
 	}
 
 	public static void loadLibrary() {
-		/* [Startup] [Organizer] [Load] [Memory] [029] */
-		loadToolBox();
+		/*loadToolBox();
 		loadToteA();
 		loadToteB();
 		loadToteC();
@@ -2541,13 +2680,13 @@ public class PitAssistant {
 		loadTCDesc();
 		loadTDDesc();
 		loadTEDesc();
-		loadCDesc();
+		loadCDesc();*/
 		loadExclusion();
 		loadPeople();
 	}
 
+	/*
 	public static void loadToolBox() {
-		/* [Load] [Memory] [030] */
 		ToolBox[0][0] = "Precision Screwdriver Set";
 		ToolBox[1][0] = "Goo-gone";
 		ToolBox[2][0] = "Files";
@@ -2595,7 +2734,6 @@ public class PitAssistant {
 	}
 
 	public static void loadToteA() {
-		/* [Load] [Memory] [031] */
 		ToteA[0][0] = "Rivet Box";
 		ToteA[1][0] = "Pneumatics Hardware Box";
 		ToteA[2][0] = "Zip Tie Box";
@@ -2622,7 +2760,6 @@ public class PitAssistant {
 	}
 
 	public static void loadToteB() {
-		/* [Load] [Memory] [032] */
 		ToteB[0][0] = "Polycord Box (+tread, radio, camera)";
 		ToteB[1][0] = "Solder Box (+chain)";
 		ToteB[2][0] = "Vex Pro Box (versas/ringlight/victor)";
@@ -2640,7 +2777,6 @@ public class PitAssistant {
 	}
 
 	public static void loadToteC() {
-		/* [Load] [Memory] [033] */
 		ToteC[0][0] = "Hardstop (orange)";
 		ToteC[1][0] = "Gears Stuff Box";
 		ToteC[2][0] = "Mcmaster box";
@@ -2665,7 +2801,6 @@ public class PitAssistant {
 	}
 
 	public static void loadToteD() {
-		/* [Load] [Memory] [034] */
 		ToteD[0][0] = "Pit Bag";
 		ToteD[1][0] = "White Board";
 		ToteD[2][0] = "Staple Bag";
@@ -2697,7 +2832,6 @@ public class PitAssistant {
 	}
 
 	public static void loadToteE() {
-		/* [Load] [Memory] [035] */
 		ToteE[0][0] = "Chain Box";
 		ToteE[1][0] = "Plates Stuff Box";
 		ToteE[2][0] = "Clear Screw Box";
@@ -2712,7 +2846,6 @@ public class PitAssistant {
 	}
 
 	public static void loadCrate() {
-		/* [Load] [Memory] [036] */
 		Crate[0][0] = "long hex stock (3)";
 		Crate[1][0] = "standard stand";
 		Crate[2][0] = "vise";
@@ -2733,7 +2866,7 @@ public class PitAssistant {
 			Crate[f][1] = "0";
 		}
 	}
-
+	 */
 	public static void loadExclusion() {
 		/* [Load] [Memory] [037] */
 		Exclusion[0] = "and";
@@ -2793,9 +2926,9 @@ public class PitAssistant {
 		People[27] = "joseph";
 		People[28] = "zain";
 	}
-
+	
+	/*
 	public static void loadTLDesc() {
-		/* [Load] [Memory] [039] */
 		TLDesc[0] = "Precision Screwdrivers Sets screws ";
 		TLDesc[1] = "Goo-gone goo gone removers";
 		TLDesc[2] = "Files";
@@ -2840,7 +2973,6 @@ public class PitAssistant {
 	}
 
 	public static void loadTADesc() {
-		/* [Load] [Memory] [040] */
 		TADesc[0] = "Rivets Boxes";
 		TADesc[1] = "Pneumatics Hardware Boxes";
 		TADesc[2] = "Zip Tie Boxes ziptie zipties";
@@ -2864,7 +2996,6 @@ public class PitAssistant {
 	}
 
 	public static void loadTBDesc() {
-		/* [Load] [Memory] [041] */
 		TBDesc[0] = "Polycords Boxes (+treads, radios, cameras)";
 		TBDesc[1] = "Solder Boxes (+chains)";
 		TBDesc[2] = "Vex Pro Boxes (versas/ringlights/victors) vexpros";
@@ -2879,7 +3010,6 @@ public class PitAssistant {
 	}
 
 	public static void loadTCDesc() {
-		/* [Load] [Memory] [042] */
 		TCDesc[0] = "Hardstops (orange)";
 		TCDesc[1] = "Gears Stuff Boxes";
 		TCDesc[2] = "Mcmaster boxes";
@@ -2901,7 +3031,6 @@ public class PitAssistant {
 	}
 
 	public static void loadTDDesc() {
-		/* [Load] [Memory] [043] */
 		TDDesc[0] = "Pit Bags";
 		TDDesc[1] = "White Boards";
 		TDDesc[2] = "Staples Bags";
@@ -2930,7 +3059,6 @@ public class PitAssistant {
 	}
 
 	public static void loadTEDesc() {
-		/* [Load] [Memory] [044] */
 		TEDesc[0] = "Chain Boxes";
 		TEDesc[1] = "Plates Stuff Boxes";
 		TEDesc[2] = "Clear Screw Boxes";
@@ -2942,7 +3070,6 @@ public class PitAssistant {
 	}
 
 	public static void loadCDesc() {
-		/* [Load] [Memory] [045] */
 		CDesc[0] = "long hex stocks (3)";
 		CDesc[1] = "standard stands";
 		CDesc[2] = "vises";
@@ -2960,9 +3087,25 @@ public class PitAssistant {
 		CDesc[14] = "Orange Safety Kits";
 		CDesc[15] = "knee pads";
 	}
-
+	*/
+	public static int[] checkBorrow(String item)
+	{
+		int[] loc = new int[locations];
+		for( int f=0; f<locations-1; f++ )
+		{
+			for( int g=0; g<masterInventoryPointers[f]; g++ )
+			{
+				if( item.equals(masterInventory[f][g][0]) )
+				{
+					loc[f] = g+1;
+					break;
+				}
+			}
+		}
+		return loc;
+	}
+	/*
 	public static int ToolBoxCB(String item) {
-		/* [Search] [046] */
 		int loc = 0;
 		for (int f = 0; f < 41; f++) {
 			if (item.equals(ToolBox[f][0].toLowerCase())) {
@@ -2974,7 +3117,6 @@ public class PitAssistant {
 	}
 
 	public static int ToteACB(String item) {
-		/* [Search] [047] */
 		int loc = 0;
 		for (int f = 0; f < 20; f++) {
 			if (item.equals(ToteA[f][0].toLowerCase())) {
@@ -2986,7 +3128,6 @@ public class PitAssistant {
 	}
 
 	public static int ToteBCB(String item) {
-		/* [Search] [048] */
 		int loc = 0;
 		for (int f = 0; f < 11; f++) {
 			if (item.equals(ToteB[f][0].toLowerCase())) {
@@ -2998,7 +3139,6 @@ public class PitAssistant {
 	}
 
 	public static int ToteCCB(String item) {
-		/* [Search] [049] */
 		int loc = 0;
 		for (int f = 0; f < 18; f++) {
 			if (item.equals(ToteC[f][0].toLowerCase())) {
@@ -3010,7 +3150,6 @@ public class PitAssistant {
 	}
 
 	public static int ToteDCB(String item) {
-		/* [Search] [050] */
 		int loc = 0;
 		for (int f = 0; f < 25; f++) {
 			if (item.equals(ToteD[f][0].toLowerCase())) {
@@ -3022,7 +3161,6 @@ public class PitAssistant {
 	}
 
 	public static int ToteECB(String item) {
-		/* [Search] [051] */
 		int loc = 0;
 		for (int f = 0; f < 8; f++) {
 			if (item.equals(ToteE[f][0].toLowerCase())) {
@@ -3034,7 +3172,6 @@ public class PitAssistant {
 	}
 
 	public static int CrateCB(String item) {
-		/* [Search] [052] */
 		int loc = 0;
 		for (int f = 0; f < 16; f++) {
 			if (item.equals(Crate[f][0].toLowerCase())) {
@@ -3044,9 +3181,9 @@ public class PitAssistant {
 		}
 		return loc;
 	}
-
+	*/
+	/*
 	public static void listToolBox() {
-		/* [Text] [Print] [Info] [053] */
 		GUI.out("The Toolbox contains the following:");
 		for (int f = 0; f < 41; f++) {
 			if (ToolBox[f][1] == "0") {
@@ -3061,7 +3198,6 @@ public class PitAssistant {
 	}
 
 	public static void listToteA() {
-		/* [Text] [Print] [Info] [054] */
 		GUI.out("Tote A contains the following:");
 		for (int f = 0; f < 20; f++) {
 			if (ToteA[f][1] == "0") {
@@ -3076,7 +3212,6 @@ public class PitAssistant {
 	}
 
 	public static void listToteB() {
-		/* [Text] [Print] [Info] [055] */
 		GUI.out("Tote B contains the following:");
 		for (int f = 0; f < 11; f++) {
 			if (ToteB[f][1] == "0") {
@@ -3091,7 +3226,6 @@ public class PitAssistant {
 	}
 
 	public static void listToteC() {
-		/* [Text] [Print] [Info] [055] */
 		GUI.out("Tote C contains the following:");
 		for (int f = 0; f < 18; f++) {
 			if (ToteC[f][1] == "0") {
@@ -3106,7 +3240,6 @@ public class PitAssistant {
 	}
 
 	public static void listToteD() {
-		/* [Text] [Print] [Info] [056] */
 		GUI.out("Tote D contains the following:");
 		for (int f = 0; f < 25; f++) {
 			if (ToteD[f][1] == "0") {
@@ -3121,7 +3254,6 @@ public class PitAssistant {
 	}
 
 	public static void listToteE() {
-		/* [Text] [Print] [Info] [057] */
 		GUI.out("Tote E contains the following:");
 		for (int f = 0; f < 8; f++) {
 			if (ToteE[f][1] == "0") {
@@ -3136,7 +3268,6 @@ public class PitAssistant {
 	}
 
 	public static void listCrate() {
-		/* [Text] [Print] [Info] [058] */
 		GUI.out("The Crate contains the following:");
 		for (int f = 0; f < 16; f++) {
 			if (Crate[f][1] == "0") {
@@ -3149,7 +3280,7 @@ public class PitAssistant {
 		}
 		GUI.text("");
 	}
-
+	*/
 	public static void shutDown() throws InterruptedException {
 		/* [Cleanup] [Terminate] [059] */
 		if (debugMode) {

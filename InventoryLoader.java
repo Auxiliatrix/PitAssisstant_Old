@@ -22,6 +22,7 @@ public class InventoryLoader {
 	// Level 2: Index
 	// Level 2: Category { 0:Item || 1+:Description }
 	// Level 3: Contents
+	public static String[][] masterInventoryBorrow = new String[255][10000];
 	public static int[][] masterInventoryDescriptionsPointer = new int[255][10000];
 	
 	public static String[] inventoryFile = new String[10000];
@@ -46,6 +47,24 @@ public class InventoryLoader {
 				GUI.text("Inventory created.");
 			}
 		}
+		locations = 0;
+		for( int f=0; f<255; f++ )
+		{
+			locationNames[f] = "";
+			masterInventoryPointers[f] = 0;
+			for( int g=0; g<10000; g++ )
+			{
+				for( int h=0; h<100; h++ )
+				{
+					masterInventory[f][g][h] = "";
+				}
+				masterInventoryDescriptionsPointer[f][g] = 0;
+				inventoryFile[g] = "";
+				masterInventoryBorrow[f][g] = "0";
+			}
+		}
+		previousWasItem = false;
+		inventoryFilePointer = 0;
 		loadInventory();
 		GUI.text("Inventory loaded.");
 	}
@@ -123,6 +142,7 @@ public class InventoryLoader {
             BufferedReader bufferedReader = new BufferedReader(fileReader);
             while((line = bufferedReader.readLine()) != null)
             {
+            	line = line.toLowerCase();
             	String item = "";
             	int length = line.length();
             	String sub = line.substring(1,length);
@@ -149,7 +169,7 @@ public class InventoryLoader {
             		}
             		else
             		{
-            			masterInventory[locations-1][masterInventoryPointers[locations-1]][masterInventoryDescriptionsPointer[locations-1][masterInventoryPointers[locations-1]]+1] = line;
+            			masterInventory[locations-1][masterInventoryPointers[locations-1]][masterInventoryDescriptionsPointer[locations-1][masterInventoryPointers[locations-1]]+1] = sub;
             			masterInventoryDescriptionsPointer[locations-1][masterInventoryPointers[locations-1]]++;
             			GUI.text("Descriptor \"" + sub + "\" added under Item \"" + masterInventory[locations-1][masterInventoryPointers[locations-1]-1][0] + "\".");
             		}

@@ -156,12 +156,12 @@ public class PAInterface extends JPanel implements ActionListener {
 		console.setText("");
 		text("  =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-[" + programName + "]-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=");
 		text("");
-		text("  Hi, I'm Pit Assistant (v4.6). I can look for things, and tell you what's in our totes and boxes.");
-		text("Pit Assisstant (v4.6) Theoretically(TM) supports description-based queries and all sentence structures.");
-		text("         Pit Assistant (v4.6) Theoretically(TM) keeps track of borrowed items from a file.");
-		text("       Pit Assistant (v4.6) also Theoretically(TM) supports and keeps track of user preferences.");
+		text("  Hi, I'm Pit Assistant (v5.0). I can look for things, and tell you what's in our totes and boxes.");
+		text("Pit Assisstant (v5.0) Theoretically(TM) supports description-based queries and all sentence structures.");
+		text("         Pit Assistant (v5.0) Theoretically(TM) keeps track of borrowed items from a file.");
+		text("       Pit Assistant (v5.0) also Theoretically(TM) supports and keeps track of user preferences.");
 		text("");
-		text("  =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=(v4.6)=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=");
+		text("  =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=(v5.0)=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=");
 		text("");
 	}
 	protected void command(String command)
