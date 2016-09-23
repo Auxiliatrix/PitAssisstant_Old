@@ -12,5 +12,3 @@ english
 sarcasm
 0
 started
-programName
-Hannah Bot
