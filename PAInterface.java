@@ -14,8 +14,11 @@ import javax.swing.text.Document;
 import javax.swing.text.Style;
 import javax.swing.text.StyleConstants;
 
+import voce.SpeechInterface;
+
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
+import java.net.URL;
 
 
 public class PAInterface extends JPanel implements ActionListener {
@@ -30,9 +33,14 @@ public class PAInterface extends JPanel implements ActionListener {
     public static String userName = "";
     protected Style style;
 
+    protected static SpeechInterface ss = new SpeechInterface();
+	URL loadGUI = SpeechInterface.class.getResource("load");
+	URL inGUI = SpeechInterface.class.getResource("in");
+	URL outGUI = SpeechInterface.class.getResource("out");
+    
     public PAInterface() {
         super(new GridBagLayout());
-		voce.SpeechInterface.init("../../../lib", true, false, "", "");
+		ss.init("../../../lib", true, false, "", "");
         console = new JTextPane();
         console.setFont(new java.awt.Font("Courier New",Font.BOLD,18));
         console.setEditable(false);
@@ -130,7 +138,7 @@ public class PAInterface extends JPanel implements ActionListener {
 			e.printStackTrace();
 		}
 		console.setCaretPosition(console.getDocument().getLength());
-		voce.SpeechInterface.synthesize(output);
+		ss.synthesize(output);
 	}
 	protected void textNoLine(String output)
 	{
@@ -156,19 +164,19 @@ public class PAInterface extends JPanel implements ActionListener {
 		console.setText("");
 		text("  =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-[" + programName + "]-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=");
 		text("");
-		text("  Hi, I'm Pit Assistant (v5.0). I can look for things, and tell you what's in our totes and boxes.");
-		text("Pit Assisstant (v5.0) Theoretically(TM) supports description-based queries and all sentence structures.");
-		text("         Pit Assistant (v5.0) Theoretically(TM) keeps track of borrowed items from a file.");
-		text("       Pit Assistant (v5.0) also Theoretically(TM) supports and keeps track of user preferences.");
+		text("  Hi, I'm Pit Assistant (v5.1). I can look for things, and tell you what's in our totes and boxes.");
+		text("Pit Assisstant (v5.1) Theoretically(TM) supports description-based queries and all sentence structures.");
+		text("         Pit Assistant (v5.1) Theoretically(TM) keeps track of borrowed items from a file.");
+		text("       Pit Assistant (v5.1) also Theoretically(TM) supports and keeps track of user preferences.");
 		text("");
-		text("  =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=(v5.0)=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=");
+		text("  =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=(v5.1)=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=");
 		text("");
 	}
 	protected void command(String command)
 	{
 		if( command.equals("end") )
 		{
-			voce.SpeechInterface.destroy();
+			ss.destroy();
 			frame.dispose();
 		}
 	}

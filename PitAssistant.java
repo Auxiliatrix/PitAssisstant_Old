@@ -14,6 +14,7 @@
  */
 import java.awt.Color;
 import java.io.*;
+import java.net.URL;
 
 public class PitAssistant {
 	
@@ -141,6 +142,14 @@ public class PitAssistant {
 	public static boolean exactCase = false;
 
 	protected static PAInterface GUI = new PAInterface();
+	URL loadGUI = PAInterface.class.getResource("load");
+	URL inGUI = PAInterface.class.getResource("in");
+	URL outGUI = PAInterface.class.getResource("out");
+	
+	protected static InventoryLoader inven = new InventoryLoader();
+	URL loadInven = InventoryLoader.class.getResource("load");
+	URL inInven = InventoryLoader.class.getResource("in");
+	URL outInven = InventoryLoader.class.getResource("out");
 
 	public static void main(String args[]) throws InterruptedException {
 		/* [Organizer] [Main] [001] */
@@ -168,7 +177,7 @@ public class PitAssistant {
 
 			}
 		}
-		InventoryLoader.run();
+		inven.run();
 		if (!started) {
 			GUI.load(programName, userName, programColor, userColor);
 			GUI.text("Loading libraries...");
@@ -176,17 +185,17 @@ public class PitAssistant {
 			GUI.text("Libraries loaded!");
 			started = true;
 		}
-		InventoryLoader.run();
-		fileDump = InventoryLoader.fileDump;
-		fileDumpPointer = InventoryLoader.fileDumpPointer;
-		locations = InventoryLoader.locations;
-		locationNames = InventoryLoader.locationNames;
-		masterInventoryPointers = InventoryLoader.masterInventoryPointers;
-		masterInventory = InventoryLoader.masterInventory;
-		masterInventoryBorrow = InventoryLoader.masterInventoryBorrow;
-		masterInventoryDescriptionsPointer = InventoryLoader.masterInventoryDescriptionsPointer;
-		inventoryFile = InventoryLoader.inventoryFile;
-		inventoryFilePointer = InventoryLoader.inventoryFilePointer;
+		inven.run();
+		fileDump = inven.fileDump;
+		fileDumpPointer = inven.fileDumpPointer;
+		locations = inven.locations;
+		locationNames = inven.locationNames;
+		masterInventoryPointers = inven.masterInventoryPointers;
+		masterInventory = inven.masterInventory;
+		masterInventoryBorrow = inven.masterInventoryBorrow;
+		masterInventoryDescriptionsPointer = inven.masterInventoryDescriptionsPointer;
+		inventoryFile = inven.inventoryFile;
+		inventoryFilePointer = inven.inventoryFilePointer;
 		found = new int[locations+1];
 		Thread.sleep(1500);
 		if( !debugMode )
@@ -526,12 +535,12 @@ public class PitAssistant {
 		GUI.text("  =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-[" + programName
 				+ "]-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=");
 		GUI.text("");
-		GUI.text("  Hi, I'm Pit Assistant (v5.0). I can look for things, and tell you what's in our totes and boxes.");
-		GUI.text("Pit Assisstant (v5.0) Theoretically(TM) supports description-based queries and all sentence structures.");
-		GUI.text("         Pit Assistant (v5.0) Theoretically(TM) keeps track of borrowed items from a file.");
-		GUI.text("       Pit Assistant (v5.0) also Theoretically(TM) supports and keeps track of user preferences.");
+		GUI.text("  Hi, I'm Pit Assistant (v5.1). I can look for things, and tell you what's in our totes and boxes.");
+		GUI.text("Pit Assisstant (v5.1) Theoretically(TM) supports description-based queries and all sentence structures.");
+		GUI.text("         Pit Assistant (v5.1) Theoretically(TM) keeps track of borrowed items from a file.");
+		GUI.text("       Pit Assistant (v5.1) also Theoretically(TM) supports and keeps track of user preferences.");
 		GUI.text("");
-		GUI.text("  =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=(v5.0)=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=");
+		GUI.text("  =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=(v5.1)=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=");
 		GUI.text("");
 		GUI.text("How may I help you?");
 	}
@@ -674,6 +683,7 @@ public class PitAssistant {
 			GUI.text("(v4.6)  ::  Setup new recursive search algorithm for modular inventory implementation");
 			GUI.text("(v4.7)  ::  Finished modular inventory setup. Beginning the long and arduous process of debugging.");
 			GUI.text("(v5.0)  ::  Debugging complete (and way ahead of schedule). Modular Inventory is now up and running.");
+			GUI.text("(v5.1)  ::  Made PitAssistant executable again.");
 			skip = true;
 		}
 		if (data.contains("help") && !data.contains("find")
