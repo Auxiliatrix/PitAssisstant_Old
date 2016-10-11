@@ -62,6 +62,7 @@ public class PAInterface extends JPanel implements ActionListener {
         c.weightx = 1.0;
         c.weighty = 1.0;
         add(scroll, c);
+        // console.setBackground(Color.blue);
     }
 	protected void load(String program, String user, Color pac, Color uc)
 	{
@@ -164,12 +165,12 @@ public class PAInterface extends JPanel implements ActionListener {
 		console.setText("");
 		text("  =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-[" + programName + "]-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=");
 		text("");
-		text("  Hi, I'm Pit Assistant (v5.1). I can look for things, and tell you what's in our totes and boxes.");
-		text("Pit Assisstant (v5.1) Theoretically(TM) supports description-based queries and all sentence structures.");
-		text("         Pit Assistant (v5.1) Theoretically(TM) keeps track of borrowed items from a file.");
-		text("       Pit Assistant (v5.1) also Theoretically(TM) supports and keeps track of user preferences.");
+		text("  Hi, I'm Pit Assistant (v5.2). I can look for things, and tell you what's in our totes and boxes.");
+		text("Pit Assisstant (v5.2) Theoretically(TM) supports description-based queries and all sentence structures.");
+		text("         Pit Assistant (v5.2) Theoretically(TM) keeps track of borrowed items from a file.");
+		text("       Pit Assistant (v5.2) also Theoretically(TM) supports and keeps track of user preferences.");
 		text("");
-		text("  =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=(v5.1)=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=");
+		text("  =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=(v5.2)=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=");
 		text("");
 	}
 	protected void command(String command)

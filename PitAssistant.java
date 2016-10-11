@@ -32,7 +32,7 @@ public class PitAssistant {
 	// Level 2: Category { 0:Item || 1+:Description }
 	// Level 3: Contents
 	public static String[][] masterInventoryBorrow;
-	public static String[][] masterInventoryBB = new String[255][10000];
+	public static String[][] masterInventoryBB = new String[255][1000];
 	public static int[][] masterInventoryDescriptionsPointer;
 	
 	public static String[] inventoryFile;
@@ -41,39 +41,39 @@ public class PitAssistant {
 	public static int[] found;
 	
 	// arrays and pointers??
-	public static String[] nickName = new String[10000];
+	public static String[] nickName = new String[1000];
 	public static int nickNamePointer = 0;
-	public static String[] borrowFile = new String[10000];
+	public static String[] borrowFile = new String[1000];
 	public static int borrowFilePointer = 0;
-	public static String[] prefFile = new String[10000];
+	public static String[] prefFile = new String[1000];
 	public static int prefFilePointer = 0;
-	public static String[] registerFile = new String[10000];
+	public static String[] registerFile = new String[1000];
 	public static int registerFilePointer = 0;
-	public static String[] borrowedItem = new String[10000];
-	public static String[] borrowedTeam = new String[10000];
+	public static String[] borrowedItem = new String[1000];
+	public static String[] borrowedTeam = new String[1000];
 	public static int borrowedPointer = 0;
-	public static String[] lentItem = new String[10000];
-	public static int[][] lentLoc = new int[10000][2];
-	public static String[] lentTeam = new String[10000];
+	public static String[] lentItem = new String[1000];
+	public static int[][] lentLoc = new int[1000][2];
+	public static String[] lentTeam = new String[1000];
 	public static int lentPointer = 0;
-	public static String[] borrowedItemBU = new String[10000];
-	public static String[] borrowedTeamBU = new String[10000];
+	public static String[] borrowedItemBU = new String[1000];
+	public static String[] borrowedTeamBU = new String[1000];
 	public static int borrowedPointerBU = 0;
-	public static String[] lentItemBU = new String[10000];
-	public static int[][] lentLocBU = new int[10000][2];
-	public static String[] lentTeamBU = new String[10000];
+	public static String[] lentItemBU = new String[1000];
+	public static int[][] lentLocBU = new int[1000][2];
+	public static String[] lentTeamBU = new String[1000];
 	public static int lentPointerBU = 0;
-	public static int[][] results = new int[10000][2];
-	public static String[] exact = new String[10000];
-	public static int[] exactLocation = new int[10000];
+	public static int[][] results = new int[1000][2];
+	public static String[] exact = new String[1000];
+	public static int[] exactLocation = new int[1000];
 	public static int exactPointer = 0;
-	public static String[] printed = new String[10000];
+	public static String[] printed = new String[1000];
 	public static int printedPointer = 1;
 	public static int resultPointer = 0;
-	public static String[] notes = new String[10000];
+	public static String[] notes = new String[1000];
 	public static int notesPointer = 0;
 	public static int[] p = new int[8];
-	public static String[] keywords = new String[10000];
+	public static String[] keywords = new String[1000];
 	public static int keywordPointer = 0;
 	// what the hell do these things do
 	public static int TLLength = 42;
@@ -390,7 +390,7 @@ public class PitAssistant {
 		borrowWrite("// Line 3: Team No.");
 		borrowedPointer = 0;
 		lentPointer = 0;
-		for (int f = 0; f < 10000; f++) {
+		for (int f = 0; f < 1000; f++) {
 			borrowedItem[f] = "";
 			borrowedTeam[f] = "";
 			lentItem[f] = "";
@@ -535,12 +535,12 @@ public class PitAssistant {
 		GUI.text("  =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-[" + programName
 				+ "]-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=");
 		GUI.text("");
-		GUI.text("  Hi, I'm Pit Assistant (v5.1). I can look for things, and tell you what's in our totes and boxes.");
-		GUI.text("Pit Assisstant (v5.1) Theoretically(TM) supports description-based queries and all sentence structures.");
-		GUI.text("         Pit Assistant (v5.1) Theoretically(TM) keeps track of borrowed items from a file.");
-		GUI.text("       Pit Assistant (v5.1) also Theoretically(TM) supports and keeps track of user preferences.");
+		GUI.text("  Hi, I'm Pit Assistant (v5.2). I can look for things, and tell you what's in our totes and boxes.");
+		GUI.text("Pit Assisstant (v5.2) Theoretically(TM) supports description-based queries and all sentence structures.");
+		GUI.text("         Pit Assistant (v5.2) Theoretically(TM) keeps track of borrowed items from a file.");
+		GUI.text("       Pit Assistant (v5.2) also Theoretically(TM) supports and keeps track of user preferences.");
 		GUI.text("");
-		GUI.text("  =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=(v5.1)=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=");
+		GUI.text("  =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=(v5.2)=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=");
 		GUI.text("");
 		GUI.text("How may I help you?");
 	}
@@ -684,6 +684,7 @@ public class PitAssistant {
 			GUI.text("(v4.7)  ::  Finished modular inventory setup. Beginning the long and arduous process of debugging.");
 			GUI.text("(v5.0)  ::  Debugging complete (and way ahead of schedule). Modular Inventory is now up and running.");
 			GUI.text("(v5.1)  ::  Made PitAssistant executable again.");
+			GUI.text("(v5.2)  ::  Maybe fixed the memory leak.");
 			skip = true;
 		}
 		if (data.contains("help") && !data.contains("find")
@@ -698,19 +699,16 @@ public class PitAssistant {
 			skip = true;
 		}
 		if (data.contains("todo") || data.contains("to-do")) {
-			GUI.text("1.  BUG FIXES:");
-			GUI.text("   a) CRITICAL MEMORY LEAK");
-			GUI.text("");
-			GUI.text("2.  Emoji Support");
-			GUI.text("3.  *Consolidate pointers");
-			GUI.text("4.  Save reponses to a text file for easy translation for international teams");
-			GUI.text("5.  Organize cases [Standalone, Priority, Easter Egg, Repeatable]");
-			GUI.text("6.  *Add undo borrow function");
-			GUI.text("7.  Add sentience easter egg");
-			GUI.text("8.  Add a pager maybe?");
-			GUI.text("9.  Work on social communications");
-			GUI.text("10. Make header stay same size regardless of name");
-			GUI.text("11. Make note taking independent from borrow file");
+			GUI.text("1.  Emoji Support");
+			GUI.text("2.  *Consolidate pointers");
+			GUI.text("3  Save reponses to a text file for easy translation for international teams");
+			GUI.text("4.  Organize cases [Standalone, Priority, Easter Egg, Repeatable]");
+			GUI.text("5.  *Add undo borrow function");
+			GUI.text("6.  Add sentience easter egg");
+			GUI.text("7.  Add a pager maybe?");
+			GUI.text("8.  Work on social communications");
+			GUI.text("9. Make header stay same size regardless of name");
+			GUI.text("10. Make note taking independent from borrow file");
 			skip = true;
 		}
 		if (data.contains("thank")) {
@@ -2271,6 +2269,8 @@ public class PitAssistant {
 				borrowWrite("n");
 				borrowWrite(sub);
 				loadBorrow();
+				notes[notesPointer] = sub;
+				notesPointer++;
 				cont = false;
 			} else if (c != 2) {
 				GUI.out("Please put the note in quotations.");

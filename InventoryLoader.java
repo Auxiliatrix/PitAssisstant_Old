@@ -9,7 +9,7 @@ import java.io.PrintWriter;
 
 public class InventoryLoader {
 
-	public static String[] fileDump = new String[10000];
+	public static String[] fileDump = new String[1000];
 	public static int fileDumpPointer = 0;
 	public static int locations = 0;
 	// Number of General Locations
@@ -17,15 +17,15 @@ public class InventoryLoader {
 	// Names of the General Locations
 	public static int[] masterInventoryPointers = new int[255];
 	// Contains General Location sizes
-	public static String[][][] masterInventory = new String[255][10000][100];
+	public static String[][][] masterInventory = new String[255][1000][100];
 	// Level 1: General Location
 	// Level 2: Index
 	// Level 2: Category { 0:Item || 1+:Description }
 	// Level 3: Contents
-	public static String[][] masterInventoryBorrow = new String[255][10000];
-	public static int[][] masterInventoryDescriptionsPointer = new int[255][10000];
+	public static String[][] masterInventoryBorrow = new String[255][1000];
+	public static int[][] masterInventoryDescriptionsPointer = new int[255][1000];
 	
-	public static String[] inventoryFile = new String[10000];
+	public static String[] inventoryFile = new String[1000];
 	public static int inventoryFilePointer = 0;
 	
 	public static boolean previousWasItem = false;
@@ -52,7 +52,7 @@ public class InventoryLoader {
 		{
 			locationNames[f] = "";
 			masterInventoryPointers[f] = 0;
-			for( int g=0; g<10000; g++ )
+			for( int g=0; g<1000; g++ )
 			{
 				for( int h=0; h<100; h++ )
 				{
