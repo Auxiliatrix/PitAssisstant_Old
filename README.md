@@ -3,8 +3,7 @@ PitAssistant is a program designed specifically for use by FRC teams in order to
 Currently, PitAssisstant goes under the name of HannahBot, named after the wonderful organizer Hannah, from team 604.
 As of right now, PitAssisstant(HannahBot) is version 1.8, and supports description-based queries and several easter eggs, because programmers get bored.
 
-The code is open-source, so that you can all look at it and pretend to look smart while saying "yeah, I totally could have done that."
-Well, you didn't. 604 Quixilver's Programmers did.
+The code is open-source, under the MIT License.
 
 ###Commands:
 - help - display commands
@@ -12,7 +11,7 @@ Well, you didn't. 604 Quixilver's Programmers did.
 - debug on/off/toggle - toggle debug mode
 - flush - flush the console
 
-####Credits:
+###Credits:
 - Programmer: Sang Gi Kim
 - GUI: Pranav Seethaman
 
