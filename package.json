@@ -1,0 +1,22 @@
+{
+  "name": "pitassistant",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "start"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Squeakadoodle/PitAssisstant.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Squeakadoodle/PitAssisstant/issues"
+  },
+  "homepage": "https://github.com/Squeakadoodle/PitAssisstant#readme",
+  "dependencies": {
+    "lokijs": "^1.4.3"
+  }
+}
