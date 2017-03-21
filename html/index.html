@@ -1,5 +1,5 @@
 <!doctype html>
-<html ng-app="hannahBot">
+<html ng-app="BotContainer">
 
   <head>
     <script src="../js/hammer.min.js"></script>
@@ -10,79 +10,16 @@
   </head>
 
   <body>
-  <div class="" ng-controller="toteCtrl">
-        <nav class="grey darken-4">
-            <div class="nav-wrapper">
-              <form>
-                <div class="input-field">
-                  <input id="search" type="search" ng-model="searchString" placeholder="What're you looking for?" required>
-                  <label for="search"><i class="material-icons">search</i></label>
-                  <i class="material-icons">close</i>
-                </div>
-              </form>
-            </div>
-        </nav>
 
-        <div class="container center row">
-          <div class="collection" ng-repeat="i in data | searchFor:searchString">
-            <a href="#!" class="collection-item">{{i}}<span class="badge">{{relationalList[i]}}</span></a>
-          </div>
-          <div class="collection" ng-repeat="i in data2 | searchFor:searchString">
-            <a href="#!" class="collection-item">{{i}}<span class="badge">{{BLlist[i]}}</span></a>
-          </div>
-        </div>
+    <div class="" ng-controller="MainControl">
 
-        <div class="fixed-action-btn vertical">
-          <a class="btn-floating btn-large black">
-            <i class="large material-icons">swap_vert</i>
-          </a>
-          <ul>
-            <li><a class="btn-floating black tooltipped" data-position="left" data-delay="50" data-tooltip="Lending a Tool?" ng-click="lendTool()"><i class="material-icons">call_made</i></a></li>
-            <li><a class="btn-floating black tooltipped" data-position="left" data-delay="50" data-tooltip="Borrowing a Tool?" ng-click="borrowTool()"><i class="material-icons">call_received</i></a></li>
-          </ul>
-        </div>
+        <ul id="slide-out" class="side-nav">
+            pranav is the babe
+        </ul>
 
-        <div id="borrowModal" class="modal">
-
-          <div class="modal-content container">
-            <div class="input-field col s6 offset-s3 valign-wrapper">
-              <input ng-model="toolName" id="toolName" type="text" class="validate valign">
-              <label class="active valign" for="appName">Name of Tool</label>
-            </div>
-
-            <div class="input-field col s6 offset-s3">
-              <input ng-model="teamName" id="teamName" type="text" class="validate">
-              <label class="active" for="iconName">Team Borrowing From</label>
-            </div>
-
-            <div class="col s6 offset-s3 right-align">
-              <button class="btn waves-effect waves-light black" ng-click="borrowComplete()">Submit</button>
-            </div>
-
-          </div>
-
-        </div>
-
-    <div id="lendModal" class="modal">
-
-      <div class="modal-content container">
-        <div class="input-field col s6 offset-s3 valign-wrapper">
-          <input ng-model="toolName" id="toolName" type="text" class="validate valign">
-          <label class="active valign" for="appName">Name of Tool</label>
-        </div>
-
-        <div class="input-field col s6 offset-s3">
-          <input ng-model="teamName" id="teamName" type="text" class="validate">
-          <label class="active" for="iconName">Team Lending To</label>
-        </div>
-
-        <div class="col s6 offset-s3 right-align">
-          <button class="btn waves-effect waves-light black" ng-click="lendComplete()">Submit</button>
-        </div>
-
+      <div class="valign-wrapper">
+        <a href="#" data-activates="slide-out" class="button-collapse"><i class="material-icons valign">fast_forward</i></a>
       </div>
-
-    </div>
 
     </div>
 
