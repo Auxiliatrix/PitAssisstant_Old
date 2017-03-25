@@ -1,0 +1,45 @@
+html { overflow-y: hidden; }
+
+.buttonDiv {
+    height: 100vh;
+    width: 10vh;
+    z-index:-9999;
+    position:absolute;
+}
+
+.finfout {
+    -webkit-animation: fadeinout .35s linear 1 forwards;
+    animation: fadeinout .35s linear 1 forwards;
+}
+
+@-webkit-keyframes fadeinout {
+  0% { opacity: 0; }
+  50% { opacity: 1; }
+}
+
+.showed{
+display: none;
+}
+
+.showing:hover .showed{
+display : block;
+}
+
+.triangle-border {
+  position:relative;
+  padding:1em;
+  margin:2em 0 4em;
+  border:5px solid #000000;
+  color:#333;
+  background:#fff;
+  -webkit-border-radius:10px;
+  -moz-border-radius:10px;
+  border-radius:10px;
+}
+
+.chat_div{
+  padding: 2em;
+  height: auto;
+  width: 70vw;
+  overflow-wrap: break-word;
+}

@@ -6,6 +6,6 @@ var jquery = require("jquery")
 
 angular.module('BotContainer', [])
 
-  .controller('MainControl', function($scope){
+  .controller('SideBar', function($scope){
     $(".button-collapse").sideNav();
   })
